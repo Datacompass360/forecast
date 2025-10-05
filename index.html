@@ -52,6 +52,20 @@
     .badge-gray { background-color: #f3f4f6; color: #4b5563; }
     #closeModal { transition: color 0.2s; }
     #closeModal:hover { color: #111827; }
+
+    /* Chart Resizing: 4 inches (W) x 3 inches (H) approx 400px x 300px */
+    .chart-container-4x3 {
+        width: 100%;
+        max-width: 400px; 
+        height: 300px; 
+        margin: 0 auto;
+    }
+    #analyticsCharts > div, #dashboardTab > div:not(#dashboardCards) {
+        /* Ensure the grid item itself is flexible and centers its content */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -75,9 +89,10 @@
   <main id="content" class="p-4">
     <div id="dashboardTab" class="hidden"> 
         <div id="dashboardCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6"></div>
+        <!-- Chart container updated with the fixed size class wrapper -->
         <div class="bg-white p-4 rounded-lg shadow">
             <h3 class="font-semibold mb-2">Prediction Type Distribution</h3>
-            <canvas id="predictionPieChart"></canvas>
+            <div class="chart-container-4x3"><canvas id="predictionPieChart"></canvas></div>
         </div>
     </div>
     <div id="analyticsTab" class="hidden">
@@ -88,11 +103,12 @@
       <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4"></div>
       
       <div class="bg-white p-4 rounded-lg shadow mb-4">
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
               <div class="filter-group flex flex-col"><label for="matchDateFilter">Match Date:</label><select id="matchDateFilter" class="border"></select></div>
               <div class="filter-group flex flex-col"><label>Winning Chance:</label><div class="range-filter"><input type="number" id="minWinChance" placeholder="Min" class="border"><input type="number" id="maxWinChance" placeholder="Max" class="border"></div></div>
               <div class="filter-group flex flex-col"><label for="over3GoalsFilter">Over 3 Goals:</label><select id="over3GoalsFilter" class="border"></select></div>
               <div class="filter-group flex flex-col"><label for="predictionFilter">Match Prediction:</label><select id="predictionFilter" class="border"></select></div>
+              <div class="filter-group flex flex-col"><label for="minOutcomeProb">Outcome Prob.:</label><div class="range-filter"><input type="number" id="minOutcomeProb" placeholder="Min" class="border"><input type="number" id="maxOutcomeProb" placeholder="Max" class="border"></div></div>
               <div class="flex items-center gap-3 col-span-2 justify-end">
                 <button id="moreFiltersBtn" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">More Filters</button>
                 <button id="clearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded text-sm hover:bg-gray-300">Clear All Filters</button>
@@ -107,6 +123,7 @@
             <th class="p-2 text-left">View</th>
             <th class="p-2 text-left" data-column="MatchDate">Date</th>
             <th class="p-2 text-left" data-column="Prediction">Prediction</th>
+            <th class="p-2 text-left" data-column="Outcome Probability">Outcome %</th>
             <th class="p-2 text-left" data-column="Odds (Prediction)">Odds (Prediction)</th>
             <th class="p-2 text-left" data-column="Winning Probability">Win %</th>
             <th class="p-2 text-left" data-column="Over 3 Goals">Over 3 Goals</th>
@@ -125,19 +142,33 @@
 
   <!-- Modals -->
   <div id="moreFiltersModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-30 p-4">
-      <div class="bg-white rounded-lg w-full max-w-4xl p-6 relative">
+      <!-- Modal size and content structure updated -->
+      <div class="bg-white rounded-lg w-full max-w-6xl p-6 relative"> 
           <h3 class="text-lg font-bold mb-4">Advanced Filters</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
-              <div class="filter-group flex flex-col"><label for="leagueFilter" class="text-sm font-medium">League (Multi-select):</label><select id="leagueFilter" multiple class="border rounded h-48"></select></div>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4">
+              
+              <!-- Column 1: Match Info/Categories (Selections) -->
               <div class="space-y-4">
+                  <div class="filter-group flex flex-col"><label for="leagueFilter" class="text-sm font-medium">League (Multi-select):</label><select id="leagueFilter" multiple class="border rounded h-32"></select></div>
                   <div class="filter-group flex flex-col"><label for="modalMatchAnalysisFilter">Match Analysis:</label><select id="modalMatchAnalysisFilter" class="border"></select></div>
                   <div class="filter-group flex flex-col"><label for="modalGoalsAnalysisFilter">Goals Analysis:</label><select id="modalGoalsAnalysisFilter" class="border"></select></div>
-                   <div class="filter-group flex flex-col"><label for="modalPredictionFilter">Match Prediction:</label><select id="modalPredictionFilter" class="border"></select></div>
+                  <div class="filter-group flex flex-col"><label for="modalPredictionFilter">Match Prediction:</label><select id="modalPredictionFilter" class="border"></select></div>
+                  <div class="filter-group flex flex-col"><label for="modalOver3GoalsFilter">Over 3 Goals:</label><select id="modalOver3GoalsFilter" class="border"></select></div>
               </div>
+
+              <!-- Column 2: Streaks & Goals (Ranges) -->
+              <div class="space-y-4">
+                  <div class="filter-group flex flex-col"><label>Winning Streak:</label><div class="range-filter"><input type="number" id="minWinningStreak" placeholder="Min" class="border"><input type="number" id="maxWinningStreak" placeholder="Max" class="border"></div></div>
+                  <div class="filter-group flex flex-col"><label>Losing Streak:</label><div class="range-filter"><input type="number" id="minLosingStreak" placeholder="Min" class="border"><input type="number" id="maxLosingStreak" placeholder="Max" class="border"></div></div>
+                  <div class="filter-group flex flex-col"><label>Probability of 3 Goals (%):</label><div class="range-filter"><input type="number" id="minProb3Goals" placeholder="Min" class="border"><input type="number" id="maxProb3Goals" placeholder="Max" class="border"></div></div>
+                  <div class="filter-group flex flex-col"><label>Total Goals Prediction:</label><div class="range-filter"><input type="number" id="minTotalGoals" placeholder="Min" class="border"><input type="number" id="maxTotalGoals" placeholder="Max" class="border"></div></div>
+              </div>
+
+              <!-- Column 3: Probability Metrics (Ranges) -->
               <div class="space-y-4">
                   <div class="filter-group flex flex-col"><label>Winning Chance (%):</label><div class="range-filter"><input type="number" id="modalMinWinChance" placeholder="Min" class="border"><input type="number" id="modalMaxWinChance" placeholder="Max" class="border"></div></div>
-                  <div class="filter-group flex flex-col"><label for="modalOver3GoalsFilter">Over 3 Goals:</label><select id="modalOver3GoalsFilter" class="border"></select></div>
-                  <div class="filter-group flex flex-col"><label>Total Goals Prediction:</label><div class="range-filter"><input type="number" id="minTotalGoals" placeholder="Min" class="border"><input type="number" id="maxTotalGoals" placeholder="Max" class="border"></div></div>
+                  <div class="filter-group flex flex-col"><label>Winning Probability (%):</label><div class="range-filter"><input type="number" id="minWinningProbability" placeholder="Min" class="border"><input type="number" id="maxWinningProbability" placeholder="Max" class="border"></div></div>
+                  <div class="filter-group flex flex-col"><label>Outcome Probability (%):</label><div class="range-filter"><input type="number" id="minOutcomeProbability" placeholder="Min" class="border"><input type="number" id="maxOutcomeProbability" placeholder="Max" class="border"></div></div>
               </div>
           </div>
           <div class="mt-6 flex justify-end gap-3">
@@ -170,18 +201,34 @@
 
     // --- Data Fetching & Processing ---
     /**
-     * Fetches and parses CSV data from a URL using PapaParse's download feature.
-     * This is more robust for cross-origin requests than a standard fetch().
+     * Fetches CSV data using standard fetch and parses the text using PapaParse.
+     * This method is generally more robust against environment-specific CORS/download issues.
      * @param {string} url The URL of the CSV file.
      * @returns {Promise<Array<Object>>} A promise that resolves with the parsed data.
      */
-    function fetchCsv(url) {
+    async function fetchCsv(url) {
+        // Add a cache-busting parameter to prevent loading stale data.
+        const cacheBustUrl = url + (url.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
+        
+        // 1. Fetch the data as text
+        let response;
+        try {
+            response = await fetch(cacheBustUrl);
+            if (!response.ok) {
+                // Throw an error if the HTTP status is not OK (e.g., 404, 500)
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (e) {
+            console.error('Network or HTTP error during CSV fetch:', e);
+            // Re-throw the error to be caught by the caller (loadData)
+            throw new Error(`Failed to fetch CSV data from the URL.`);
+        }
+
+        const csvText = await response.text();
+
+        // 2. Parse the fetched text using PapaParse
         return new Promise((resolve, reject) => {
-            // Add a cache-busting parameter to prevent loading stale data.
-            const cacheBustUrl = url + (url.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
-            
-            Papa.parse(cacheBustUrl, {
-                download: true, // This is crucial for fetching remote files and handling CORS.
+            Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
                 transformHeader: h => h.trim(),
@@ -192,8 +239,9 @@
                     resolve(results.data);
                 },
                 error: function(err) {
-                    console.error('PapaParse download/parse error:', err);
-                    reject(new Error(`Failed to load or parse CSV from ${url}. Check the URL and network connection.`));
+                    // This error handler is for parsing errors, not download errors
+                    console.error('PapaParse parsing error:', err);
+                    reject(new Error(`Failed to parse CSV content.`));
                 }
             });
         });
@@ -205,8 +253,10 @@
             for (const k in r) {
                 row[k.trim()] = (r[k] || '').toString().trim();
             }
+            // All required numeric keys are listed here for consistent parsing
             const numericKeys = [
-                'Winning Probability', 'Probability of 3 Goals', 'Winning Chance', 'Outcome Probability', 'Winning Streak', 'Losing Streak', 
+                'Winning Probability', 'Probability of 3 Goals', 'Winning Chance', 'Outcome Probability', 
+                'Winning Streak', 'Losing Streak', 
                 'Home Wins', 'Home Draws', 'Home Losses', 'Home Scored', 'Home Scored (Avg)', 'Home Conceded', 'Home Conceded (Avg)',
                 'Away Wins', 'Away Draws', 'Away Losses', 'Away Scored', 'Away Scored (Avg)', 'Away Conceded', 'Away Conceded (Avg)',
                 'Odds (Prediction)', 'Stake', 'Total Goals Prediction'
@@ -217,7 +267,8 @@
                 const d = new Date(row['Match Date']);
                 if (!isNaN(d)) row.MatchDate = d.toISOString().split('T')[0];
             } else {
-                row.MatchDate = '';
+                // Defaulting to a generic date for sorting if MatchDate is missing in the new data
+                row.MatchDate = row.Date || '1970-01-01'; 
             }
             return row;
         });
@@ -237,11 +288,19 @@
         try {
             const rawData = await fetchCsv(CSV_URL);
             allMatches = normalizeRows(rawData);
+            
+            // Add fallback for 'Match' column if not present (as in generic CSVs)
+            allMatches = allMatches.map(r => ({
+                ...r,
+                // Assuming 'Fund Name' might serve as a Match identifier if the original 'Match' is missing
+                Match: r.Match || r['Fund Name'] || r['Date'] || `Unknown Match ${crypto.randomUUID().substring(0, 4)}`,
+            }));
+
             populateFilters(allMatches);
             applyFilters();
         } catch (err) { 
             console.error('Failed to load CSV data:', err);
-            showErrorOverlay(`Failed to load data. Please check connection and console.`);
+            showErrorOverlay(`Failed to load data. The link might be broken. Error: ${err.message}`);
         } finally { 
             document.getElementById('loadingOverlay').classList.add('hidden'); 
         }
@@ -250,10 +309,14 @@
     // --- Filter Population & Logic ---
     function populateFilters(data) {
         const createOptions = (arr) => [...new Set(arr)].filter(Boolean).sort();
+        
+        // Main Filters
         populateSelect('matchDateFilter', createOptions(data.map(r => r.MatchDate)).reverse());
-        populateSelect('predictionFilter', createOptions(data.map(r => r.Prediction)));
-        populateSelect('modalPredictionFilter', createOptions(data.map(r => r.Prediction)));
+        populateSelect('predictionFilter', createOptions(data.map(r => r['Match Prediction'] || r.Prediction)));
         populateSelect('over3GoalsFilter', createOptions(data.map(r => r['Over 3 Goals'])));
+        
+        // Modal Select Filters
+        populateSelect('modalPredictionFilter', createOptions(data.map(r => r['Match Prediction'] || r.Prediction)));
         populateSelect('modalOver3GoalsFilter', createOptions(data.map(r => r['Over 3 Goals'])));
         populateSelect('leagueFilter', createOptions(data.map(r => r.League)), true);
         populateSelect('modalMatchAnalysisFilter', createOptions(data.map(r => r['Match Analysis'])));
@@ -272,27 +335,76 @@
         const getVal = id => document.getElementById(id).value.trim();
         const getNum = id => parseFloat(getVal(id));
         
+        // Main Filters
         const mainDate = getVal("matchDateFilter"), mainPred = getVal("predictionFilter"), mainOver3 = getVal("over3GoalsFilter");
         const mainMinWin = getNum('minWinChance'), mainMaxWin = getNum('maxWinChance');
+        const mainMinOutcome = getNum('minOutcomeProb'), mainMaxOutcome = getNum('maxOutcomeProb');
+        
+        // Modal Filters
         const modalLeagues = Array.from(document.getElementById("leagueFilter").selectedOptions).map(o=>o.value);
         const modalAnalysis = getVal('modalMatchAnalysisFilter'), modalGoals = getVal('modalGoalsAnalysisFilter'), modalPred = getVal('modalPredictionFilter'), modalOver3 = getVal('modalOver3GoalsFilter');
-        const modalMinWin = getNum('modalMinWinChance'), modalMaxWin = getNum('modalMaxWinChance');
+        
+        // New/Expanded Range Filters
+        const modalMinWin = getNum('modalMinWinChance'), modalMaxWin = getNum('modalMaxWinChance'); // Winning Chance
         const minTotalGoals = getNum('minTotalGoals'), maxTotalGoals = getNum('maxTotalGoals');
+        const minWinningStreak = getNum('minWinningStreak'), maxWinningStreak = getNum('maxWinningStreak');
+        const minLosingStreak = getNum('minLosingStreak'), maxLosingStreak = getNum('maxLosingStreak');
+        const minWinningProbability = getNum('minWinningProbability'), maxWinningProbability = getNum('maxWinningProbability');
+        const minProb3Goals = getNum('minProb3Goals'), maxProb3Goals = getNum('maxProb3Goals');
+        const minOutcomeProbability = getNum('minOutcomeProbability'), maxOutcomeProbability = getNum('maxOutcomeProbability');
+
 
         let tempFiltered = allMatches.filter(r => {
             const winChance = r['Winning Chance'];
-            return (!mainDate || r.MatchDate === mainDate) && (!mainPred || r.Prediction === mainPred) &&
-                   (!mainOver3 || r['Over 3 Goals'] === mainOver3) && (isNaN(mainMinWin) || winChance >= mainMinWin) &&
-                   (isNaN(mainMaxWin) || winChance <= mainMaxWin) && (modalLeagues.length === 0 || modalLeagues.includes(r.League)) &&
-                   (!modalAnalysis || r['Match Analysis'] === modalAnalysis) && (!modalGoals || r['Goals Analysis'] === modalGoals) &&
-                   (!modalPred || r.Prediction === modalPred) && (!modalOver3 || r['Over 3 Goals'] === modalOver3) &&
+            const winningProb = r['Winning Probability'];
+            const prob3Goals = r['Probability of 3 Goals'];
+            const outcomeProb = r['Outcome Probability'];
+            const prediction = (r['Match Prediction'] || r.Prediction || '');
+
+            // Main Filter Logic (for quick access)
+            return (!mainDate || r.MatchDate === mainDate) && 
+                   (!mainPred || prediction === mainPred) &&
+                   (!mainOver3 || r['Over 3 Goals'] === mainOver3) && 
+                   (isNaN(mainMinWin) || winChance >= mainMinWin) &&
+                   (isNaN(mainMaxWin) || winChance <= mainMaxWin) &&
+                   (isNaN(mainMinOutcome) || outcomeProb >= mainMinOutcome) &&
+                   (isNaN(mainMaxOutcome) || outcomeProb <= mainMaxOutcome) &&
+
+                   // Modal Select Filters
+                   (modalLeagues.length === 0 || modalLeagues.includes(r.League)) &&
+                   (!modalAnalysis || r['Match Analysis'] === modalAnalysis) && 
+                   (!modalGoals || r['Goals Analysis'] === modalGoals) &&
+                   (!modalPred || prediction === modalPred) && 
+                   (!modalOver3 || r['Over 3 Goals'] === modalOver3) &&
+
+                   // Modal Range Filters (New/Expanded)
                    (isNaN(modalMinWin) || winChance >= modalMinWin) && (isNaN(modalMaxWin) || winChance <= modalMaxWin) &&
-                   (isNaN(minTotalGoals) || r['Total Goals Prediction'] >= minTotalGoals) && (isNaN(maxTotalGoals) || r['Total Goals Prediction'] <= maxTotalGoals);
+                   (isNaN(minTotalGoals) || r['Total Goals Prediction'] >= minTotalGoals) && (isNaN(maxTotalGoals) || r['Total Goals Prediction'] <= maxTotalGoals) &&
+
+                   (isNaN(minWinningStreak) || r['Winning Streak'] >= minWinningStreak) && (isNaN(maxWinningStreak) || r['Winning Streak'] <= maxWinningStreak) &&
+                   (isNaN(minLosingStreak) || r['Losing Streak'] >= minLosingStreak) && (isNaN(maxLosingStreak) || r['Losing Streak'] <= maxLosingStreak) &&
+                   (isNaN(minWinningProbability) || winningProb >= minWinningProbability) && (isNaN(maxWinningProbability) || winningProb <= maxWinningProbability) &&
+                   (isNaN(minProb3Goals) || prob3Goals >= minProb3Goals) && (isNaN(maxProb3Goals) || prob3Goals <= maxProb3Goals) &&
+                   (isNaN(minOutcomeProbability) || outcomeProb >= minOutcomeProbability) && (isNaN(maxOutcomeProbability) || outcomeProb <= maxOutcomeProbability);
         });
         
-        if (currentTab === 'best') tempFiltered = tempFiltered.filter(r => (r['Outcome Probability'] >= 66 && r['Prediction'] === 'Home Win') || (r['Outcome Probability'] >= 76 && r['Prediction'] === 'Away Win'));
-        else if (currentTab === 'favourites') tempFiltered = tempFiltered.filter(r => favourites.has(encodeURIComponent(`${r.Match}-${r.MatchDate}`)));
-        else if (currentTab === 'yesterday') { const y = new Date(); y.setDate(y.getDate() - 1); tempFiltered = tempFiltered.filter(r => r.MatchDate === y.toISOString().split('T')[0]); }
+        // --- Tab Specific Filters ---
+        if (currentTab === 'best') {
+             tempFiltered = tempFiltered.filter(row => {
+                const outcomeProb = parseFloat(row['Outcome Probability']) || 0;
+                const matchPrediction = (row['Match Prediction'] || row['Prediction'] || '').toLowerCase();
+            
+                return (
+                  (outcomeProb >= 66 && matchPrediction.includes('home win')) ||
+                  (outcomeProb >= 76 && matchPrediction.includes('away win'))
+                );
+              });
+        } else if (currentTab === 'favourites') {
+            tempFiltered = tempFiltered.filter(r => favourites.has(encodeURIComponent(`${r.Match}-${r.MatchDate}`)));
+        } else if (currentTab === 'yesterday') { 
+            const y = new Date(); y.setDate(y.getDate() - 1); 
+            tempFiltered = tempFiltered.filter(r => r.MatchDate === y.toISOString().split('T')[0]); 
+        }
         
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
         if (q) tempFiltered = tempFiltered.filter(r => (r.Match + ' ' + (r.League||'')).toLowerCase().includes(q));
@@ -309,17 +421,27 @@
     
     // --- Rendering Functions ---
     const totalGoalsFromResult = (res) => res ? (res.split(/[:-]/).map(Number).reduce((s,c)=>s+c,0) || null) : null;
-    const detectOutcome = (res) => { if(!res) return null; const [h,a]=res.split(/[:-]/).map(Number); return h>a?'Home':h<a?'Away':'Draw'; };
+    const detectOutcome = (res) => {
+      if (!res || !res.includes('-')) return null;
+      const scores = res.split(/[:-]/).map(Number);
+      if (scores.length !== 2) return null;
+      if (scores[0] > scores[1]) return 'Home';
+      if (scores[0] < scores[1]) return 'Away';
+      return 'Draw';
+    };
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = data.length ? '' : `<tr><td colspan="9" class="text-center p-4">No matches found.</td></tr>`;
         data.forEach(row => {
             const id = encodeURIComponent(`${row.Match}-${row.MatchDate}`);
-            const totalGoals = totalGoalsFromResult(row.Result);
             const actualOutcome = detectOutcome(row.Result);
-            const pred = (row.Prediction || '').toLowerCase();
-            const isCorrect = actualOutcome && ((actualOutcome === 'Home' && pred.includes('home')) || (actualOutcome === 'Away' && pred.includes('away')) || (actualOutcome === 'Draw' && pred.includes('draw')));
+            const pred = (row['Match Prediction'] || row.Prediction || '').toLowerCase();
+            const isCorrect = actualOutcome && (
+                (actualOutcome === 'Home' && pred.includes('home')) || 
+                (actualOutcome === 'Away' && pred.includes('away')) || 
+                (actualOutcome === 'Draw' && pred.includes('draw'))
+            );
             const isGlowing = (row['Winning Streak'] > 3 && row['Losing Streak'] < -2) || (row['Home Losses'] > row['Away Losses'] + 3) || (row['Away Losses'] > row['Home Losses'] + 3);
 
             const tr = document.createElement('tr');
@@ -329,10 +451,11 @@
               <td class='p-2 font-medium'>${row.Match}</td>
               <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>
               <td class='p-2'>${row.MatchDate}</td>
-              <td class='p-2'>${row.Prediction}</td>
+              <td class='p-2'>${row['Match Prediction'] || row.Prediction || 'N/A'}</td>
+              <td class='p-2'>${row['Outcome Probability']}%</td>
               <td class='p-2 font-semibold'>${row['Odds (Prediction)'] || ''}</td>
               <td class='p-2'>${row['Winning Probability']}%</td>
-              <td class='p-2 ${totalGoals >= 3 ? "bg-green-200" : ""}'>${row['Over 3 Goals'] || ''}</td>
+              <td class='p-2 ${row['Over 3 Goals'] === 'YES' ? "bg-green-200" : ""}'>${row['Over 3 Goals'] || ''}</td>
               <td class='p-2 ${actualOutcome ? (isCorrect ? "bg-green-300" : "bg-red-300") : ""}'>${row.Result || '—'}</td>`;
             tbody.appendChild(tr);
         });
@@ -353,7 +476,15 @@
         const total = data.length;
         const completed = data.filter(r => r.Result && r.Result.includes('-'));
         const open = total - completed.length;
-        const won = completed.filter(r => { const o = detectOutcome(r.Result), p=(r.Prediction||'').toLowerCase(); return o && ((o==='Home'&&p.includes('home'))||(o==='Away'&&p.includes('away'))||(o==='Draw'&&p.includes('draw'))); }).length;
+        const won = completed.filter(r => { 
+            const o = detectOutcome(r.Result), p=(r['Match Prediction'] || r.Prediction ||'').toLowerCase(); 
+            return o && (
+                (o==='Home'&&p.includes('home')) || 
+                (o==='Away'&&p.includes('away')) || 
+                (o==='Draw'&&p.includes('draw'))
+            ); 
+        }).length;
+
         container.innerHTML = `
             <div class="summary-card bg-blue-100" title="Total matches in the current view."><h3>Total Matches</h3><p class="text-blue-800">${total}</p></div>
             <div class="summary-card bg-yellow-100" title="Matches that have not yet been played."><h3>Open Matches</h3><p class="text-yellow-800">${open}</p></div>
@@ -371,7 +502,8 @@
             const canvasContainer = document.createElement('div');
             canvasContainer.className = 'bg-white p-4 rounded-lg shadow';
             const chartId = `chart-${field.replace(/[^a-zA-Z0-9]/g, '')}`;
-            canvasContainer.innerHTML = `<h3 class="font-semibold text-center mb-2 text-gray-700">${field}</h3><canvas id="${chartId}"></canvas>`;
+            // Added chart-container-4x3 wrapper for fixed sizing
+            canvasContainer.innerHTML = `<h3 class="font-semibold text-center mb-2 text-gray-700">${field}</h3><div class="chart-container-4x3"><canvas id="${chartId}"></canvas></div>`;
             container.appendChild(canvasContainer);
             const counts = data.reduce((acc, r) => { const val = r[field] || 'N/A'; acc[val] = (acc[val] || 0) + 1; return acc; }, {});
             createChart(chartId, 'bar', field, Object.keys(counts), Object.values(counts));
@@ -380,15 +512,23 @@
 
     function renderDashboard(data) {
         const container = document.getElementById('dashboardCards');
-        const pieContainer = document.getElementById('predictionPieChart').parentElement;
+        const pieChartWrapper = document.getElementById('predictionPieChart').closest('.bg-white');
+        
         if (!data.length) { 
             container.innerHTML = '<p class="col-span-full text-center py-8 text-gray-500">No data for dashboard view.</p>'; 
-            pieContainer.classList.add('hidden');
+            pieChartWrapper.classList.add('hidden');
             return;
         }
-        pieContainer.classList.remove('hidden');
+        pieChartWrapper.classList.remove('hidden');
         const completed = data.filter(r => r.Result && r.Result.includes('-'));
-        const won = completed.filter(r => { const o = detectOutcome(r.Result), p=(r.Prediction||'').toLowerCase(); return o && ((o==='Home'&&p.includes('home'))||(o==='Away'&&p.includes('away'))||(o==='Draw'&&p.includes('draw'))); }).length;
+        const won = completed.filter(r => { 
+            const o = detectOutcome(r.Result), p=(r['Match Prediction'] || r.Prediction ||'').toLowerCase(); 
+            return o && (
+                (o==='Home'&&p.includes('home')) || 
+                (o==='Away'&&p.includes('away')) || 
+                (o==='Draw'&&p.includes('draw'))
+            );
+        }).length;
         const avgWinProb = data.length > 0 ? data.reduce((sum, r) => sum + r['Winning Probability'], 0) / data.length : 0;
         const over3 = data.filter(r => totalGoalsFromResult(r.Result) >= 3).length;
         
@@ -399,7 +539,7 @@
             <div class="summary-card bg-blue-100"><h3>Avg. Win Prob.</h3><p>${avgWinProb.toFixed(1)}%</p></div>
             <div class="summary-card bg-indigo-100"><h3>Matches w/ 3+ Goals</h3><p>${over3}</p></div>
         `;
-        const predCounts = data.reduce((acc, r) => { const val = r['Prediction'] || 'N/A'; acc[val] = (acc[val] || 0) + 1; return acc; }, {});
+        const predCounts = data.reduce((acc, r) => { const val = r['Match Prediction'] || r.Prediction || 'N/A'; acc[val] = (acc[val] || 0) + 1; return acc; }, {});
         createChart('predictionPieChart', 'pie', 'Predictions', Object.keys(predCounts), Object.values(predCounts));
     }
     
@@ -409,6 +549,7 @@
         if (charts[id]) charts[id].destroy();
         charts[id] = new Chart(ctx, {
             type, data: { labels, datasets: [{ label, data, backgroundColor: ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#8b5cf6', '#6b7280', '#10b981', '#f97316'] }] },
+            // maintainAspectRatio is false and responsive is true, allowing the container size to dictate the chart size.
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: type === 'pie' } } }
         });
     }
@@ -417,12 +558,43 @@
         const modalContent = document.getElementById('modalContent');
         const getStat = (key, def = 'N/A') => data[key] || def;
         const actualOutcome = detectOutcome(data.Result);
-        const pred = (getStat('Prediction')).toLowerCase();
-        const isCorrect = actualOutcome && ((actualOutcome==='Home' && pred.includes('home')) || (actualOutcome==='Away' && pred.includes('away')) || (actualOutcome==='Draw' && pred.includes('draw')));
+        const pred = (getStat('Match Prediction') || getStat('Prediction')).toLowerCase();
+        const isCorrect = actualOutcome && (
+            (actualOutcome === 'Home' && pred.includes('home')) || 
+            (actualOutcome === 'Away' && pred.includes('away')) || 
+            (actualOutcome === 'Draw' && pred.includes('draw'))
+        );
+        
         let resultBadge = `<span class="value badge-gray badge">Pending</span>`;
         if(data.Result && data.Result.includes('-')) {
             resultBadge = `<span class="value ${isCorrect ? 'badge-green':'badge-red'} badge">${data.Result} [Outcome: ${actualOutcome} ${isCorrect ? '✅':'❌'}]</span>`;
         }
+        
+        // Helper to format Home/Away stats for the modal
+        const HomeStats = [
+            { label: 'Wins', value: getStat('Home Wins'), icon: 'fa-trophy', color: 'text-yellow-500' },
+            { label: 'Draws', value: getStat('Home Draws'), icon: 'fa-handshake', color: 'text-gray-500' },
+            { label: 'Losses', value: getStat('Home Losses'), icon: 'fa-xmark', color: 'text-red-500' },
+            { label: 'Scored (Avg)', value: `${getStat('Home Scored')} (Avg ${getStat('Home Scored (Avg)')})`, icon: 'fa-futbol', color: 'text-green-500' },
+            { label: 'Conceded (Avg)', value: `${getStat('Home Conceded')} (Avg ${getStat('Home Conceded (Avg)')})`, icon: 'fa-shield-halved', color: 'text-red-600' },
+        ];
+
+        const AwayStats = [
+            { label: 'Wins', value: getStat('Away Wins'), icon: 'fa-trophy', color: 'text-yellow-500' },
+            { label: 'Draws', value: getStat('Away Draws'), icon: 'fa-handshake', color: 'text-gray-500' },
+            { label: 'Losses', value: getStat('Away Losses'), icon: 'fa-xmark', color: 'text-red-500' },
+            { label: 'Scored (Avg)', value: `${getStat('Away Scored')} (Avg ${getStat('Away Scored (Avg)')})`, icon: 'fa-futbol', color: 'text-green-500' },
+            { label: 'Conceded (Avg)', value: `${getStat('Away Conceded')} (Avg ${getStat('Away Conceded (Avg)')})`, icon: 'fa-shield-halved', color: 'text-red-600' },
+        ];
+
+        // Helper to generate stat items
+        const generateStatItems = (stats) => stats.map(s => `
+            <div class="stat-item">
+                <span class="stat-label"><i class="fa-solid ${s.icon} w-5 ${s.color}"></i> ${s.label}</span> 
+                <span class="stat-value">${s.value}</span>
+            </div>
+        `).join('');
+
         modalContent.innerHTML = `
             <div class="modal-header text-center border-b pb-4 mb-4">
                 <h3 class="text-2xl font-bold">${getStat('Match')}</h3>
@@ -431,28 +603,35 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="team-card bg-gray-50 rounded-xl p-4 shadow-inner">
-                    <h4 class="text-center font-semibold text-gray-800 mb-3">HOME TEAM</h4>
+                    <h4 class="text-center font-semibold text-gray-800 mb-3">HOME TEAM PERFORMANCE</h4>
                     <div class="space-y-2">
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-trophy w-5 text-yellow-500"></i> Wins</span> <span class="stat-value">${getStat('Home Wins')}</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-handshake w-5 text-gray-500"></i> Draws</span> <span class="stat-value">${getStat('Home Draws')}</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-xmark w-5 text-red-500"></i> Losses</span> <span class="stat-value">${getStat('Home Losses')}</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-futbol w-5 text-green-500"></i> Scored</span> <span class="stat-value">${getStat('Home Scored')} (Avg ${getStat('Home Scored (Avg)')})</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-shield-halved w-5 text-red-600"></i> Conceded</span> <span class="stat-value">${getStat('Home Conceded')} (Avg ${getStat('Home Conceded (Avg)')})</span></div>
+                        ${generateStatItems(HomeStats)}
                     </div>
                 </div>
                 <div class="team-card bg-gray-50 rounded-xl p-4 shadow-inner">
-                    <h4 class="text-center font-semibold text-gray-800 mb-3">AWAY TEAM</h4>
+                    <h4 class="text-center font-semibold text-gray-800 mb-3">AWAY TEAM PERFORMANCE</h4>
                     <div class="space-y-2">
-                         <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-trophy w-5 text-yellow-500"></i> Wins</span> <span class="stat-value">${getStat('Away Wins')}</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-handshake w-5 text-gray-500"></i> Draws</span> <span class="stat-value">${getStat('Away Draws')}</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-xmark w-5 text-red-500"></i> Losses</span> <span class="stat-value">${getStat('Away Losses')}</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-futbol w-5 text-green-500"></i> Scored</span> <span class="stat-value">${getStat('Away Scored')} (Avg ${getStat('Away Scored (Avg)')})</span></div>
-                        <div class="stat-item"><span class="stat-label"><i class="fa-solid fa-shield-halved w-5 text-red-600"></i> Conceded</span> <span class="stat-value">${getStat('Away Conceded')} (Avg ${getStat('Away Conceded (Avg)')})</span></div>
+                         ${generateStatItems(AwayStats)}
                     </div>
                 </div>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-xl mt-6">
-                <!-- Prediction details here -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white p-4 rounded-xl mt-6 border border-gray-200">
+                <div class="text-center">
+                    <p class="text-xs text-gray-500">Prediction</p>
+                    <p class="font-bold text-lg text-blue-600">${getStat('Match Prediction') || getStat('Prediction')}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-xs text-gray-500">Win Probability</p>
+                    <p class="font-bold text-lg text-green-600">${getStat('Winning Probability')}%</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-xs text-gray-500">Outcome Probability</p>
+                    <p class="font-bold text-lg text-indigo-600">${getStat('Outcome Probability')}%</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-xs text-gray-500">Odds</p>
+                    <p class="font-bold text-lg text-yellow-600">${getStat('Odds (Prediction)')}</p>
+                </div>
             </div>
             <div class="text-center col-span-full mt-4"><span class="text-sm text-gray-500">Result</span><div class="mt-1">${resultBadge}</div></div>
             <a href="${getStat('URL', '#')}" target="_blank" class="block text-center mt-6 text-blue-600 hover:underline">View Source <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
@@ -482,10 +661,17 @@
         });
 
         ['moreFiltersBtn', 'closeMoreFilters'].forEach(id => document.getElementById(id).addEventListener('click', () => document.getElementById('moreFiltersModal').classList.toggle('hidden')));
+        // Apply filters on modal close/apply
         document.getElementById('applyMoreFilters').addEventListener('click', () => { applyFilters(); document.getElementById('moreFiltersModal').classList.add('hidden'); });
 
-        document.querySelectorAll('#mainContent input, #mainContent select, #searchInput').forEach(input => 
-            input.addEventListener('input', () => { clearTimeout(filterTimeout); filterTimeout = setTimeout(applyFilters, 300); })
+        document.querySelectorAll('#mainContent input, #mainContent select, #searchInput, #moreFiltersModal input, #moreFiltersModal select').forEach(input => 
+            input.addEventListener('input', (e) => { 
+                // Only apply filters immediately for main content filters, modal filters apply only on button click
+                if (!e.target.closest('#moreFiltersModal')) {
+                    clearTimeout(filterTimeout); 
+                    filterTimeout = setTimeout(applyFilters, 300); 
+                }
+            })
         );
         
         document.body.addEventListener('click', e => {
