@@ -25,6 +25,10 @@
     
     #leagueFilter { height: 100px; }
     #moreFiltersModal select { width: 100%; }
+    
+    #tableHeaders th { cursor: pointer; }
+    .sorted-asc::after { content: ' ↑'; color: #3b82f6; }
+    .sorted-desc::after { content: ' ↓'; color: #ef4444; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -114,15 +118,15 @@
 
       <table id="matchesTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
         <thead class="bg-blue-200">
-          <tr>
-            <th class="p-2 text-left">★</th>
-            <th class="p-2 text-left">Match</th>
-            <th class="p-2 text-left">Date</th>
-            <th class="p-2 text-left">Prediction</th>
-            <th class="p-2 text-left">Odds (Prediction)</th>
-            <th class="p-2 text-left">Winning %</th>
-            <th class="p-2 text-left">Over 3 Goals</th>
-            <th class="p-2 text-left">Result</th>
+          <tr id="tableHeaders">
+            <th class="p-2 text-left" data-column="star">★</th>
+            <th class="p-2 text-left" data-column="Match">Match</th>
+            <th class="p-2 text-left" data-column="MatchDate">Date</th>
+            <th class="p-2 text-left" data-column="Prediction">Prediction</th>
+            <th class="p-2 text-left" data-column="Odds (Prediction)">Odds (Prediction)</th>
+            <th class="p-2 text-left" data-column="Winning Probability">Winning %</th>
+            <th class="p-2 text-left" data-column="Over 3 Goals">Over 3 Goals</th>
+            <th class="p-2 text-left" data-column="Result">Result</th>
             <th class="p-2 text-left">Actions</th>
           </tr>
         </thead>
@@ -183,6 +187,7 @@
     let charts = {};
     let currentPage = 1;
     const rowsPerPage = 30;
+    let sortConfig = { column: 'MatchDate', direction: 'desc' };
 
     // 1. Robust Data Fetching & Normalization
     async function fetchCsv(url) {
@@ -225,16 +230,27 @@
 
     // 2. Filter Population & Logic
     function populateFilters(data) {
-        populateSelect('matchDateFilter', [...new Set(data.map(r => r.MatchDate))].sort((a, b) => new Date(b) - new Date(a)));
-        populateSelect('leagueFilter', [...new Set(data.map(r => r.League))].sort());
-        populateSelect('matchAnalysisFilter', [...new Set(data.map(r => r['Match Analysis']))].sort());
-        populateSelect('goalsAnalysisFilter', [...new Set(data.map(r => r['Goals Analysis']))].sort());
-        populateSelect('matchPredictionFilter', [...new Set(data.map(r => r['Match Prediction']))].sort());
+        populateSelect('matchDateFilter', [...new Set(data.map(r => r.MatchDate))].sort((a, b) => new Date(b) - new Date(a)), false);
+        populateLeagueFilter(data);
+        populateSelect('matchAnalysisFilter', [...new Set(data.map(r => r['Match Analysis']))].sort(), false);
+        populateSelect('goalsAnalysisFilter', [...new Set(data.map(r => r['Goals Analysis']))].sort(), false);
+        populateSelect('matchPredictionFilter', [...new Set(data.map(r => r['Match Prediction']))].sort(), false);
     }
 
-    function populateSelect(elementId, options) {
+    function populateLeagueFilter(rows) {
+        const uniqueLeagues = [...new Set(rows.map(r => r.League).filter(Boolean))].sort();
+        const leagueSelect = document.getElementById('leagueFilter');
+        leagueSelect.innerHTML = '';
+        uniqueLeagues.forEach(league => {
+            const opt = document.createElement('option');
+            opt.value = league;
+            opt.text = league;
+            leagueSelect.appendChild(opt);
+        });
+    }
+    
+    function populateSelect(elementId, options, isMulti) {
         const select = document.getElementById(elementId);
-        const isMulti = select.multiple;
         select.innerHTML = isMulti ? '' : '<option value="">All</option>';
         options.filter(Boolean).forEach(opt => {
             const o = document.createElement('option');
@@ -279,9 +295,23 @@
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
         if (q) tempFiltered = tempFiltered.filter(r => (r.Match + ' ' + (r.League||'')).toLowerCase().includes(q));
 
+        // Sorting logic
+        if (sortConfig.column) {
+            const { column, direction } = sortConfig;
+            tempFiltered.sort((a, b) => {
+                const valA = a[column];
+                const valB = b[column];
+                const dir = direction === 'asc' ? 1 : -1;
+
+                if (typeof valA === 'number' && typeof valB === 'number') {
+                    return (valA - valB) * dir;
+                }
+                return String(valA).localeCompare(String(valB)) * dir;
+            });
+        }
+
         filteredMatches = tempFiltered;
         
-        // 7. Update cards based on filtered data
         updateSummaryCards(filteredMatches);
         
         if (currentTab === 'analytics') renderAnalytics(filteredMatches);
@@ -324,14 +354,14 @@
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
             tr.innerHTML = `
-              <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
-              <td class='p-2'>${row.Match}</td>
-              <td class='p-2'>${row.MatchDate}</td>
-              <td class='p-2'>${row.Prediction}</td>
-              <td class='p-2'>${row['Odds (Prediction)'] || ''}</td>
-              <td class='p-2'>${row['Winning Probability']}%</td>
-              <td class='p-2 ${over3Class}'>${row['Over 3 Goals'] || ''}</td>
-              <td class='p-2 ${resultBg}'>${row.Result || '—'}</td>
+              <td class='p-2 text-center' data-col="star"><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
+              <td class='p-2' data-col="Match">${row.Match}</td>
+              <td class='p-2' data-col="MatchDate">${row.MatchDate}</td>
+              <td class='p-2' data-col="Prediction">${row.Prediction}</td>
+              <td class='p-2' data-col="Odds (Prediction)">${row['Odds (Prediction)'] || ''}</td>
+              <td class='p-2' data-col="Winning Probability">${row['Winning Probability']}%</td>
+              <td class='p-2 ${over3Class}' data-col="Over 3 Goals">${row['Over 3 Goals'] || ''}</td>
+              <td class='p-2 ${resultBg}' data-col="Result">${row.Result || '—'}</td>
               <td class='p-2'><button class='view-btn text-blue-600 underline text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
         });
@@ -412,7 +442,6 @@
     }
     
     function renderDashboard(data){
-        // Basic KPIs
         const completed = data.filter(r => r.Result);
         const won = completed.filter(r => {
             const actual = detectOutcome(r.Result);
@@ -424,7 +453,6 @@
         const highConf = data.filter(r => r['Outcome Probability'] > 75).length;
         document.getElementById('dashHighConfidence').textContent = highConf;
         
-        // Value Bets Logic
         const valueBets = data.filter(r => !r.Result && (r['Winning Probability'] || 0) > 60 && (r['Odds (Prediction)'] || 0) > 2.0);
         document.getElementById('dashValueBets').textContent = valueBets.length;
         const valueBetsBody = document.getElementById('dashValueBetsTable');
@@ -433,16 +461,10 @@
             valueBetsBody.innerHTML = `<tr><td colspan="3" class="py-2 text-gray-500 text-center">No value bets found.</td></tr>`;
         } else {
             valueBets.slice(0, 5).forEach(r => {
-                valueBetsBody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="py-1 text-left">${r.Match}</td>
-                        <td class="py-1 font-semibold text-blue-600 text-center">${r['Odds (Prediction)']}</td>
-                        <td class="py-1 text-center">${r['Winning Probability']}%</td>
-                    </tr>`;
+                valueBetsBody.innerHTML += `<tr class="border-b"><td class="py-1 text-left">${r.Match}</td><td class="py-1 font-semibold text-blue-600 text-center">${r['Odds (Prediction)']}</td><td class="py-1 text-center">${r['Winning Probability']}%</td></tr>`;
             });
         }
 
-        // Last 5 matches
         const last5Body = document.getElementById('dashLast5');
         last5Body.innerHTML = '';
         completed.slice(0,5).forEach(r => {
@@ -452,7 +474,6 @@
             last5Body.innerHTML += `<tr class="border-b"><td class="py-1">${r.Match}</td><td class="py-1">${r.Result}</td><td class="py-1 ${isCorrect ? 'text-green-500':'text-red-500'}">${isCorrect ? '✔' : '✖'}</td></tr>`;
         });
 
-        // Placeholder for other widgets
         document.getElementById('dashTopTeam').textContent = 'Man City';
         const ctx = document.getElementById('accuracyChart').getContext('2d');
         if(charts.accuracy) charts.accuracy.destroy();
@@ -469,6 +490,24 @@
     document.getElementById('refreshBtn').addEventListener('click', loadData);
     document.getElementById('searchInput').addEventListener('input', () => setTimeout(() => applyFilters(), 300));
     
+    document.querySelectorAll('#tableHeaders th[data-column]').forEach(th => {
+        th.addEventListener('click', () => {
+            const column = th.dataset.column;
+            if (!column) return;
+            
+            const currentDirection = sortConfig.column === column ? sortConfig.direction : 'desc';
+            sortConfig.direction = currentDirection === 'asc' ? 'desc' : 'asc';
+            sortConfig.column = column;
+            
+            document.querySelectorAll('#tableHeaders th[data-column]').forEach(innerTh => {
+                innerTh.classList.remove('sorted-asc', 'sorted-desc');
+            });
+            th.classList.add(sortConfig.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+            applyFilters(false);
+        });
+    });
+
     ['prevPageBtn', 'nextPageBtn'].forEach(id => {
         document.getElementById(id).addEventListener('click', (e) => {
             const isNext = e.target.id === 'nextPageBtn';
@@ -479,7 +518,6 @@
         });
     });
 
-    // Modal Listeners
     document.getElementById('moreFiltersBtn').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.remove('hidden'));
     document.getElementById('closeMoreFilters').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.add('hidden'));
     document.getElementById('applyMoreFilters').addEventListener('click', () => {
