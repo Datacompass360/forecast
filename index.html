@@ -50,8 +50,8 @@
     .badge-red { background-color: #fee2e2; color: #991b1b; }
     .badge-blue { background-color: #dbeafe; color: #1e40af; }
     .badge-gray { background-color: #f3f4f6; color: #4b5563; }
-    #closeModal, #closeBookmarkModal { transition: color 0.2s; }
-    #closeModal:hover, #closeBookmarkModal:hover { color: #111827; }
+    #closeModal, #closeBookmarkModal, #closeMoreFiltersModal { transition: color 0.2s; }
+    #closeModal:hover, #closeBookmarkModal:hover, #closeMoreFiltersModal:hover { color: #111827; }
 
     /* Chart Resizing */
     .chart-container-4x3 { width: 100%; max-width: 400px; height: 300px; margin: 0 auto; }
@@ -92,19 +92,25 @@
     <div id="mainContent">
       <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4"></div>
       <div class="bg-white p-4 rounded-lg shadow mb-4">
-          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
-              <div class="filter-group flex flex-col"><label for="matchDateFilter">Match Date:</label><select id="matchDateFilter" class="border"></select></div>
-              <div class="filter-group flex flex-col"><label>Winning Chance:</label><div class="range-filter"><input type="number" id="minWinChance" placeholder="Min" class="border"><input type="number" id="maxWinChance" placeholder="Max" class="border"></div></div>
-              <div class="filter-group flex flex-col"><label for="over3GoalsFilter">Over 3 Goals:</label><select id="over3GoalsFilter" class="border"></select></div>
-              <div class="filter-group flex flex-col"><label for="predictionFilter">Match Prediction:</label><select id="predictionFilter" class="border"></select></div>
-              <div class="filter-group flex flex-col"><label for="minOutcomeProb">Outcome Prob.:</label><div class="range-filter"><input type="number" id="minOutcomeProb" placeholder="Min" class="border"><input type="number" id="maxOutcomeProb" placeholder="Max" class="border"></div></div>
-              <div class="flex items-center gap-3 col-span-2 justify-end"><button id="moreFiltersBtn" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">More Filters</button><button id="clearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded text-sm hover:bg-gray-300">Clear All Filters</button></div>
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-end">
+              <div class="filter-group flex flex-col"><label for="mainMatchDateFilter">Match Date:</label><select id="mainMatchDateFilter" class="border"></select></div>
+              <div class="filter-group flex flex-col"><label for="mainModel1PredFilter">Model 1 Pred:</label><select id="mainModel1PredFilter" class="border"></select></div>
+              <div class="filter-group flex flex-col"><label>Prob 1 (%):</label><div class="range-filter"><input type="number" id="mainMinProb1" placeholder="Min" class="border"><input type="number" id="mainMaxProb1" placeholder="Max" class="border"></div></div>
+              <div class="filter-group flex flex-col"><label for="mainModel2PredFilter">Model 2 Pred:</label><select id="mainModel2PredFilter" class="border"></select></div>
+              <div class="filter-group flex flex-col"><label>Prob 2 (%):</label><div class="range-filter"><input type="number" id="mainMinProb2" placeholder="Min" class="border"><input type="number" id="mainMaxProb2" placeholder="Max" class="border"></div></div>
+              <div class="filter-group flex flex-col"><label for="mainModel3PredFilter">Model 3 Pred:</label><select id="mainModel3PredFilter" class="border"></select></div>
+              <div class="filter-group flex flex-col"><label>Prob 3 (%):</label><div class="range-filter"><input type="number" id="mainMinProb3" placeholder="Min" class="border"><input type="number" id="mainMaxProb3" placeholder="Max" class="border"></div></div>
+              <div class="flex items-center justify-end gap-2">
+                <button id="moreFiltersBtn" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">More Filters</button>
+                <button id="mainClearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded text-sm hover:bg-gray-300">Clear</button>
+              </div>
           </div>
       </div>
       <table id="matchesTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
         <thead class="bg-blue-200"><tr id="tableHeaders">
-            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left">View</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Prediction">Prediction</th><th class="p-2 text-left" data-column="Outcome Probability">Outcome %</th><th class="p-2 text-left" data-column="Odds (Prediction)">Odds (Prediction)</th><th class="p-2 text-left" data-column="Winning Probability">Win %</th><th class="p-2 text-left" data-column="Over 3 Goals">Over 3 Goals</th><th class="p-2 text-left" data-column="Result">Result</th>
-        </tr></thead><tbody id="tableBody"></tbody>
+            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
+        </tr></thead>
+        <tbody id="tableBody"></tbody>
       </table>
       <div id="paginationControls" class="flex justify-center items-center gap-4 my-3"><button id="prevPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Previous</button><span id="pageIndicator">Page 1 of 1</span><button id="nextPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Next</button></div>
     </div>
@@ -197,15 +203,49 @@
 
   <!-- Modals -->
   <div id="moreFiltersModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-30 p-4">
-      <div class="bg-white rounded-lg w-full max-w-6xl p-6 relative"> 
-          <h3 class="text-lg font-bold mb-4">Advanced Filters</h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4">
-              <div class="space-y-4"><div class="filter-group flex flex-col"><label for="leagueFilter" class="text-sm font-medium">League (Multi-select):</label><select id="leagueFilter" multiple class="border rounded h-32"></select></div><div class="filter-group flex flex-col"><label for="modalMatchAnalysisFilter">Match Analysis:</label><select id="modalMatchAnalysisFilter" class="border"></select></div><div class="filter-group flex flex-col"><label for="modalGoalsAnalysisFilter">Goals Analysis:</label><select id="modalGoalsAnalysisFilter" class="border"></select></div><div class="filter-group flex flex-col"><label for="modalPredictionFilter">Match Prediction:</label><select id="modalPredictionFilter" class="border"></select></div><div class="filter-group flex flex-col"><label for="modalOver3GoalsFilter">Over 3 Goals:</label><select id="modalOver3GoalsFilter" class="border"></select></div></div>
-              <div class="space-y-4"><div class="filter-group flex flex-col"><label>Winning Streak:</label><div class="range-filter"><input type="number" id="minWinningStreak" placeholder="Min" class="border"><input type="number" id="maxWinningStreak" placeholder="Max" class="border"></div></div><div class="filter-group flex flex-col"><label>Losing Streak:</label><div class="range-filter"><input type="number" id="minLosingStreak" placeholder="Min" class="border"><input type="number" id="maxLosingStreak" placeholder="Max" class="border"></div></div><div class="filter-group flex flex-col"><label>Probability of 3 Goals (%):</label><div class="range-filter"><input type="number" id="minProb3Goals" placeholder="Min" class="border"><input type="number" id="maxProb3Goals" placeholder="Max" class="border"></div></div><div class="filter-group flex flex-col"><label>Total Goals Prediction:</label><div class="range-filter"><input type="number" id="minTotalGoals" placeholder="Min" class="border"><input type="number" id="maxTotalGoals" placeholder="Max" class="border"></div></div></div>
-              <div class="space-y-4"><div class="filter-group flex flex-col"><label>Winning Chance (%):</label><div class="range-filter"><input type="number" id="modalMinWinChance" placeholder="Min" class="border"><input type="number" id="modalMaxWinChance" placeholder="Max" class="border"></div></div><div class="filter-group flex flex-col"><label>Winning Probability (%):</label><div class="range-filter"><input type="number" id="minWinningProbability" placeholder="Min" class="border"><input type="number" id="maxWinningProbability" placeholder="Max" class="border"></div></div><div class="filter-group flex flex-col"><label>Outcome Probability (%):</label><div class="range-filter"><input type="number" id="minOutcomeProbability" placeholder="Min" class="border"><input type="number" id="maxOutcomeProbability" placeholder="Max" class="border"></div></div></div>
-          </div>
-          <div class="mt-6 flex justify-end gap-3"><button id="closeMoreFilters" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Close</button><button id="applyMoreFilters" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Apply Filters</button></div>
-      </div>
+    <div class="bg-white rounded-lg w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto">
+        <button id="closeMoreFiltersModal" class="absolute top-4 right-4 text-gray-500 text-xl">&times;</button>
+        <h3 class="text-lg font-bold mb-4">More Filters</h3>
+        <div class="space-y-2">
+            <details class="bg-gray-50 p-3 rounded" open>
+                <summary class="font-semibold cursor-pointer">Home Team Stats</summary>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                    <div class="filter-group flex flex-col"><label>Home Wins:</label><div class="range-filter"><input type="number" id="mfHomeWinsMin" placeholder="Min" class="border"><input type="number" id="mfHomeWinsMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Home Draws:</label><div class="range-filter"><input type="number" id="mfHomeDrawsMin" placeholder="Min" class="border"><input type="number" id="mfHomeDrawsMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Home Losses:</label><div class="range-filter"><input type="number" id="mfHomeLossesMin" placeholder="Min" class="border"><input type="number" id="mfHomeLossesMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Home Scored:</label><div class="range-filter"><input type="number" id="mfHomeScoredMin" placeholder="Min" class="border"><input type="number" id="mfHomeScoredMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Home Scored (Avg):</label><div class="range-filter"><input type="number" id="mfHomeScoredAvgMin" placeholder="Min" class="border"><input type="number" id="mfHomeScoredAvgMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Home Conceded:</label><div class="range-filter"><input type="number" id="mfHomeConcededMin" placeholder="Min" class="border"><input type="number" id="mfHomeConcededMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Home Conceded (Avg):</label><div class="range-filter"><input type="number" id="mfHomeConcededAvgMin" placeholder="Min" class="border"><input type="number" id="mfHomeConcededAvgMax" placeholder="Max" class="border"></div></div>
+                </div>
+            </details>
+            <details class="bg-gray-50 p-3 rounded" open>
+                <summary class="font-semibold cursor-pointer">Away Team Stats</summary>
+                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                    <div class="filter-group flex flex-col"><label>Away Wins:</label><div class="range-filter"><input type="number" id="mfAwayWinsMin" placeholder="Min" class="border"><input type="number" id="mfAwayWinsMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Away Draws:</label><div class="range-filter"><input type="number" id="mfAwayDrawsMin" placeholder="Min" class="border"><input type="number" id="mfAwayDrawsMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Away Losses:</label><div class="range-filter"><input type="number" id="mfAwayLossesMin" placeholder="Min" class="border"><input type="number" id="mfAwayLossesMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Away Scored:</label><div class="range-filter"><input type="number" id="mfAwayScoredMin" placeholder="Min" class="border"><input type="number" id="mfAwayScoredMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Away Scored (Avg):</label><div class="range-filter"><input type="number" id="mfAwayScoredAvgMin" placeholder="Min" class="border"><input type="number" id="mfAwayScoredAvgMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Away Conceded:</label><div class="range-filter"><input type="number" id="mfAwayConcededMin" placeholder="Min" class="border"><input type="number" id="mfAwayConcededMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Away Conceded (Avg):</label><div class="range-filter"><input type="number" id="mfAwayConcededAvgMin" placeholder="Min" class="border"><input type="number" id="mfAwayConcededAvgMax" placeholder="Max" class="border"></div></div>
+                </div>
+            </details>
+            <details class="bg-gray-50 p-3 rounded" open>
+                <summary class="font-semibold cursor-pointer">Streaks & Analysis</summary>
+                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                    <div class="filter-group flex flex-col"><label>Winning Streak:</label><div class="range-filter"><input type="number" id="mfWinningStreakMin" placeholder="Min" class="border"><input type="number" id="mfWinningStreakMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Losing Streak:</label><div class="range-filter"><input type="number" id="mfLosingStreakMin" placeholder="Min" class="border"><input type="number" id="mfLosingStreakMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label for="mfMatchAnalysisFilter">Match Analysis:</label><select id="mfMatchAnalysisFilter" class="border"></select></div>
+                    <div class="filter-group flex flex-col"><label for="mfTotalGoalsPredictionFilter">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter" class="border"></select></div>
+                </div>
+            </details>
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+            <button id="resetMoreFilters" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Reset</button>
+            <button id="applyMoreFilters" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Apply Filters</button>
+        </div>
+    </div>
   </div>
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-40 p-4"><div class="bg-white rounded-lg w-full max-w-3xl p-6 relative max-h-screen overflow-y-auto"><button id="closeModal" class="absolute top-4 right-4 text-gray-500 text-xl">✖</button><div id="modalContent"></div></div></div>
   <div id="bookmarkNameModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-40 p-4"><div class="bg-white rounded-lg w-full max-w-sm p-6 relative"><button id="closeBookmarkModal" class="absolute top-3 right-4 text-gray-500 text-xl">✖</button><h3 class="text-lg font-bold mb-4">Name Bookmark Group</h3><p class="text-sm text-gray-600 mb-3">Enter a name for this group of matches. If the name already exists, matches will be added to it.</p><input type="text" id="bookmarkGroupName" placeholder="e.g., Weekend Wins, High Confidence" class="border w-full rounded px-3 py-2"><div class="mt-4 flex justify-end gap-3"><button id="cancelBookmark" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Cancel</button><button id="saveBookmark" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button></div></div></div>
@@ -250,7 +290,13 @@
             const d = new Date(row['Match Date']);
             row.MatchDate = !isNaN(d) ? d.toISOString().split('T')[0] : '1970-01-01';
             row.uniqueId = encodeURIComponent(`${row.Match}-${row.MatchDate}`);
-            const numericKeys = ['Probability (%)', 'Prediction Confidence (%)', 'Winning Probability', 'Probability of 3 Goals', 'Winning Chance', 'Outcome Probability', 'Winning Streak', 'Losing Streak', 'Home Wins', 'Home Draws', 'Home Losses', 'Home Scored', 'Home Scored (Avg)', 'Home Conceded', 'Home Conceded (Avg)', 'Away Wins', 'Away Draws', 'Away Losses', 'Away Scored', 'Away Scored (Avg)', 'Away Conceded', 'Away Conceded (Avg)', 'Odds (Prediction)', 'Stake', 'Total Goals Prediction'];
+            const numericKeys = [
+                'Probability (%)', 'Prediction Confidence (%)', 'Winning Probability', 'Probability of 3 Goals', 
+                'Winning Chance', 'Outcome Probability', 'Winning Streak', 'Losing Streak', 
+                'Home Wins', 'Home Draws', 'Home Losses', 'Home Scored', 'Home Scored (Avg)', 'Home Conceded', 'Home Conceded (Avg)', 
+                'Away Wins', 'Away Draws', 'Away Losses', 'Away Scored', 'Away Scored (Avg)', 'Away Conceded', 'Away Conceded (Avg)', 
+                'Odds (Prediction)', 'Stake', 'Total Goals Prediction'
+            ];
             numericKeys.forEach(key => { row[key] = parseFloat(String(row[key] || '').replace(/[^0-9.\-%]/g, '')) || 0; });
             return row;
         });
@@ -270,9 +316,10 @@
         try {
             const rawData = await fetchCsv(DATA_CSV_URL);
             allMatches = normalizeRows(rawData);
-            insightsMatches = allMatches;
+            insightsMatches = allMatches; // Insights uses the same data
             filteredInsightAnalyticsMatches = allMatches;
             populateAllFilters(allMatches);
+            populateDynamicFilters(allMatches);
             applyFilters();
             applyInsightsFilters();
             renderInsightAnalyticsPage(filteredInsightAnalyticsMatches);
@@ -295,28 +342,21 @@
         const matchDates = createOptions(data.map(r => r.MatchDate), 'asc');
         const leagues = createOptions(data.map(r => r.League), 'asc');
         const analyses = createOptions(data.map(r => r['Match Analysis']), 'asc');
-        const winStreaks = createOptions(data.map(r => r['Winning Streak']), 'numeric-asc');
-        const loseStreaks = createOptions(data.map(r => r['Losing Streak']), 'numeric-asc');
-
-        // Main Tab
-        populateSelect('matchDateFilter', matchDates);
-        populateSelect('predictionFilter', createOptions(data.map(r => r['Match Prediction'] || r.Prediction)));
-        populateSelect('over3GoalsFilter', createOptions(data.map(r => r['Over 3 Goals'])));
-        populateSelect('leagueFilter', leagues, true);
-        populateSelect('modalMatchAnalysisFilter', analyses);
-        populateSelect('modalGoalsAnalysisFilter', createOptions(data.map(r => r['Goals Analysis'])));
         
-        // Insights Tab
+        const predictionTypes = createOptions(data.flatMap(r => [r['Predicted Outcome'], r['Predicted Outcome3'], r['Prediction Outcome1']]));
+        populateSelect('mainMatchDateFilter', matchDates);
+        populateSelect('mainModel1PredFilter', predictionTypes);
+        populateSelect('mainModel2PredFilter', predictionTypes);
+        populateSelect('mainModel3PredFilter', predictionTypes);
+        
         populateSelect('insightsMatchDateFilter', matchDates, true);
         populateSelect('insightsLeagueFilter', leagues, true);
         populateSelect('insightsAnalysisFilter', analyses, true);
         
-        // Comparison Tab
         populateSelect('comparisonMatchDateFilter', matchDates, true);
         populateSelect('comparisonLeagueFilter', leagues, true);
         populateSelect('comparisonAnalysisFilter', analyses, true);
         
-        // Insight Analytics Tab
         populateSelect('iaMatchDateFilter', matchDates, true);
         populateSelect('iaLeagueFilter', leagues, true);
         populateSelect('iaAnalysisFilter', analyses, true);
@@ -328,6 +368,39 @@
         select.innerHTML = isMulti ? '' : '<option value="">All</option>';
         options.forEach(opt => select.add(new Option(opt, opt)));
     }
+
+    // STEP 2 & 3: Populate dynamic filters in the "More Filters" modal
+    function populateDynamicFilters(data) {
+        const numericColumns = {
+            'Home Wins': 'mfHomeWins', 'Home Draws': 'mfHomeDraws', 'Home Losses': 'mfHomeLosses',
+            'Away Wins': 'mfAwayWins', 'Away Draws': 'mfAwayDraws', 'Away Losses': 'mfAwayLosses',
+            'Home Scored': 'mfHomeScored', 'Home Scored (Avg)': 'mfHomeScoredAvg',
+            'Home Conceded': 'mfHomeConceded', 'Home Conceded (Avg)': 'mfHomeConcededAvg',
+            'Away Scored': 'mfAwayScored', 'Away Scored (Avg)': 'mfAwayScoredAvg',
+            'Away Conceded': 'mfAwayConceded', 'Away Conceded (Avg)': 'mfAwayConcededAvg',
+            'Winning Streak': 'mfWinningStreak', 'Losing Streak': 'mfLosingStreak'
+        };
+        const dropdownColumns = { 'Match Analysis': 'mfMatchAnalysisFilter', 'Total Goals Prediction': 'mfTotalGoalsPredictionFilter' };
+
+        for (const colName in numericColumns) {
+            const values = data.map(row => row[colName]).filter(v => v !== null && v !== undefined && v !== '');
+            if (values.length === 0) continue;
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const idPrefix = numericColumns[colName];
+            const minEl = document.getElementById(`${idPrefix}Min`);
+            const maxEl = document.getElementById(`${idPrefix}Max`);
+            if (minEl) minEl.placeholder = `Min (${min})`;
+            if (maxEl) maxEl.placeholder = `Max (${max})`;
+        }
+
+        for (const colName in dropdownColumns) {
+            const uniqueVals = [...new Set(data.map(row => row[colName]))].filter(Boolean).sort();
+            const selectId = dropdownColumns[colName];
+            populateSelect(selectId, uniqueVals, false);
+        }
+    }
+
 
     function getSelectedOptions(id) { return Array.from(document.getElementById(id).selectedOptions).map(o => o.value); }
 
@@ -358,17 +431,100 @@
 
     function applyFilters(resetPage = true) {
         if (resetPage) currentPage = 1;
+        
         const getVal = id => document.getElementById(id).value.trim();
+        const getNum = id => parseFloat(getVal(id));
+        const getNumMf = id => parseFloat(document.getElementById(id)?.value.trim());
+        const getValMf = id => document.getElementById(id)?.value.trim();
+
+        // Main filters
+        const mainDate = getVal("mainMatchDateFilter");
+        const model1Pred = getVal("mainModel1PredFilter"), minProb1 = getNum('mainMinProb1'), maxProb1 = getNum('mainMaxProb1');
+        const model2Pred = getVal("mainModel2PredFilter"), minProb2 = getNum('mainMinProb2'), maxProb2 = getNum('mainMaxProb2');
+        const model3Pred = getVal("mainModel3PredFilter"), minProb3 = getNum('mainMinProb3'), maxProb3 = getNum('mainMaxProb3');
+        
+        // More Filters
+        const mf = {
+            homeWinsMin: getNumMf('mfHomeWinsMin'), homeWinsMax: getNumMf('mfHomeWinsMax'),
+            homeDrawsMin: getNumMf('mfHomeDrawsMin'), homeDrawsMax: getNumMf('mfHomeDrawsMax'),
+            homeLossesMin: getNumMf('mfHomeLossesMin'), homeLossesMax: getNumMf('mfHomeLossesMax'),
+            homeScoredMin: getNumMf('mfHomeScoredMin'), homeScoredMax: getNumMf('mfHomeScoredMax'),
+            homeScoredAvgMin: getNumMf('mfHomeScoredAvgMin'), homeScoredAvgMax: getNumMf('mfHomeScoredAvgMax'),
+            homeConcededMin: getNumMf('mfHomeConcededMin'), homeConcededMax: getNumMf('mfHomeConcededMax'),
+            homeConcededAvgMin: getNumMf('mfHomeConcededAvgMin'), homeConcededAvgMax: getNumMf('mfHomeConcededAvgMax'),
+            awayWinsMin: getNumMf('mfAwayWinsMin'), awayWinsMax: getNumMf('mfAwayWinsMax'),
+            awayDrawsMin: getNumMf('mfAwayDrawsMin'), awayDrawsMax: getNumMf('mfAwayDrawsMax'),
+            awayLossesMin: getNumMf('mfAwayLossesMin'), awayLossesMax: getNumMf('mfAwayLossesMax'),
+            awayScoredMin: getNumMf('mfAwayScoredMin'), awayScoredMax: getNumMf('mfAwayScoredMax'),
+            awayScoredAvgMin: getNumMf('mfAwayScoredAvgMin'), awayScoredAvgMax: getNumMf('mfAwayScoredAvgMax'),
+            awayConcededMin: getNumMf('mfAwayConcededMin'), awayConcededMax: getNumMf('mfAwayConcededMax'),
+            awayConcededAvgMin: getNumMf('mfAwayConcededAvgMin'), awayConcededAvgMax: getNumMf('mfAwayConcededAvgMax'),
+            winningStreakMin: getNumMf('mfWinningStreakMin'), winningStreakMax: getNumMf('mfWinningStreakMax'),
+            losingStreakMin: getNumMf('mfLosingStreakMin'), losingStreakMax: getNumMf('mfLosingStreakMax'),
+            matchAnalysis: getValMf('mfMatchAnalysisFilter'),
+            totalGoalsPrediction: getValMf('mfTotalGoalsPredictionFilter'),
+        };
+
         let tempFiltered = allMatches.filter(r => {
-            const mainDate = getVal("matchDateFilter");
-            const mainPred = getVal("predictionFilter");
-            return (!mainDate || r.MatchDate === mainDate) && (!mainPred || (r['Match Prediction'] || r.Prediction) === mainPred);
+            const checkRange = (val, min, max) => (isNaN(min) || val >= min) && (isNaN(max) || val <= max);
+
+            return (!mainDate || r.MatchDate === mainDate) &&
+                   (!model1Pred || r['Predicted Outcome'] === model1Pred) && checkRange(r['Probability (%)'], minProb1, maxProb1) &&
+                   (!model2Pred || r['Predicted Outcome3'] === model2Pred) && checkRange(r['Prediction Confidence (%)'], minProb2, maxProb2) &&
+                   (!model3Pred || r['Prediction Outcome1'] === model3Pred) && checkRange(r['Winning Probability'], minProb3, maxProb3) &&
+                   checkRange(r['Home Wins'], mf.homeWinsMin, mf.homeWinsMax) &&
+                   checkRange(r['Home Draws'], mf.homeDrawsMin, mf.homeDrawsMax) &&
+                   checkRange(r['Home Losses'], mf.homeLossesMin, mf.homeLossesMax) &&
+                   checkRange(r['Home Scored'], mf.homeScoredMin, mf.homeScoredMax) &&
+                   checkRange(r['Home Scored (Avg)'], mf.homeScoredAvgMin, mf.homeScoredAvgMax) &&
+                   checkRange(r['Home Conceded'], mf.homeConcededMin, mf.homeConcededMax) &&
+                   checkRange(r['Home Conceded (Avg)'], mf.homeConcededAvgMin, mf.homeConcededAvgMax) &&
+                   checkRange(r['Away Wins'], mf.awayWinsMin, mf.awayWinsMax) &&
+                   checkRange(r['Away Draws'], mf.awayDrawsMin, mf.awayDrawsMax) &&
+                   checkRange(r['Away Losses'], mf.awayLossesMin, mf.awayLossesMax) &&
+                   checkRange(r['Away Scored'], mf.awayScoredMin, mf.awayScoredMax) &&
+                   checkRange(r['Away Scored (Avg)'], mf.awayScoredAvgMin, mf.awayScoredAvgMax) &&
+                   checkRange(r['Away Conceded'], mf.awayConcededMin, mf.awayConcededMax) &&
+                   checkRange(r['Away Conceded (Avg)'], mf.awayConcededAvgMin, mf.awayConcededAvgMax) &&
+                   checkRange(r['Winning Streak'], mf.winningStreakMin, mf.winningStreakMax) &&
+                   checkRange(r['Losing Streak'], mf.losingStreakMin, mf.losingStreakMax) &&
+                   (!mf.matchAnalysis || r['Match Analysis'] === mf.matchAnalysis) &&
+                   (!mf.totalGoalsPrediction || r['Total Goals Prediction'] == mf.totalGoalsPrediction);
         });
+        
+        if (currentTab === 'best') {
+             tempFiltered = tempFiltered.filter(r => {
+                return (r['Probability (%)'] >= 66 && r['Predicted Outcome'] === 'Home Win') || 
+                       (r['Probability (%)'] >= 76 && r['Predicted Outcome'] === 'Away Win');
+              });
+        } else if (currentTab === 'favourites') {
+            tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId));
+        } else if (currentTab === 'yesterday') { 
+            const y = new Date(); y.setDate(y.getDate() - 1); 
+            tempFiltered = tempFiltered.filter(r => r.MatchDate === y.toISOString().split('T')[0]); 
+        }
+        
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
         if (q) tempFiltered = tempFiltered.filter(r => (r.Match + ' ' + (r.League||'')).toLowerCase().includes(q));
-        if (sortConfig.column) tempFiltered.sort((a,b) => (String(a[sortConfig.column] || '') > String(b[sortConfig.column] || '') ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1));
+
+        if (sortConfig.column) {
+            tempFiltered.sort((a,b) => {
+                let valA = a[sortConfig.column];
+                let valB = b[sortConfig.column];
+                if (sortConfig.column.startsWith('Probability')) {
+                    const keyMap = {'Probability 1': 'Probability (%)', 'Probability 2': 'Prediction Confidence (%)', 'Probability 3': 'Winning Probability'};
+                    valA = a[keyMap[sortConfig.column]] || 0;
+                    valB = b[keyMap[sortConfig.column]] || 0;
+                }
+                if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+        
         filteredMatches = tempFiltered;
         if (!['dashboard', 'analytics', 'insights', 'comparison', 'insight-analytics'].includes(currentTab)) updateSummaryCards(filteredMatches);
+        
         if (currentTab === 'analytics') renderAnalytics(filteredMatches);
         else if (currentTab === 'dashboard') renderDashboard(filteredMatches);
         else if (!['insights', 'comparison', 'insight-analytics'].includes(currentTab)) renderPaginatedTable(filteredMatches);
@@ -389,6 +545,18 @@
     }
     
     // --- Rendering Functions ---
+    function evaluatePrediction(predicted, result) {
+      if (!predicted || !result || !result.includes('-')) return null;
+      const scores = result.split(/[:-]/).map(s => parseInt(s.trim(), 10));
+      if (scores.some(isNaN) || scores.length !== 2) return null;
+      const [home, away] = scores;
+      const outcome = home > away ? "Home Win" : home < away ? "Away Win" : "Draw";
+      if (predicted === "Draw") return outcome === "Draw";
+      if (predicted === "Home Win") return outcome === "Home Win";
+      if (predicted === "Away Win") return outcome === "Away Win";
+      return false;
+    }
+
     const totalGoalsFromResult = (res) => res ? (res.split(/[:-]/).map(Number).reduce((s,c)=>s+c,0) || null) : null;
     const detectOutcome = (res) => {
       if (!res || !res.includes('-')) return null;
@@ -401,15 +569,26 @@
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="10" class="text-center p-4">No matches found.</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="11" class="text-center p-4">No matches found.</td></tr>`;
         data.forEach(row => {
-            const id = row.uniqueId;
-            const actualOutcome = detectOutcome(row.Result);
-            const pred = (row['Match Prediction'] || row.Prediction || '').toLowerCase();
-            const isCorrect = actualOutcome && ((actualOutcome === 'Home' && pred.includes('home')) || (actualOutcome === 'Away' && pred.includes('away')) || (actualOutcome === 'Draw' && pred.includes('draw')));
+            const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
+            const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
+            const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
+            const getColorStyle = (isCorrect) => isCorrect === null ? '' : `style="background-color: ${isCorrect ? '#d4edda' : '#f8d7da'}"`;
+
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
-            tr.innerHTML = `<td class='p-2 text-center'><button class='fav-btn ${favourites.has(id) ? "star-fav" : "star-normal"}' data-id='${id}'>★</button></td><td class='p-2 font-medium'>${row.Match}</td><td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td><td class='p-2'>${row.MatchDate}</td><td class='p-2'>${row['Match Prediction'] || row.Prediction || 'N/A'}</td><td class='p-2'>${row['Outcome Probability']}%</td><td class='p-2 font-semibold'>${row['Odds (Prediction)'] || ''}</td><td class='p-2'>${row['Winning Probability']}%</td><td class='p-2 ${row['Over 3 Goals'] === 'YES' ? "bg-green-200" : ""}'>${row['Over 3 Goals'] || ''}</td><td class='p-2 ${actualOutcome ? (isCorrect ? "bg-green-300" : "bg-red-300") : ""}'>${row.Result || '—'}</td>`;
+            tr.innerHTML = `
+              <td class='p-2 text-center'><button class='fav-btn ${favourites.has(row.uniqueId) ? "star-fav" : "star-normal"}' data-id='${row.uniqueId}'>★</button></td>
+              <td class='p-2'>${row.MatchDate}</td><td class='p-2 font-medium'>${row.Match}</td>
+              <td class='p-2' ${getColorStyle(isCorrect1)}>${row['Predicted Outcome'] || 'N/A'}</td>
+              <td class='p-2'>${row['Probability (%)']}%</td>
+              <td class='p-2' ${getColorStyle(isCorrect2)}>${row['Predicted Outcome3'] || 'N/A'}</td>
+              <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
+              <td class='p-2' ${getColorStyle(isCorrect3)}>${row['Prediction Outcome1'] || 'N/A'}</td>
+              <td class='p-2'>${row['Winning Probability']}%</td>
+              <td class='p-2'>${row.Result || '—'}</td>
+              <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
         });
     }
@@ -449,8 +628,11 @@
         if (!data || !container) return;
         const total = data.length;
         const completed = data.filter(r => r.Result && r.Result.includes('-'));
-        const won = completed.filter(r => { const o = detectOutcome(r.Result), p=(r['Match Prediction'] || r.Prediction ||'').toLowerCase(); return o && ( (o==='Home'&&p.includes('home')) || (o==='Away'&&p.includes('away')) || (o==='Draw'&&p.includes('draw')) ); }).length;
-        container.innerHTML = `<div class="summary-card bg-blue-100"><h3>Total Matches</h3><p class="text-blue-800">${total}</p></div><div class="summary-card bg-yellow-100"><h3>Open Matches</h3><p class="text-yellow-800">${total - completed.length}</p></div><div class="summary-card bg-green-100"><h3>Matches Won ✅</h3><p class="text-green-800">${won}</p></div><div class="summary-card bg-red-100"><h3>Matches Lost ❌</h3><p class="text-red-800">${completed.length - won}</p></div>`;
+        const won1 = completed.filter(r => evaluatePrediction(r['Predicted Outcome'], r.Result)).length;
+        const won2 = completed.filter(r => evaluatePrediction(r['Predicted Outcome3'], r.Result)).length;
+        const won3 = completed.filter(r => evaluatePrediction(r['Prediction Outcome1'], r.Result)).length;
+        
+        container.innerHTML = `<div class="summary-card bg-blue-100"><h3>Total Matches</h3><p class="text-blue-800">${total}</p></div><div class="summary-card bg-green-100"><h3>Model 1 Wins</h3><p class="text-green-800">${won1}</p></div><div class="summary-card bg-green-100"><h3>Model 2 Wins</h3><p class="text-green-800">${won2}</p></div><div class="summary-card bg-green-100"><h3>Model 3 Wins</h3><p class="text-green-800">${won3}</p></div>`;
     }
 
     function updateInsightsSummaryCards(data) {
@@ -458,9 +640,9 @@
         if (!data || !container) return;
         const completed = data.filter(r => r.Result && r.Result.includes('-'));
         if (completed.length === 0) { container.innerHTML = `<div class="summary-card bg-gray-100"><h3>Model 1 Wins</h3><p>0 (0%)</p></div><div class="summary-card bg-gray-100"><h3>Model 2 Wins</h3><p>0 (0%)</p></div><div class="summary-card bg-gray-100"><h3>Model 3 Wins</h3><p>0 (0%)</p></div>`; return; }
-        const model1Wins = completed.filter(r => { const o = detectOutcome(r.Result); return o && ((o === 'Home' && r['Predicted Outcome'] === 'Home Win') || (o === 'Away' && r['Predicted Outcome'] === 'Away Win') || (o === 'Draw' && r['Predicted Outcome'] === 'Draw')) }).length;
-        const model2Wins = completed.filter(r => { const o = detectOutcome(r.Result); return o && ((o === 'Home' && r['Predicted Outcome3'] === 'Home Win') || (o === 'Away' && r['Predicted Outcome3'] === 'Away Win') || (o === 'Draw' && r['Predicted Outcome3'] === 'Draw')) }).length;
-        const model3Wins = completed.filter(r => { const o = detectOutcome(r.Result); return o && ((o === 'Home' && r['Prediction Outcome1'] === 'Home Win') || (o === 'Away' && r['Prediction Outcome1'] === 'Away Win') || (o === 'Draw' && r['Prediction Outcome1'] === 'Draw')) }).length;
+        const model1Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome'], r.Result)).length;
+        const model2Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome3'], r.Result)).length;
+        const model3Wins = completed.filter(r => evaluatePrediction(r['Prediction Outcome1'], r.Result)).length;
         container.innerHTML = `<div class="summary-card bg-green-100"><h3>Model 1 Wins</h3><p class="text-green-800">${model1Wins} (${((model1Wins / completed.length) * 100).toFixed(0)}%)</p></div><div class="summary-card bg-green-100"><h3>Model 2 Wins</h3><p class="text-green-800">${model2Wins} (${((model2Wins / completed.length) * 100).toFixed(0)}%)</p></div><div class="summary-card bg-green-100"><h3>Model 3 Wins</h3><p class="text-green-800">${model3Wins} (${((model3Wins / completed.length) * 100).toFixed(0)}%)</p></div>`;
     }
     
@@ -498,6 +680,51 @@
         charts[id] = new Chart(ctx, { type, data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: !!chartOptions.datasets } }, scales: type === 'bar' ? { y: { beginAtZero: true, suggestedMax: chartOptions.yMax } } : {} } });
     }
 
+    function showMatchModal(data) {
+        const modalContent = document.getElementById('modalContent');
+        const getStat = (key, def = 'N/A') => data[key] || def;
+
+        const isCorrect1 = evaluatePrediction(data['Predicted Outcome'], data.Result);
+        const isCorrect2 = evaluatePrediction(data['Predicted Outcome3'], data.Result);
+        const isCorrect3 = evaluatePrediction(data['Prediction Outcome1'], data.Result);
+
+        const getResultContent = (isCorrect) => {
+            if (isCorrect === null) return `<span class="badge badge-gray">Pending</span>`;
+            return isCorrect 
+                ? `<span class="badge badge-green">Correct ✅</span>` 
+                : `<span class="badge badge-red">Incorrect ❌</span>`;
+        };
+
+        modalContent.innerHTML = `
+            <div class="modal-header text-center border-b pb-4 mb-4">
+              <h3 class="text-2xl font-bold">${getStat('Match')}</h3>
+              <p class="text-sm text-gray-500">${getStat('MatchDate')}</p>
+              <p class="text-lg font-bold mt-2">Result: ${getStat('Result', '—')}</p>
+            </div>
+
+            <h4 class="text-lg font-semibold text-gray-800 mb-3 text-center">Model Predictions</h4>
+            <div class="bg-gray-50 rounded-xl p-4 shadow-inner space-y-2">
+                <div class="stat-item">
+                    <span class="stat-label"><i class="fa-solid fa-bullseye w-5 text-blue-500"></i> Model 1</span>
+                    <span class="stat-value">${getStat('Predicted Outcome')} at ${getStat('Probability (%)')}%</span>
+                    ${getResultContent(isCorrect1)}
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label"><i class="fa-solid fa-bullseye w-5 text-indigo-500"></i> Model 2</span>
+                    <span class="stat-value">${getStat('Predicted Outcome3')} at ${getStat('Prediction Confidence (%)')}%</span>
+                    ${getResultContent(isCorrect2)}
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label"><i class="fa-solid fa-bullseye w-5 text-purple-500"></i> Model 3</span>
+                    <span class="stat-value">${getStat('Prediction Outcome1')} at ${getStat('Winning Probability')}%</span>
+                    ${getResultContent(isCorrect3)}
+                </div>
+            </div>
+            <a href="${getStat('URL', '#')}" target="_blank" class="block text-center mt-6 text-blue-600 hover:underline">View Source <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+        `;
+        document.getElementById('modal').classList.remove('hidden');
+    }
+    
     function renderComparisonPage() {
         let currentComparisonData = allMatches.filter(m => matchesForComparison.has(m.uniqueId));
         currentComparisonData = applyGenericFilters(currentComparisonData, 'comparison');
@@ -513,24 +740,39 @@
         if (!data) return;
         const completed = data.filter(r => r.Result && r.Result.includes('-'));
         if (completed.length === 0) { container.innerHTML = `<div class="summary-card bg-gray-100"><h3>Model 1 Win %</h3><p>N/A</p></div><div class="summary-card bg-gray-100"><h3>Model 2 Win %</h3><p>N/A</p></div><div class="summary-card bg-gray-100"><h3>Model 3 Win %</h3><p>N/A</p></div>`; return; }
-        const model1Wins = completed.filter(r => { const o = detectOutcome(r.Result); return o && ((o === 'Home' && r['Predicted Outcome'] === 'Home Win') || (o === 'Away' && r['Predicted Outcome'] === 'Away Win') || (o === 'Draw' && r['Predicted Outcome'] === 'Draw')) }).length;
-        const model2Wins = completed.filter(r => { const o = detectOutcome(r.Result); return o && ((o === 'Home' && r['Predicted Outcome3'] === 'Home Win') || (o === 'Away' && r['Predicted Outcome3'] === 'Away Win') || (o === 'Draw' && r['Predicted Outcome3'] === 'Draw')) }).length;
-        const model3Wins = completed.filter(r => { const o = detectOutcome(r.Result); return o && ((o === 'Home' && r['Prediction Outcome1'] === 'Home Win') || (o === 'Away' && r['Prediction Outcome1'] === 'Away Win') || (o === 'Draw' && r['Prediction Outcome1'] === 'Draw')) }).length;
+        const model1Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome'], r.Result)).length;
+        const model2Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome3'], r.Result)).length;
+        const model3Wins = completed.filter(r => evaluatePrediction(r['Prediction Outcome1'], r.Result)).length;
         container.innerHTML = `<div class="summary-card bg-blue-100"><h3>Prediction Model 1 Win %</h3><p class="text-blue-800">${((model1Wins/completed.length)*100).toFixed(0)}%</p></div><div class="summary-card bg-indigo-100"><h3>Prediction Model 2 Win %</h3><p class="text-indigo-800">${((model2Wins/completed.length)*100).toFixed(0)}%</p></div><div class="summary-card bg-purple-100"><h3>Prediction Model 3 Win %</h3><p class="text-purple-800">${((model3Wins/completed.length)*100).toFixed(0)}%</p></div>`;
     }
-    
+
     function renderComparisonTable(data) {
         const tbody = document.getElementById('comparisonTableBody');
         tbody.innerHTML = data.length ? '' : `<tr><td colspan="10" class="text-center p-4">No matches selected for comparison.</td></tr>`;
         data.forEach(row => {
-            const actualOutcome = detectOutcome(row.Result);
-            const getBgClass = (isCorrect) => actualOutcome ? (isCorrect ? 'bg-green-200' : 'bg-red-200') : '';
-            const isCorrectModel1 = actualOutcome && ( (actualOutcome === 'Home' && row['Predicted Outcome'] === 'Home Win') || (actualOutcome === 'Away' && row['Predicted Outcome'] === 'Away Win') || (actualOutcome === 'Draw' && row['Predicted Outcome'] === 'Draw') );
-            const isCorrectModel2 = actualOutcome && ( (actualOutcome === 'Home' && row['Predicted Outcome3'] === 'Home Win') || (actualOutcome === 'Away' && row['Predicted Outcome3'] === 'Away Win') || (actualOutcome === 'Draw' && row['Predicted Outcome3'] === 'Draw') );
-            const isCorrectModel3 = actualOutcome && ( (actualOutcome === 'Home' && row['Prediction Outcome1'] === 'Home Win') || (actualOutcome === 'Away' && row['Prediction Outcome1'] === 'Away Win') || (actualOutcome === 'Draw' && row['Prediction Outcome1'] === 'Draw') );
+            const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
+            const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
+            const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
+
+            const getColorStyle = (isCorrect) => {
+                if (isCorrect === null) return '';
+                const color = isCorrect ? '#d4edda' : '#f8d7da';
+                return `style="background-color: ${color}"`;
+            };
+
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
-            tr.innerHTML = `<td class="p-2 text-center"><input type="checkbox" class="bookmark-checkbox" data-id="${row.uniqueId}"></td><td class="p-2 font-medium">${row.Match}</td><td class="p-2">${row.MatchDate}</td><td class="p-2 ${getBgClass(isCorrectModel1)}">${row['Predicted Outcome']}</td><td class="p-2">${row['Probability (%)']}%</td><td class="p-2 ${getBgClass(isCorrectModel2)}">${row['Predicted Outcome3']}</td><td class="p-2">${row['Prediction Confidence (%)']}%</td><td class="p-2 ${getBgClass(isCorrectModel3)}">${row['Prediction Outcome1']}</td><td class="p-2">${row['Winning Probability']}%</td><td class="p-2">${row.Result || '—'}</td>`;
+            tr.innerHTML = `
+              <td class="p-2 text-center"><input type="checkbox" class="bookmark-checkbox" data-id="${row.uniqueId}"></td>
+              <td class="p-2 font-medium">${row.Match}</td>
+              <td class="p-2">${row.MatchDate}</td>
+              <td class="p-2" ${getColorStyle(isCorrect1)}>${row['Predicted Outcome']}</td>
+              <td class="p-2">${row['Probability (%)']}%</td>
+              <td class="p-2" ${getColorStyle(isCorrect2)}>${row['Predicted Outcome3']}</td>
+              <td class="p-2">${row['Prediction Confidence (%)']}%</td>
+              <td class="p-2" ${getColorStyle(isCorrect3)}>${row['Prediction Outcome1']}</td>
+              <td class="p-2">${row['Winning Probability']}%</td>
+              <td class="p-2">${row.Result || '—'}</td>`;
             tbody.appendChild(tr);
         });
     }
@@ -561,7 +803,7 @@
         const calculateWinRate = (dataset, modelPredKey, predictionType) => {
             const relevant = dataset.filter(r => r[modelPredKey] === predictionType && r.Result && r.Result.includes('-'));
             if (relevant.length === 0) return 0;
-            const wins = relevant.filter(r => { const outcome = detectOutcome(r.Result); return (outcome === 'Home' && predictionType === 'Home Win') || (outcome === 'Away' && predictionType === 'Away Win') || (outcome === 'Draw' && predictionType === 'Draw'); }).length;
+            const wins = relevant.filter(r => evaluatePrediction(r[modelPredKey], r.Result)).length;
             return (wins / relevant.length) * 100;
         };
         const predictionTypes = ['Home Win', 'Away Win', 'Draw'];
@@ -569,7 +811,7 @@
         createChart('model2WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Predicted Outcome3', type)));
         createChart('model3WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Prediction Outcome1', type)));
         const calculateWinsInProbRanges = (dataset, modelPredKey, modelProbKey) => {
-            const wins = dataset.filter(r => { const o = detectOutcome(r.Result), p = r[modelPredKey]; return o && ((o === 'Home' && p === 'Home Win') || (o === 'Away' && p === 'Away Win') || (o === 'Draw' && p === 'Draw')); });
+            const wins = dataset.filter(r => evaluatePrediction(r[modelPredKey], r.Result));
             const ranges = { '0-50%': 0, '51-70%': 0, '71-100%': 0 };
             wins.forEach(win => { const prob = win[modelProbKey]; if (prob <= 50) ranges['0-50%']++; else if (prob <= 70) ranges['51-70%']++; else ranges['71-100%']++; });
             return Object.values(ranges);
@@ -597,10 +839,7 @@
         models.forEach(model => {
             const modelMatches = completed.filter(r => r[model.predKey]);
             model.matches = modelMatches.length;
-            model.wins = modelMatches.filter(r => {
-                const o = detectOutcome(r.Result), p = r[model.predKey];
-                return o && ((o==='Home' && p==='Home Win') || (o==='Away' && p==='Away Win') || (o==='Draw' && p==='Draw'));
-            }).length;
+            model.wins = modelMatches.filter(r => evaluatePrediction(r[model.predKey], r.Result)).length;
             model.winRate = model.matches > 0 ? (model.wins / model.matches) * 100 : 0;
         });
         return { models, totalMatches: data.length, totalCompleted: completed.length };
@@ -632,10 +871,7 @@
                 const predKey = modelName === 'Model 1' ? 'Predicted Outcome' : modelName === 'Model 2' ? 'Predicted Outcome3' : 'Prediction Outcome1';
                 const catMatches = completed.filter(r => r[predKey] === cat);
                 const totalCatMatches = catMatches.length;
-                const totalCatWins = catMatches.filter(r => {
-                    const o = detectOutcome(r.Result);
-                    return (o === 'Home' && cat === 'Home Win') || (o === 'Draw' && cat === 'Draw') || (o === 'Away' && cat === 'Away Win');
-                }).length;
+                const totalCatWins = catMatches.filter(r => evaluatePrediction(r[predKey], r.Result)).length;
                 const winPercent = totalCatMatches > 0 ? ((totalCatWins / totalCatMatches) * 100).toFixed(1) + '%' : 'N/A';
                 tableHTML += `<tr class="border-b"><td class="p-2">${modelName}</td><td class="p-2">${cat}</td><td class="p-2">${totalCatWins}</td><td class="p-2">${totalCatMatches}</td><td class="p-2">${winPercent}</td></tr>`;
             });
@@ -650,7 +886,7 @@
         const calcWinRate = (predKey, cat) => {
             const catMatches = completed.filter(r => r[predKey] === cat);
             if (catMatches.length === 0) return 0;
-            const wins = catMatches.filter(r => { const o = detectOutcome(r.Result); return (o === 'Home' && cat === 'Home Win') || (o === 'Draw' && cat === 'Draw') || (o === 'Away' && cat === 'Away Win'); }).length;
+            const wins = catMatches.filter(r => evaluatePrediction(r[predKey], r.Result)).length;
             return (wins / catMatches.length) * 100;
         };
         const model1Data = categories.map(cat => calcWinRate('Predicted Outcome', cat));
@@ -664,7 +900,7 @@
     function renderProbabilityWinsGraphs(data) {
         const probLabels = ['0-50%', '51-70%', '71-100%'];
         const calcWinsInRanges = (predKey, probKey) => {
-            const wins = data.filter(r => { const o = detectOutcome(r.Result), p = r[predKey]; return o && ((o === 'Home' && p === 'Home Win') || (o === 'Away' && p === 'Away Win') || (o === 'Draw' && p === 'Draw')); });
+            const wins = data.filter(r => evaluatePrediction(r[predKey], r.Result));
             const ranges = { '0-50%': 0, '51-70%': 0, '71-100%': 0 };
             wins.forEach(win => { const prob = win[probKey]; if (prob <= 50) ranges['0-50%']++; else if (prob <= 70) ranges['51-70%']++; else ranges['71-100%']++; });
             return Object.values(ranges);
@@ -704,7 +940,13 @@
             else applyFilters();
         }));
 
-        ['clearFilters', 'insightsClearFilters', 'comparisonClearFilters', 'iaClearFilters'].forEach(id => {
+        document.getElementById('mainClearFilters').addEventListener('click', () => {
+             const form = document.querySelector('#mainContent .bg-white');
+             form.querySelectorAll('select, input').forEach(el => { el.value = ''; });
+             applyFilters();
+        });
+
+        ['insightsClearFilters', 'comparisonClearFilters', 'iaClearFilters'].forEach(id => {
             document.getElementById(id)?.addEventListener('click', (e) => {
                 const form = e.target.closest('.bg-white');
                 form.querySelectorAll('select, input').forEach(el => {
@@ -715,8 +957,17 @@
                 if (id.startsWith('insights')) applyInsightsFilters();
                 else if (id.startsWith('comparison')) renderComparisonPage();
                 else if (id.startsWith('ia')) applyInsightAnalyticsFilters();
-                else applyFilters();
             });
+        });
+        
+        const mainFilterHandler = () => {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(applyFilters, 300);
+        };
+
+        document.querySelectorAll('#mainContent select, #mainContent input').forEach(el => {
+            el.addEventListener('input', mainFilterHandler);
+            el.addEventListener('change', mainFilterHandler);
         });
         
         const filterHandler = (tab) => {
@@ -753,6 +1004,31 @@
             const nextBookmarkBtn = e.target.closest('.bookmark-next-btn');
             if (nextBookmarkBtn) { const group = nextBookmarkBtn.dataset.group; const totalPages = Math.ceil((bookmarkedMatches[group] || []).length / rowsPerPage); if(!bookmarkPages[group]) bookmarkPages[group] = 1; if(bookmarkPages[group] < totalPages) bookmarkPages[group]++; renderBookmarkSection(); }
         });
+
+        document.getElementById('tableHeaders').addEventListener('click', e => {
+            const th = e.target.closest('th[data-column]');
+            if(!th) return;
+            const column = th.dataset.column;
+            document.querySelectorAll('#tableHeaders th').forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));
+            sortConfig.direction = (sortConfig.column === column && sortConfig.direction === 'asc') ? 'desc' : 'asc';
+            sortConfig.column = column;
+            th.classList.add(sortConfig.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+            applyFilters(false);
+        });
+
+        // More Filters Modal Listeners
+        document.getElementById('moreFiltersBtn').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.remove('hidden'));
+        document.getElementById('closeMoreFiltersModal').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.add('hidden'));
+        document.getElementById('applyMoreFilters').addEventListener('click', () => {
+            applyFilters();
+            document.getElementById('moreFiltersModal').classList.add('hidden');
+        });
+        document.getElementById('resetMoreFilters').addEventListener('click', () => {
+            const modal = document.getElementById('moreFiltersModal');
+            modal.querySelectorAll('input[type="number"], select').forEach(el => el.value = '');
+            applyFilters();
+        });
+
 
         ['prevPageBtn', 'nextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredMatches.length/rowsPerPage); if(e.target.id==='nextPageBtn' && currentPage < totalPages) currentPage++; else if(e.target.id==='prevPageBtn' && currentPage > 1) currentPage--; renderPaginatedTable(filteredMatches); }));
         ['insightsPrevPageBtn', 'insightsNextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredInsightsMatches.length/rowsPerPage); if(e.target.id==='insightsNextPageBtn' && insightsCurrentPage < totalPages) insightsCurrentPage++; else if(e.target.id==='insightsPrevPageBtn' && insightsCurrentPage > 1) insightsCurrentPage--; renderInsightsPaginatedTable(filteredInsightsMatches); }));
