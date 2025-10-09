@@ -564,6 +564,11 @@
       return false;
     }
 
+    const getPredictionBgClass = (isCorrect) => {
+        if (isCorrect === null) return '';
+        return isCorrect ? 'bg-green-200' : 'bg-red-200';
+    };
+
     const totalGoalsFromResult = (res) => res ? (res.split(/[:-]/).map(Number).reduce((s,c)=>s+c,0) || null) : null;
     const detectOutcome = (res) => {
       if (!res || !res.includes('-')) return null;
@@ -582,8 +587,7 @@
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
             const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
             const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
-            const getColorStyle = (isCorrect) => isCorrect === null ? '' : `style="background-color: ${isCorrect ? '#d4edda' : '#f8d7da'}"`;
-
+            
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
 
@@ -607,11 +611,11 @@
             tr.innerHTML = `
               <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
               <td class='p-2'>${row.MatchDate}</td><td class='p-2 font-medium'>${row.Match}</td>
-              <td class='p-2' ${getColorStyle(isCorrect1)}>${row['Predicted Outcome'] || 'N/A'}</td>
+              <td class='p-2 ${getPredictionBgClass(isCorrect1)}'>${row['Predicted Outcome'] || 'N/A'}</td>
               <td class='p-2'>${row['Probability (%)']}%</td>
-              <td class='p-2' ${getColorStyle(isCorrect2)}>${row['Predicted Outcome3'] || 'N/A'}</td>
+              <td class='p-2 ${getPredictionBgClass(isCorrect2)}'>${row['Predicted Outcome3'] || 'N/A'}</td>
               <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
-              <td class='p-2' ${getColorStyle(isCorrect3)}>${row['Prediction Outcome1'] || 'N/A'}</td>
+              <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${row['Prediction Outcome1'] || 'N/A'}</td>
               <td class='p-2'>${row['Winning Probability']}%</td>
               <td class='p-2'>${row.Result || '—'}</td>
               <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
@@ -631,24 +635,25 @@
             tr.className = 'border-b hover:bg-gray-50';
             
             // ⭐ Favorite Star Logic
-            let starClass;
             const m1 = row['Predicted Outcome'];
             const m2 = row['Predicted Outcome3'];
             const m3 = row['Prediction Outcome1'];
             const allModelsMatch = m1 && m1 === m2 && m2 === m3;
 
+            let starClass;
             if (allModelsMatch) {
-                // Automatically push to favorites if all models match
                 if (!favourites.has(id)) {
                     favourites.add(id);
                     localStorage.setItem('favourites', JSON.stringify([...favourites]));
                 }
-                // Green if correct, blue otherwise
                 starClass = evaluatePrediction(m1, row.Result) === true ? 'star-green' : 'star-blue';
             } else {
-                // Standard favorite logic
                 starClass = favourites.has(id) ? 'star-fav' : 'star-normal';
             }
+
+            const isCorrect1 = evaluatePrediction(m1, row.Result);
+            const isCorrect2 = evaluatePrediction(m2, row.Result);
+            const isCorrect3 = evaluatePrediction(m3, row.Result);
 
             tr.innerHTML = `
                 <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
@@ -656,11 +661,11 @@
                 <td class='p-2'>${row.MatchDate}</td>
                 <td class='p-2 font-medium'>${row.Match}</td>
                 <td class='p-2'>${row.Result || '—'}</td>
-                <td class='p-2'>${m1 || 'N/A'}</td>
+                <td class='p-2 ${getPredictionBgClass(isCorrect1)}'>${m1 || 'N/A'}</td>
                 <td class='p-2'>${row['Probability (%)']}%</td>
-                <td class='p-2'>${m2 || 'N/A'}</td>
+                <td class='p-2 ${getPredictionBgClass(isCorrect2)}'>${m2 || 'N/A'}</td>
                 <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
-                <td class='p-2'>${m3 || 'N/A'}</td>
+                <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${m3 || 'N/A'}</td>
                 <td class='p-2'>${row['Winning Probability']}%</td>
                 <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
@@ -828,23 +833,17 @@
             const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
             const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
 
-            const getColorStyle = (isCorrect) => {
-                if (isCorrect === null) return '';
-                const color = isCorrect ? '#d4edda' : '#f8d7da';
-                return `style="background-color: ${color}"`;
-            };
-
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
             tr.innerHTML = `
               <td class="p-2 text-center"><input type="checkbox" class="bookmark-checkbox" data-id="${row.uniqueId}"></td>
               <td class="p-2 font-medium">${row.Match}</td>
               <td class="p-2">${row.MatchDate}</td>
-              <td class="p-2" ${getColorStyle(isCorrect1)}>${row['Predicted Outcome']}</td>
+              <td class="p-2 ${getPredictionBgClass(isCorrect1)}">${row['Predicted Outcome']}</td>
               <td class="p-2">${row['Probability (%)']}%</td>
-              <td class="p-2" ${getColorStyle(isCorrect2)}>${row['Predicted Outcome3']}</td>
+              <td class="p-2 ${getPredictionBgClass(isCorrect2)}">${row['Predicted Outcome3']}</td>
               <td class="p-2">${row['Prediction Confidence (%)']}%</td>
-              <td class="p-2" ${getColorStyle(isCorrect3)}>${row['Prediction Outcome1']}</td>
+              <td class="p-2 ${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td>
               <td class="p-2">${row['Winning Probability']}%</td>
               <td class="p-2">${row.Result || '—'}</td>`;
             tbody.appendChild(tr);
@@ -865,7 +864,27 @@
             const start = (page - 1) * rowsPerPage;
             const paginatedMatches = matches.slice(start, start + rowsPerPage);
             let tableHTML = `<div class="flex justify-between items-center mb-2"><h2 class="text-xl font-semibold">Bookmarks: ${groupName} (${matches.length})</h2></div><div class="overflow-x-auto"><table class="min-w-full bg-white rounded shadow text-sm"><thead class="bg-yellow-200"><tr><th class="p-2 text-left">Match</th><th class="p-2 text-left">Date</th><th class="p-2 text-left">Model 1</th><th class="p-2 text-left">Conf 1</th><th class="p-2 text-left">Model 2</th><th class="p-2 text-left">Conf 2</th><th class="p-2 text-left">Model 3</th><th class="p-2 text-left">Conf 3</th><th class="p-2 text-left">Result</th><th class="p-2 text-left">Remove</th></tr></thead><tbody>`;
-            paginatedMatches.forEach(row => { tableHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-2 font-medium">${row.Match}</td><td class="p-2">${row.MatchDate}</td><td class="p-2">${row['Predicted Outcome']}</td><td class="p-2">${row['Probability (%)']}%</td><td class="p-2">${row['Predicted Outcome3']}</td><td class="p-2">${row['Prediction Confidence (%)']}%</td><td class="p-2">${row['Prediction Outcome1']}</td><td class="p-2">${row['Winning Probability']}%</td><td class="p-2">${row.Result || '—'}</td><td class="p-2 text-center"><button class="remove-bookmark-btn text-red-500 hover:text-red-700" data-id="${row.uniqueId}" data-group="${groupName}">✖</button></td></tr>`; });
+            
+            paginatedMatches.forEach(row => {
+                const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
+                const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
+                const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
+                
+                tableHTML += `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-2 font-medium">${row.Match}</td>
+                    <td class="p-2">${row.MatchDate}</td>
+                    <td class="p-2 ${getPredictionBgClass(isCorrect1)}">${row['Predicted Outcome']}</td>
+                    <td class="p-2">${row['Probability (%)']}%</td>
+                    <td class="p-2 ${getPredictionBgClass(isCorrect2)}">${row['Predicted Outcome3']}</td>
+                    <td class="p-2">${row['Prediction Confidence (%)']}%</td>
+                    <td class="p-2 ${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td>
+                    <td class="p-2">${row['Winning Probability']}%</td>
+                    <td class="p-2">${row.Result || '—'}</td>
+                    <td class="p-2 text-center"><button class="remove-bookmark-btn text-red-500 hover:text-red-700" data-id="${row.uniqueId}" data-group="${groupName}">✖</button></td>
+                </tr>`;
+            });
+
             tableHTML += `</tbody></table></div>`;
             let paginationHTML = `<div class="flex justify-center items-center gap-4 my-3"><button class="bookmark-prev-btn bg-gray-200 px-3 py-1 rounded text-xs ${page === 1 ? 'opacity-50' : ''}" data-group="${groupName}" ${page === 1 ? 'disabled' : ''}>Prev</button><span>Page ${page} of ${totalPages}</span><button class="bookmark-next-btn bg-gray-200 px-3 py-1 rounded text-xs ${page >= totalPages ? 'opacity-50' : ''}" data-group="${groupName}" ${page >= totalPages ? 'disabled' : ''}>Next</button></div>`;
             groupContainer.innerHTML = tableHTML + paginationHTML;
@@ -1166,4 +1185,3 @@
   </script>
 </body>
 </html>
-
