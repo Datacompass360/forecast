@@ -154,15 +154,18 @@
                 </div>
             </div>
         </div>
-        <h2 class="text-xl font-semibold mb-2">Comparison Table</h2>
-        <p class="text-sm text-gray-600 mb-4">Select matches from the 'Insights' tab using the 'C' checkbox column to compare them here.</p>
-        <div class="overflow-x-auto">
-            <table id="comparisonTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
-                <thead class="bg-blue-200"><tr id="comparisonTableHeaders">
-                    <th class="p-2 text-left"><input type="checkbox" id="selectAllBookmark"></th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Prediction Model 1">Prediction Model 1</th><th class="p-2 text-left" data-column="Confidence Model 1">Confidence Model 1</th><th class="p-2 text-left" data-column="Prediction Model 2">Prediction Model 2</th><th class="p-2 text-left" data-column="Confidence Model 2">Confidence Model 2</th><th class="p-2 text-left" data-column="Prediction Model 3">Prediction Model 3</th><th class="p-2 text-left" data-column="Confidence Model 3">Confidence Model 3</th><th class="p-2 text-left" data-column="Result">Result</th>
-                </tr></thead><tbody id="comparisonTableBody"></tbody>
-            </table>
-        </div>
+        <details class="mt-4" id="comparisonTableContainer" open>
+            <summary class="text-xl font-semibold mb-2 cursor-pointer hover:text-blue-600">Comparison Table</summary>
+            <p class="text-sm text-gray-600 my-4">Select matches from the 'Insights' tab using the 'C' checkbox column to compare them here.</p>
+            <div class="overflow-x-auto">
+                <table id="comparisonTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
+                    <thead class="bg-blue-200"><tr id="comparisonTableHeaders">
+                        <th class="p-2 text-left"><input type="checkbox" id="selectAllBookmark"></th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Prediction Model 1">Prediction Model 1</th><th class="p-2 text-left" data-column="Confidence Model 1">Confidence Model 1</th><th class="p-2 text-left" data-column="Prediction Model 2">Prediction Model 2</th><th class="p-2 text-left" data-column="Confidence Model 2">Confidence Model 2</th><th class="p-2 text-left" data-column="Prediction Model 3">Prediction Model 3</th><th class="p-2 text-left" data-column="Confidence Model 3">Confidence Model 3</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">Remove</th>
+                    </tr></thead>
+                    <tbody id="comparisonTableBody"></tbody>
+                </table>
+            </div>
+        </details>
         <div id="bookmarkSection" class="mt-8"></div>
         <div id="comparisonAnalyticsSection" class="mt-8 pt-8 border-t">
           <h2 class="text-2xl font-bold text-center mb-6">Comparison Analytics</h2>
@@ -297,6 +300,7 @@
                 'Winning Chance', 'Outcome Probability', 'Winning Streak', 'Losing Streak', 
                 'Home Wins', 'Home Draws', 'Home Losses', 'Home Scored', 'Home Scored (Avg)', 'Home Conceded', 'Home Conceded (Avg)', 
                 'Away Wins', 'Away Draws', 'Away Losses', 'Away Scored', 'Away Scored (Avg)', 'Away Conceded', 'Away Conceded (Avg)', 
+                'Home Odds', 'Draw Odds', 'Away Odds',
                 'Odds (Prediction)', 'Stake', 'Total Goals Prediction'
             ];
             numericKeys.forEach(key => { row[key] = parseFloat(String(row[key] || '').replace(/[^0-9.\-%]/g, '')) || 0; });
@@ -371,7 +375,6 @@
         options.forEach(opt => select.add(new Option(opt, opt)));
     }
 
-    // STEP 2 & 3: Populate dynamic filters in the "More Filters" modal
     function populateDynamicFilters(data) {
         const numericColumns = {
             'Home Wins': 'mfHomeWins', 'Home Draws': 'mfHomeDraws', 'Home Losses': 'mfHomeLosses',
@@ -439,13 +442,11 @@
         const getNumMf = id => parseFloat(document.getElementById(id)?.value.trim());
         const getValMf = id => document.getElementById(id)?.value.trim();
 
-        // Main filters
         const mainDate = getVal("mainMatchDateFilter");
         const model1Pred = getVal("mainModel1PredFilter"), minProb1 = getNum('mainMinProb1'), maxProb1 = getNum('mainMaxProb1');
         const model2Pred = getVal("mainModel2PredFilter"), minProb2 = getNum('mainMinProb2'), maxProb2 = getNum('mainMaxProb2');
         const model3Pred = getVal("mainModel3PredFilter"), minProb3 = getNum('mainMinProb3'), maxProb3 = getNum('mainMaxProb3');
         
-        // More Filters
         const mf = {
             homeWinsMin: getNumMf('mfHomeWinsMin'), homeWinsMax: getNumMf('mfHomeWinsMax'),
             homeDrawsMin: getNumMf('mfHomeDrawsMin'), homeDrawsMax: getNumMf('mfHomeDrawsMax'),
@@ -495,7 +496,6 @@
         });
         
         if (currentTab === 'best') {
-             // 🧠 Best Prediction Tab — Filter Criteria Update
              tempFiltered = tempFiltered.filter(r => r['Prediction Confidence (%)'] >= 64);
         } else if (currentTab === 'favourites') {
             tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId));
@@ -534,7 +534,6 @@
         if (resetPage) insightsCurrentPage = 1;
         let tempFiltered = applyGenericFilters(insightsMatches, 'insights');
         
-        // 🔍 Search Functionality
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
         if (q) {
             tempFiltered = tempFiltered.filter(r => (r.Match || '').toLowerCase().includes(q));
@@ -591,7 +590,6 @@
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
 
-            // ⭐ Favorite Star Logic 
             let starClass;
             const m1 = row['Predicted Outcome'];
             const m2 = row['Predicted Outcome3'];
@@ -634,7 +632,6 @@
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
             
-            // ⭐ Favorite Star Logic
             const m1 = row['Predicted Outcome'];
             const m2 = row['Predicted Outcome3'];
             const m3 = row['Prediction Outcome1'];
@@ -838,7 +835,6 @@
         let currentComparisonData = allMatches.filter(m => matchesForComparison.has(m.uniqueId));
         currentComparisonData = applyGenericFilters(currentComparisonData, 'comparison');
         
-        // 🔍 Search Functionality
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
         if (q) {
             currentComparisonData = currentComparisonData.filter(r => (r.Match || '').toLowerCase().includes(q));
@@ -863,17 +859,25 @@
     }
 
     function renderComparisonTable(data) {
+        const table = document.getElementById('comparisonTable');
         const tbody = document.getElementById('comparisonTableBody');
         const q = document.getElementById('searchInput').value.trim();
         let emptyMessage = 'No matches selected for comparison.';
         if (matchesForComparison.size > 0 && q && data.length === 0) {
             emptyMessage = 'No matches found for your search.';
         }
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="10" class="text-center p-4">${emptyMessage}</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="11" class="text-center p-4">${emptyMessage}</td></tr>`;
+        
+        let wins1 = 0, wins2 = 0, wins3 = 0;
+
         data.forEach(row => {
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
             const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
             const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
+            
+            if (isCorrect1) wins1++;
+            if (isCorrect2) wins2++;
+            if (isCorrect3) wins3++;
 
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
@@ -887,9 +891,28 @@
               <td class="p-2">${row['Prediction Confidence (%)']}%</td>
               <td class="p-2 ${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td>
               <td class="p-2">${row['Winning Probability']}%</td>
-              <td class="p-2">${row.Result || '—'}</td>`;
+              <td class="p-2">${row.Result || '—'}</td>
+              <td class="p-2 text-center"><button class="remove-comparison-btn text-red-500 hover:text-red-700 text-lg" data-id="${row.uniqueId}" title="Remove from comparison">✖</button></td>`;
             tbody.appendChild(tr);
         });
+
+        const existingTfoot = table.querySelector('tfoot');
+        if (existingTfoot) existingTfoot.remove();
+
+        if (data.length > 0) {
+            const tfoot = table.createTFoot();
+            const footerRow = tfoot.insertRow();
+            footerRow.className = 'bg-blue-100 font-bold';
+            footerRow.innerHTML = `
+                <td class="p-2" colspan="3">Number of Wins</td>
+                <td class="p-2 text-center">${wins1}</td>
+                <td class="p-2"></td>
+                <td class="p-2 text-center">${wins2}</td>
+                <td class="p-2"></td>
+                <td class="p-2 text-center">${wins3}</td>
+                <td class="p-2" colspan="3"></td>
+            `;
+        }
     }
 
     function renderBookmarkSection() { 
@@ -901,6 +924,14 @@
             const groupContainer = document.createElement('div');
             groupContainer.className = 'mb-8';
             const matches = bookmarkedMatches[groupName];
+
+            let wins1 = 0, wins2 = 0, wins3 = 0;
+            matches.forEach(row => {
+                if (evaluatePrediction(row['Predicted Outcome'], row.Result)) wins1++;
+                if (evaluatePrediction(row['Predicted Outcome3'], row.Result)) wins2++;
+                if (evaluatePrediction(row['Prediction Outcome1'], row.Result)) wins3++;
+            });
+
             const page = bookmarkPages[groupName] || 1;
             const totalPages = Math.ceil(matches.length / rowsPerPage) || 1;
             const start = (page - 1) * rowsPerPage;
@@ -908,26 +939,28 @@
             let tableHTML = `<div class="flex justify-between items-center mb-2"><h2 class="text-xl font-semibold">Bookmarks: ${groupName} (${matches.length})</h2></div><div class="overflow-x-auto"><table class="min-w-full bg-white rounded shadow text-sm"><thead class="bg-yellow-200"><tr><th class="p-2 text-left">Match</th><th class="p-2 text-left">Date</th><th class="p-2 text-left">Model 1</th><th class="p-2 text-left">Conf 1</th><th class="p-2 text-left">Model 2</th><th class="p-2 text-left">Conf 2</th><th class="p-2 text-left">Model 3</th><th class="p-2 text-left">Conf 3</th><th class="p-2 text-left">Result</th><th class="p-2 text-left">Remove</th></tr></thead><tbody>`;
             
             paginatedMatches.forEach(row => {
-                const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
-                const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
-                const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
-                
-                tableHTML += `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-2 font-medium">${row.Match}</td>
-                    <td class="p-2">${row.MatchDate}</td>
-                    <td class="p-2 ${getPredictionBgClass(isCorrect1)}">${row['Predicted Outcome']}</td>
-                    <td class="p-2">${row['Probability (%)']}%</td>
-                    <td class="p-2 ${getPredictionBgClass(isCorrect2)}">${row['Predicted Outcome3']}</td>
-                    <td class="p-2">${row['Prediction Confidence (%)']}%</td>
-                    <td class="p-2 ${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td>
-                    <td class="p-2">${row['Winning Probability']}%</td>
-                    <td class="p-2">${row.Result || '—'}</td>
-                    <td class="p-2 text-center"><button class="remove-bookmark-btn text-red-500 hover:text-red-700" data-id="${row.uniqueId}" data-group="${groupName}">✖</button></td>
-                </tr>`;
+                tableHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-2 font-medium">${row.Match}</td><td class="p-2">${row.MatchDate}</td><td class="p-2 ${getPredictionBgClass(evaluatePrediction(row['Predicted Outcome'], row.Result))}">${row['Predicted Outcome']}</td><td class="p-2">${row['Probability (%)']}%</td><td class="p-2 ${getPredictionBgClass(evaluatePrediction(row['Predicted Outcome3'], row.Result))}">${row['Predicted Outcome3']}</td><td class="p-2">${row['Prediction Confidence (%)']}%</td><td class="p-2 ${getPredictionBgClass(evaluatePrediction(row['Prediction Outcome1'], row.Result))}">${row['Prediction Outcome1']}</td><td class="p-2">${row['Winning Probability']}%</td><td class="p-2">${row.Result || '—'}</td><td class="p-2 text-center"><button class="remove-bookmark-btn text-red-500 hover:text-red-700" data-id="${row.uniqueId}" data-group="${groupName}">✖</button></td></tr>`;
             });
 
-            tableHTML += `</tbody></table></div>`;
+            tableHTML += `</tbody>`;
+
+            if (matches.length > 0) {
+                tableHTML += `
+                    <tfoot class="bg-yellow-100 font-bold">
+                        <tr>
+                            <td class="p-2" colspan="2">Number of Wins</td>
+                            <td class="p-2 text-center">${wins1}</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 text-center">${wins2}</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 text-center">${wins3}</td>
+                            <td class="p-2" colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                `;
+            }
+
+            tableHTML += `</table></div>`;
             let paginationHTML = `<div class="flex justify-center items-center gap-4 my-3"><button class="bookmark-prev-btn bg-gray-200 px-3 py-1 rounded text-xs ${page === 1 ? 'opacity-50' : ''}" data-group="${groupName}" ${page === 1 ? 'disabled' : ''}>Prev</button><span>Page ${page} of ${totalPages}</span><button class="bookmark-next-btn bg-gray-200 px-3 py-1 rounded text-xs ${page >= totalPages ? 'opacity-50' : ''}" data-group="${groupName}" ${page >= totalPages ? 'disabled' : ''}>Next</button></div>`;
             groupContainer.innerHTML = tableHTML + paginationHTML;
             container.appendChild(groupContainer);
@@ -1162,9 +1195,29 @@
                     applyFilters(false);
                 }
             }
-            if (e.target.matches('.compare-checkbox')) { const id = e.target.dataset.id; if (e.target.checked) matchesForComparison.add(id); else matchesForComparison.delete(id); }
+            if (e.target.matches('.compare-checkbox')) { 
+                const id = e.target.dataset.id; 
+                if (e.target.checked) matchesForComparison.add(id); 
+                else matchesForComparison.delete(id); 
+            }
             const removeBookmarkBtn = e.target.closest('.remove-bookmark-btn');
-            if (removeBookmarkBtn) { const {id, group} = removeBookmarkBtn.dataset; bookmarkedMatches[group] = bookmarkedMatches[group].filter(m => m.uniqueId !== id); if(bookmarkedMatches[group].length === 0) delete bookmarkedMatches[group]; localStorage.setItem('bookmarkedMatches', JSON.stringify(bookmarkedMatches)); renderComparisonPage(); }
+            if (removeBookmarkBtn) { 
+                const {id, group} = removeBookmarkBtn.dataset; 
+                bookmarkedMatches[group] = bookmarkedMatches[group].filter(m => m.uniqueId !== id); 
+                if(bookmarkedMatches[group].length === 0) delete bookmarkedMatches[group]; 
+                localStorage.setItem('bookmarkedMatches', JSON.stringify(bookmarkedMatches)); 
+                renderComparisonPage(); 
+            }
+            const removeComparisonBtn = e.target.closest('.remove-comparison-btn');
+            if (removeComparisonBtn) {
+                const id = removeComparisonBtn.dataset.id;
+                matchesForComparison.delete(id);
+                renderComparisonPage();
+                const insightsCheckbox = document.querySelector(`#insightsTableBody .compare-checkbox[data-id='${id}']`);
+                if (insightsCheckbox) {
+                    insightsCheckbox.checked = false;
+                }
+            }
             const prevBookmarkBtn = e.target.closest('.bookmark-prev-btn');
             if (prevBookmarkBtn) { const group = prevBookmarkBtn.dataset.group; if(bookmarkPages[group] > 1) bookmarkPages[group]--; renderBookmarkSection(); }
             const nextBookmarkBtn = e.target.closest('.bookmark-next-btn');
@@ -1182,7 +1235,6 @@
             applyFilters(false);
         });
 
-        // More Filters Modal Listeners
         document.getElementById('moreFiltersBtn').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.remove('hidden'));
         document.getElementById('closeMoreFiltersModal').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.add('hidden'));
         document.getElementById('applyMoreFilters').addEventListener('click', () => {
@@ -1206,14 +1258,23 @@
             if (!groupName) { alert('Please enter a group name.'); return; }
             if (!bookmarkedMatches[groupName]) bookmarkedMatches[groupName] = [];
             const existingIds = new Set(bookmarkedMatches[groupName].map(m => m.uniqueId));
-            const selectedIds = new Set(Array.from(document.querySelectorAll('.bookmark-checkbox:checked')).map(cb => cb.dataset.id));
+            const selectedIds = new Set(Array.from(document.querySelectorAll('#comparisonTableBody .bookmark-checkbox:checked')).map(cb => cb.dataset.id));
             const matchesToAdd = allMatches.filter(m => selectedIds.has(m.uniqueId) && !existingIds.has(m.uniqueId));
+            
             bookmarkedMatches[groupName].push(...matchesToAdd);
             localStorage.setItem('bookmarkedMatches', JSON.stringify(bookmarkedMatches));
-            matchesToAdd.forEach(m => matchesForComparison.delete(m.uniqueId));
+            
+            document.querySelectorAll('#comparisonTableBody .bookmark-checkbox:checked').forEach(cb => cb.checked = false);
+            document.getElementById('selectAllBookmark').checked = false;
+
             document.getElementById('bookmarkGroupName').value = '';
             document.getElementById('bookmarkNameModal').classList.add('hidden');
             renderComparisonPage();
+        });
+        document.getElementById('selectAllBookmark').addEventListener('click', e => {
+            document.querySelectorAll('#comparisonTableBody .bookmark-checkbox').forEach(cb => {
+                cb.checked = e.target.checked;
+            });
         });
     }
 
