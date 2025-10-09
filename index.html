@@ -20,8 +20,10 @@
     .summary-card h3 { font-size: 1rem; color: #4b5563; margin-bottom: 8px; font-weight: 500;}
     .summary-card p { font-size: 1.75rem; font-weight: bold; }
 
-    .star-fav { color: #f59e0b; }
-    .star-normal { color: #cbd5e1; }
+    .star-fav { color: #f59e0b; } /* Yellow for manual favorite */
+    .star-normal { color: #cbd5e1; } /* Grey for normal */
+    .star-blue { color: #3b82f6; } /* Blue for same predictions */
+    .star-green { color: #22c55e; } /* Green for correct predictions */
     
     .favorite-highlight {
       color: #007bff; /* bright blue */
@@ -130,7 +132,7 @@
         </div>
         <table id="insightsTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
             <thead class="bg-blue-200"><tr id="insightsTableHeaders">
-                <th class="p-2 text-left">C</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left" data-column="Model 1">Model 1</th><th class="p-2 text-left" data-column="Probability 1">Probability 1</th><th class="p-2 text-left" data-column="Model 2">Model 2</th><th class="p-2 text-left" data-column="Probability 2">Probability 2</th><th class="p-2 text-left" data-column="Model 3">Model 3</th><th class="p-2 text-left" data-column="Probability 3">Probability 3</th><th class="p-2 text-left">View</th>
+                <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left">C</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left" data-column="Model 1">Model 1</th><th class="p-2 text-left" data-column="Probability 1">Probability 1</th><th class="p-2 text-left" data-column="Model 2">Model 2</th><th class="p-2 text-left" data-column="Probability 2">Probability 2</th><th class="p-2 text-left" data-column="Model 3">Model 3</th><th class="p-2 text-left" data-column="Probability 3">Probability 3</th><th class="p-2 text-left">View</th>
             </tr></thead><tbody id="insightsTableBody"></tbody>
         </table>
         <div id="insightsPaginationControls" class="flex justify-center items-center gap-4 my-3"><button id="insightsPrevPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Previous</button><span id="insightsPageIndicator">Page 1 of 1</span><button id="insightsNextPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Next</button></div>
@@ -493,10 +495,8 @@
         });
         
         if (currentTab === 'best') {
-             tempFiltered = tempFiltered.filter(r => {
-                return (r['Probability (%)'] >= 66 && r['Predicted Outcome'] === 'Home Win') || 
-                       (r['Probability (%)'] >= 76 && r['Predicted Outcome'] === 'Away Win');
-              });
+             // 🧠 Best Prediction Tab — Filter Criteria Update
+             tempFiltered = tempFiltered.filter(r => r['Prediction Confidence (%)'] >= 64);
         } else if (currentTab === 'favourites') {
             tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId));
         } else if (currentTab === 'yesterday') { 
@@ -505,7 +505,7 @@
         }
         
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (q) tempFiltered = tempFiltered.filter(r => (r.Match + ' ' + (r.League||'')).toLowerCase().includes(q));
+        if (q) tempFiltered = tempFiltered.filter(r => (r.Match || '').toLowerCase().includes(q));
 
         if (sortConfig.column) {
             tempFiltered.sort((a,b) => {
@@ -533,6 +533,13 @@
     function applyInsightsFilters(resetPage = true) {
         if (resetPage) insightsCurrentPage = 1;
         let tempFiltered = applyGenericFilters(insightsMatches, 'insights');
+        
+        // 🔍 Search Functionality
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (q) {
+            tempFiltered = tempFiltered.filter(r => (r.Match || '').toLowerCase().includes(q));
+        }
+
         if (insightsSortConfig.column) tempFiltered.sort((a,b) => (String(a[insightsSortConfig.column] || '') > String(b[insightsSortConfig.column] || '') ? 1 : -1) * (insightsSortConfig.direction === 'asc' ? 1 : -1));
         filteredInsightsMatches = tempFiltered;
         updateInsightsSummaryCards(filteredInsightsMatches);
@@ -571,6 +578,7 @@
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = data.length ? '' : `<tr><td colspan="11" class="text-center p-4">No matches found.</td></tr>`;
         data.forEach(row => {
+            const id = row.uniqueId;
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
             const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
             const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
@@ -578,8 +586,26 @@
 
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
+
+            // ⭐ Favorite Star Logic 
+            let starClass;
+            const m1 = row['Predicted Outcome'];
+            const m2 = row['Predicted Outcome3'];
+            const m3 = row['Prediction Outcome1'];
+            const allModelsMatch = m1 && m1 === m2 && m2 === m3;
+
+            if (allModelsMatch) {
+                if (!favourites.has(id)) {
+                    favourites.add(id);
+                    localStorage.setItem('favourites', JSON.stringify([...favourites]));
+                }
+                starClass = evaluatePrediction(m1, row.Result) === true ? 'star-green' : 'star-blue';
+            } else {
+                starClass = favourites.has(id) ? 'star-fav' : 'star-normal';
+            }
+
             tr.innerHTML = `
-              <td class='p-2 text-center'><button class='fav-btn ${favourites.has(row.uniqueId) ? "star-fav" : "star-normal"}' data-id='${row.uniqueId}'>★</button></td>
+              <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
               <td class='p-2'>${row.MatchDate}</td><td class='p-2 font-medium'>${row.Match}</td>
               <td class='p-2' ${getColorStyle(isCorrect1)}>${row['Predicted Outcome'] || 'N/A'}</td>
               <td class='p-2'>${row['Probability (%)']}%</td>
@@ -595,12 +621,48 @@
 
     function renderInsightsTable(data) {
         const tbody = document.getElementById('insightsTableBody');
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="11" class="text-center p-4">No matches found.</td></tr>`;
+        const q = document.getElementById('searchInput').value.trim();
+        const emptyMessage = q ? 'No matches found for your search.' : 'No matches found.';
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="12" class="text-center p-4">${emptyMessage}</td></tr>`;
+        
         data.forEach(row => {
             const id = row.uniqueId;
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
-            tr.innerHTML = `<td class='p-2 text-center'><input type="checkbox" class="compare-checkbox" data-id='${id}' ${matchesForComparison.has(id) ? 'checked' : ''}></td><td class='p-2'>${row.MatchDate}</td><td class='p-2 font-medium'>${row.Match}</td><td class='p-2'>${row.Result || '—'}</td><td class='p-2'>${row['Predicted Outcome']}</td><td class='p-2'>${row['Probability (%)']}%</td><td class='p-2'>${row['Predicted Outcome3']}</td><td class='p-2'>${row['Prediction Confidence (%)']}%</td><td class='p-2'>${row['Prediction Outcome1']}</td><td class='p-2'>${row['Winning Probability']}%</td><td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
+            
+            // ⭐ Favorite Star Logic
+            let starClass;
+            const m1 = row['Predicted Outcome'];
+            const m2 = row['Predicted Outcome3'];
+            const m3 = row['Prediction Outcome1'];
+            const allModelsMatch = m1 && m1 === m2 && m2 === m3;
+
+            if (allModelsMatch) {
+                // Automatically push to favorites if all models match
+                if (!favourites.has(id)) {
+                    favourites.add(id);
+                    localStorage.setItem('favourites', JSON.stringify([...favourites]));
+                }
+                // Green if correct, blue otherwise
+                starClass = evaluatePrediction(m1, row.Result) === true ? 'star-green' : 'star-blue';
+            } else {
+                // Standard favorite logic
+                starClass = favourites.has(id) ? 'star-fav' : 'star-normal';
+            }
+
+            tr.innerHTML = `
+                <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
+                <td class='p-2 text-center'><input type="checkbox" class="compare-checkbox" data-id='${id}' ${matchesForComparison.has(id) ? 'checked' : ''}></td>
+                <td class='p-2'>${row.MatchDate}</td>
+                <td class='p-2 font-medium'>${row.Match}</td>
+                <td class='p-2'>${row.Result || '—'}</td>
+                <td class='p-2'>${m1 || 'N/A'}</td>
+                <td class='p-2'>${row['Probability (%)']}%</td>
+                <td class='p-2'>${m2 || 'N/A'}</td>
+                <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
+                <td class='p-2'>${m3 || 'N/A'}</td>
+                <td class='p-2'>${row['Winning Probability']}%</td>
+                <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
         });
     }
@@ -728,6 +790,13 @@
     function renderComparisonPage() {
         let currentComparisonData = allMatches.filter(m => matchesForComparison.has(m.uniqueId));
         currentComparisonData = applyGenericFilters(currentComparisonData, 'comparison');
+        
+        // 🔍 Search Functionality
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (q) {
+            currentComparisonData = currentComparisonData.filter(r => (r.Match || '').toLowerCase().includes(q));
+        }
+
         if (comparisonSortConfig.column) currentComparisonData.sort((a,b) => (String(a[comparisonSortConfig.column] || '') > String(b[comparisonSortConfig.column] || '') ? 1 : -1) * (comparisonSortConfig.direction === 'asc' ? 1 : -1));
         updateComparisonStats(currentComparisonData);
         renderComparisonTable(currentComparisonData);
@@ -748,7 +817,12 @@
 
     function renderComparisonTable(data) {
         const tbody = document.getElementById('comparisonTableBody');
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="10" class="text-center p-4">No matches selected for comparison.</td></tr>`;
+        const q = document.getElementById('searchInput').value.trim();
+        let emptyMessage = 'No matches selected for comparison.';
+        if (matchesForComparison.size > 0 && q && data.length === 0) {
+            emptyMessage = 'No matches found for your search.';
+        }
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="10" class="text-center p-4">${emptyMessage}</td></tr>`;
         data.forEach(row => {
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
             const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
@@ -988,14 +1062,45 @@
             });
         });
         
-        document.getElementById('searchInput').addEventListener('input', () => { clearTimeout(filterTimeout); filterTimeout = setTimeout(applyFilters, 300); });
+        document.getElementById('searchInput').addEventListener('input', () => {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(() => {
+                switch (currentTab) {
+                    case 'insights':
+                        applyInsightsFilters();
+                        break;
+                    case 'comparison':
+                        renderComparisonPage();
+                        break;
+                    case 'all':
+                    case 'best':
+                    case 'favourites':
+                    case 'yesterday':
+                        applyFilters();
+                        break;
+                }
+            }, 300);
+        });
         
         document.body.addEventListener('click', e => {
             const viewBtn = e.target.closest('.view-btn');
             if (viewBtn) showMatchModal(JSON.parse(decodeURIComponent(viewBtn.dataset.match)));
             if (e.target.id === 'closeModal' || e.target.id === 'modal') document.getElementById('modal').classList.add('hidden');
             const favBtn = e.target.closest('.fav-btn');
-            if (favBtn) { const id = favBtn.dataset.id; if(favourites.has(id)) favourites.delete(id); else favourites.add(id); localStorage.setItem('favourites', JSON.stringify([...favourites])); if (currentTab === 'insights') applyInsightsFilters(false); else applyFilters(false); }
+            if (favBtn) { 
+                const id = favBtn.dataset.id; 
+                if(favourites.has(id)) {
+                    favourites.delete(id);
+                } else {
+                    favourites.add(id);
+                }
+                localStorage.setItem('favourites', JSON.stringify([...favourites])); 
+                if (currentTab === 'insights') {
+                    applyInsightsFilters(false);
+                } else {
+                    applyFilters(false);
+                }
+            }
             if (e.target.matches('.compare-checkbox')) { const id = e.target.dataset.id; if (e.target.checked) matchesForComparison.add(id); else matchesForComparison.delete(id); }
             const removeBookmarkBtn = e.target.closest('.remove-bookmark-btn');
             if (removeBookmarkBtn) { const {id, group} = removeBookmarkBtn.dataset; bookmarkedMatches[group] = bookmarkedMatches[group].filter(m => m.uniqueId !== id); if(bookmarkedMatches[group].length === 0) delete bookmarkedMatches[group]; localStorage.setItem('bookmarkedMatches', JSON.stringify(bookmarkedMatches)); renderComparisonPage(); }
