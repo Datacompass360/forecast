@@ -292,8 +292,12 @@
         return rows.filter(r => r && r.Match).map(r => {
             const row = {};
             for (const k in r) row[k.trim()] = (r[k] || '').toString().trim();
-            const d = new Date(row['Match Date']);
-            row.MatchDate = !isNaN(d) ? d.toISOString().split('T')[0] : '1970-01-01';
+            
+            // --- REQUIRED FIX ---
+            // Treat "Match Date" as plain text and assign it to the property used by the rest of the script.
+            row.MatchDate = row['Match Date'] || 'N/A';
+            // --- END OF FIX ---
+
             row.uniqueId = encodeURIComponent(`${row.Match}-${row.MatchDate}`);
             const numericKeys = [
                 'Probability (%)', 'Prediction Confidence (%)', 'Winning Probability', 'Probability of 3 Goals', 
@@ -345,7 +349,7 @@
             else opts.reverse();
             return opts;
         }
-        const matchDates = createOptions(data.map(r => r.MatchDate), 'asc');
+        const matchDates = createOptions(data.map(r => r.MatchDate), 'desc'); // Changed to desc for recent dates first
         const leagues = createOptions(data.map(r => r.League), 'asc');
         const analyses = createOptions(data.map(r => r['Match Analysis']), 'asc');
         
