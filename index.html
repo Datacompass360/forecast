@@ -19,6 +19,7 @@
     .summary-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .summary-card h3 { font-size: 1rem; color: #4b5563; margin-bottom: 8px; font-weight: 500;}
     .summary-card p { font-size: 1.75rem; font-weight: bold; }
+    .summary-card .sub-info { font-size: 0.8rem; color: #6b7280; }
 
     .star-fav { color: #f59e0b; } /* Yellow for manual favorite */
     .star-normal { color: #cbd5e1; } /* Grey for normal */
@@ -57,7 +58,7 @@
 
     /* Chart Resizing */
     .chart-container-4x3 { width: 100%; max-width: 400px; height: 300px; margin: 0 auto; }
-    #analyticsCharts > div, #dashboardTab > div:not(#dashboardCards) { display: flex; flex-direction: column; align-items: center; }
+    #analyticsCharts > div, #dashboardTab > div:not(#dashboardCards):not(#dashboardFilters) { display: flex; flex-direction: column; align-items: center; }
     
     /* Custom multi-select dropdown style to indicate it's a dropdown */
     select[multiple] { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
@@ -73,8 +74,8 @@
   </nav>
 
   <div class="tabs flex flex-wrap justify-center bg-blue-100 py-2 space-x-2 sticky top-[68px] z-20">
-    <button class="tab-btn px-4 py-1 rounded" data-tab="dashboard"><i class="fa-solid fa-chart-pie mr-2"></i>Dashboard</button>
-    <button class="tab-btn active px-4 py-1 rounded" data-tab="all">All Matches</button>
+    <button class="tab-btn active px-4 py-1 rounded" data-tab="dashboard"><i class="fa-solid fa-chart-pie mr-2"></i>Dashboard</button>
+    <button class="tab-btn px-4 py-1 rounded" data-tab="all">All Matches</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="insights">📊 Insights</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="comparison">🗂️ Comparison</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="insight-analytics">🧩 Insight Analytics</button>
@@ -85,13 +86,29 @@
   </div>
 
   <main id="content" class="p-4">
-    <div id="dashboardTab" class="hidden"> 
-        <div id="dashboardCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6"></div>
-        <div class="bg-white p-4 rounded-lg shadow"><h3 class="font-semibold mb-2">Prediction Type Distribution</h3><div class="chart-container-4x3"><canvas id="predictionPieChart"></canvas></div></div>
+    <div id="dashboardTab">
+        <div id="dashboardFilters" class="bg-white p-4 rounded-lg shadow mb-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 items-end">
+                <div class="filter-group flex flex-col"><label for="dashboardMatchDateFilter">Match Date:</label><select id="dashboardMatchDateFilter" class="border"></select></div>
+                <div class="filter-group flex flex-col"><label>Winning Streak:</label><div class="range-filter"><input type="number" id="dashboardMinWinStreak" placeholder="Min" class="border"><input type="number" id="dashboardMaxWinStreak" placeholder="Max" class="border"></div></div>
+                <div class="filter-group flex flex-col"><label>Losing Streak:</label><div class="range-filter"><input type="number" id="dashboardMinLoseStreak" placeholder="Min" class="border"><input type="number" id="dashboardMaxLoseStreak" placeholder="Max" class="border"></div></div>
+                <div class="flex items-center justify-end gap-2 col-start-auto lg:col-start-5">
+                  <button id="dashboardMoreFiltersBtn" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">More Filters</button>
+                  <button id="dashboardClearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded text-sm hover:bg-gray-300">Clear</button>
+                </div>
+            </div>
+        </div>
+        <div id="dashboardCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
+        <div id="dashboardTables" class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div id="dashboardTable1Container"></div>
+            <div id="dashboardTable2Container"></div>
+            <div id="dashboardTable3Container"></div>
+            <div id="dashboardTable4Container"></div>
+        </div>
     </div>
     <div id="analyticsTab" class="hidden"><div id="analyticsCharts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div></div>
     
-    <div id="mainContent">
+    <div id="mainContent" class="hidden">
       <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4"></div>
       <div class="bg-white p-4 rounded-lg shadow mb-4">
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-end">
@@ -110,7 +127,7 @@
       </div>
       <table id="matchesTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
         <thead class="bg-blue-200"><tr id="tableHeaders">
-            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Predicted Odd">Predicted Odd</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
+            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Predicted Odd">Predicted Odd</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Tip">Tip</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
         </tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
@@ -132,7 +149,7 @@
         </div>
         <table id="insightsTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
             <thead class="bg-blue-200"><tr id="insightsTableHeaders">
-                <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left">C</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left" data-column="Model 1">Model 1</th><th class="p-2 text-left" data-column="Probability 1">Probability 1</th><th class="p-2 text-left" data-column="Model 2">Model 2</th><th class="p-2 text-left" data-column="Probability 2">Probability 2</th><th class="p-2 text-left" data-column="Model 3">Model 3</th><th class="p-2 text-left" data-column="Probability 3">Probability 3</th><th class="p-2 text-left">View</th>
+                <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left">C</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left" data-column="Model 1">Model 1</th><th class="p-2 text-left" data-column="Probability 1">Probability 1</th><th class="p-2 text-left" data-column="Model 2">Model 2</th><th class="p-2 text-left" data-column="Probability 2">Probability 2</th><th class="p-2 text-left" data-column="Model 3">Model 3</th><th class="p-2 text-left" data-column="Probability 3">Probability 3</th><th class="p-2 text-left" data-column="Tip">Tip</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left">View</th>
             </tr></thead><tbody id="insightsTableBody"></tbody>
         </table>
         <div id="insightsPaginationControls" class="flex justify-center items-center gap-4 my-3"><button id="insightsPrevPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Previous</button><span id="insightsPageIndicator">Page 1 of 1</span><button id="insightsNextPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Next</button></div>
@@ -160,7 +177,7 @@
             <div class="overflow-x-auto">
                 <table id="comparisonTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
                     <thead class="bg-blue-200"><tr id="comparisonTableHeaders">
-                        <th class="p-2 text-left"><input type="checkbox" id="selectAllBookmark"></th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Prediction Model 1">Prediction Model 1</th><th class="p-2 text-left" data-column="Confidence Model 1">Confidence Model 1</th><th class="p-2 text-left" data-column="Prediction Model 2">Prediction Model 2</th><th class="p-2 text-left" data-column="Confidence Model 2">Confidence Model 2</th><th class="p-2 text-left" data-column="Prediction Model 3">Prediction Model 3</th><th class="p-2 text-left" data-column="Confidence Model 3">Confidence Model 3</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">Remove</th>
+                        <th class="p-2 text-left"><input type="checkbox" id="selectAllBookmark"></th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Prediction Model 1">Prediction Model 1</th><th class="p-2 text-left" data-column="Confidence Model 1">Confidence Model 1</th><th class="p-2 text-left" data-column="Prediction Model 2">Prediction Model 2</th><th class="p-2 text-left" data-column="Confidence Model 2">Confidence Model 2</th><th class="p-2 text-left" data-column="Prediction Model 3">Prediction Model 3</th><th class="p-2 text-left" data-column="Confidence Model 3">Confidence Model 3</th><th class="p-2 text-left" data-column="Tip">Tip</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">Remove</th>
                     </tr></thead>
                     <tbody id="comparisonTableBody"></tbody>
                 </table>
@@ -210,8 +227,16 @@
   <div id="moreFiltersModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-30 p-4">
     <div class="bg-white rounded-lg w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto">
         <button id="closeMoreFiltersModal" class="absolute top-4 right-4 text-gray-500 text-xl">&times;</button>
-        <h3 class="text-lg font-bold mb-4">More Filters</h3>
+        <h3 id="moreFiltersModalTitle" class="text-lg font-bold mb-4">More Filters</h3>
         <div class="space-y-2">
+            <details class="bg-gray-50 p-3 rounded" open>
+                <summary class="font-semibold cursor-pointer">Predictions & Tips</summary>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                    <div class="filter-group flex flex-col"><label for="mfTipFilter">Tip:</label><select id="mfTipFilter" class="border"></select></div>
+                    <div class="filter-group flex flex-col"><label>Tip Probability (%):</label><div class="range-filter"><input type="number" id="mfTipProbMin" placeholder="Min" class="border"><input type="number" id="mfTipProbMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label for="mfMatchTipFilter">Match Tip:</label><select id="mfMatchTipFilter" class="border"></select></div>
+                </div>
+            </details>
             <details class="bg-gray-50 p-3 rounded" open>
                 <summary class="font-semibold cursor-pointer">Home Team Stats</summary>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
@@ -269,7 +294,7 @@
   <script>
     // --- State & Config ---
     const DATA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQH-Uue5Ctuo4aU-4S81U9QvoXxslOq6YjKHnVkPjyOeJqci4p19cs2iZ8y5GgzsSh_vQHxPYb-gl-5/pub?gid=0&single=true&output=csv';
-    let allMatches = [], filteredMatches = [], favourites = new Set(), currentTab = 'all';
+    let allMatches = [], filteredMatches = [], favourites = new Set(), currentTab = 'dashboard';
     let insightsMatches = [], filteredInsightsMatches = [], matchesForComparison = new Set();
     let filteredInsightAnalyticsMatches = [];
     let bookmarkedMatches = {};
@@ -313,7 +338,8 @@
                 'Away Wins', 'Away Draws', 'Away Losses', 'Away Scored', 'Away Scored (Avg)', 'Away Conceded', 'Away Conceded (Avg)', 
                 'Home Odds', 'Draw Odds', 'Away Odds',
                 'Odds (Prediction)', 'Stake', 'Total Goals Prediction',
-                'H2H Home Wins', 'H2H Away Wins', 'H2H Draws', 'Home Team Position', 'Away Team Position'
+                'H2H Home Wins', 'H2H Away Wins', 'H2H Draws', 'Home Team Position', 'Away Team Position',
+                'Tip Probability'
             ];
             numericKeys.forEach(key => { row[key] = parseFloat(String(row[key] || '').replace(/[^0-9.\-%]/g, '')) || 0; });
 
@@ -353,6 +379,7 @@
             applyFilters();
             applyInsightsFilters();
             renderInsightAnalyticsPage(filteredInsightAnalyticsMatches);
+            renderDashboard(); // Initial render for dashboard
         } catch (err) { 
             console.error('Failed to load CSV data:', err);
             showErrorOverlay(`Failed to load data. Error: ${err.message}`);
@@ -372,9 +399,12 @@
         const matchDates = createOptions(data.map(r => r.MatchDate), 'desc'); // Changed to desc for recent dates first
         const leagues = createOptions(data.map(r => r.League), 'asc');
         const analyses = createOptions(data.map(r => r['Match Analysis']), 'asc');
-        
+        const tips = createOptions(data.map(r => r['Tip']), 'asc');
+        const matchTips = createOptions(data.map(r => r['Match Tip']), 'asc');
+
         const predictionTypes = createOptions(data.flatMap(r => [r['Predicted Outcome'], r['Predicted Outcome3'], r['Prediction Outcome1']]));
         populateSelect('mainMatchDateFilter', matchDates);
+        populateSelect('dashboardMatchDateFilter', matchDates);
         populateSelect('mainModel1PredFilter', predictionTypes);
         populateSelect('mainModel2PredFilter', predictionTypes);
         populateSelect('mainModel3PredFilter', predictionTypes);
@@ -390,6 +420,9 @@
         populateSelect('iaMatchDateFilter', matchDates, true);
         populateSelect('iaLeagueFilter', leagues, true);
         populateSelect('iaAnalysisFilter', analyses, true);
+        
+        populateSelect('mfTipFilter', tips);
+        populateSelect('mfMatchTipFilter', matchTips);
     }
     
     function populateSelect(id, options, isMulti = false) {
@@ -409,7 +442,8 @@
             'Away Conceded': 'mfAwayConceded', 'Away Conceded (Avg)': 'mfAwayConcededAvg',
             'Winning Streak': 'mfWinningStreak', 'Losing Streak': 'mfLosingStreak',
             'H2H Home Wins': 'mfH2HHomeWins', 'H2H Away Wins': 'mfH2HAwayWins', 'H2H Draws': 'mfH2HDraws',
-            'Home Team Position': 'mfHomeTeamPosition', 'Away Team Position': 'mfAwayTeamPosition'
+            'Home Team Position': 'mfHomeTeamPosition', 'Away Team Position': 'mfAwayTeamPosition',
+            'Tip Probability': 'mfTipProb'
         };
         const dropdownColumns = { 'Match Analysis': 'mfMatchAnalysisFilter', 'Total Goals Prediction': 'mfTotalGoalsPredictionFilter' };
 
@@ -460,95 +494,117 @@
         });
     }
 
-    function applyFilters(resetPage = true) {
-        if (resetPage) currentPage = 1;
-        
-        const getVal = id => document.getElementById(id).value.trim();
+    function _getFilteredData(dataToFilter) {
+        const getVal = id => document.getElementById(id)?.value.trim() || '';
         const getNum = id => parseFloat(getVal(id));
-        const getNumMf = id => parseFloat(document.getElementById(id)?.value.trim());
-        const getValMf = id => document.getElementById(id)?.value.trim();
 
-        const mainDate = getVal("mainMatchDateFilter");
-        const model1Pred = getVal("mainModel1PredFilter"), minProb1 = getNum('mainMinProb1'), maxProb1 = getNum('mainMaxProb1');
-        const model2Pred = getVal("mainModel2PredFilter"), minProb2 = getNum('mainMinProb2'), maxProb2 = getNum('mainMaxProb2');
-        const model3Pred = getVal("mainModel3PredFilter"), minProb3 = getNum('mainMinProb3'), maxProb3 = getNum('mainMaxProb3');
-        
+        // 'More Filters' modal values (common to all tabs)
         const mf = {
-            homeWinsMin: getNumMf('mfHomeWinsMin'), homeWinsMax: getNumMf('mfHomeWinsMax'),
-            homeDrawsMin: getNumMf('mfHomeDrawsMin'), homeDrawsMax: getNumMf('mfHomeDrawsMax'),
-            homeLossesMin: getNumMf('mfHomeLossesMin'), homeLossesMax: getNumMf('mfHomeLossesMax'),
-            homeScoredMin: getNumMf('mfHomeScoredMin'), homeScoredMax: getNumMf('mfHomeScoredMax'),
-            homeScoredAvgMin: getNumMf('mfHomeScoredAvgMin'), homeScoredAvgMax: getNumMf('mfHomeScoredAvgMax'),
-            homeConcededMin: getNumMf('mfHomeConcededMin'), homeConcededMax: getNumMf('mfHomeConcededMax'),
-            homeConcededAvgMin: getNumMf('mfHomeConcededAvgMin'), homeConcededAvgMax: getNumMf('mfHomeConcededAvgMax'),
-            awayWinsMin: getNumMf('mfAwayWinsMin'), awayWinsMax: getNumMf('mfAwayWinsMax'),
-            awayDrawsMin: getNumMf('mfAwayDrawsMin'), awayDrawsMax: getNumMf('mfAwayDrawsMax'),
-            awayLossesMin: getNumMf('mfAwayLossesMin'), awayLossesMax: getNumMf('mfAwayLossesMax'),
-            awayScoredMin: getNumMf('mfAwayScoredMin'), awayScoredMax: getNumMf('mfAwayScoredMax'),
-            awayScoredAvgMin: getNumMf('mfAwayScoredAvgMin'), awayScoredAvgMax: getNumMf('mfAwayScoredAvgMax'),
-            awayConcededMin: getNumMf('mfAwayConcededMin'), awayConcededMax: getNumMf('mfAwayConcededMax'),
-            awayConcededAvgMin: getNumMf('mfAwayConcededAvgMin'), awayConcededAvgMax: getNumMf('mfAwayConcededAvgMax'),
-            winningStreakMin: getNumMf('mfWinningStreakMin'), winningStreakMax: getNumMf('mfWinningStreakMax'),
-            losingStreakMin: getNumMf('mfLosingStreakMin'), losingStreakMax: getNumMf('mfLosingStreakMax'),
-            matchAnalysis: getValMf('mfMatchAnalysisFilter'),
-            totalGoalsPrediction: getValMf('mfTotalGoalsPredictionFilter'),
-            h2hHomeWinsMin: getNumMf('mfH2HHomeWinsMin'), h2hHomeWinsMax: getNumMf('mfH2HHomeWinsMax'),
-            h2hAwayWinsMin: getNumMf('mfH2HAwayWinsMin'), h2hAwayWinsMax: getNumMf('mfH2HAwayWinsMax'),
-            h2hDrawsMin: getNumMf('mfH2HDrawsMin'), h2hDrawsMax: getNumMf('mfH2HDrawsMax'),
-            homeTeamPositionMin: getNumMf('mfHomeTeamPositionMin'), homeTeamPositionMax: getNumMf('mfHomeTeamPositionMax'),
-            awayTeamPositionMin: getNumMf('mfAwayTeamPositionMin'), awayTeamPositionMax: getNumMf('mfAwayTeamPositionMax'),
+            tip: getVal('mfTipFilter'),
+            tipProbMin: getNum('mfTipProbMin'), tipProbMax: getNum('mfTipProbMax'),
+            matchTip: getVal('mfMatchTipFilter'),
+            homeWinsMin: getNum('mfHomeWinsMin'), homeWinsMax: getNum('mfHomeWinsMax'),
+            homeDrawsMin: getNum('mfHomeDrawsMin'), homeDrawsMax: getNum('mfHomeDrawsMax'),
+            homeLossesMin: getNum('mfHomeLossesMin'), homeLossesMax: getNum('mfHomeLossesMax'),
+            homeScoredMin: getNum('mfHomeScoredMin'), homeScoredMax: getNum('mfHomeScoredMax'),
+            homeScoredAvgMin: getNum('mfHomeScoredAvgMin'), homeScoredAvgMax: getNum('mfHomeScoredAvgMax'),
+            homeConcededMin: getNum('mfHomeConcededMin'), homeConcededMax: getNum('mfHomeConcededMax'),
+            homeConcededAvgMin: getNum('mfHomeConcededAvgMin'), homeConcededAvgMax: getNum('mfHomeConcededAvgMax'),
+            awayWinsMin: getNum('mfAwayWinsMin'), awayWinsMax: getNum('mfAwayWinsMax'),
+            awayDrawsMin: getNum('mfAwayDrawsMin'), awayDrawsMax: getNum('mfAwayDrawsMax'),
+            awayLossesMin: getNum('mfAwayLossesMin'), awayLossesMax: getNum('mfAwayLossesMax'),
+            awayScoredMin: getNum('mfAwayScoredMin'), awayScoredMax: getNum('mfAwayScoredMax'),
+            awayScoredAvgMin: getNum('mfAwayScoredAvgMin'), awayScoredAvgMax: getNum('mfAwayScoredAvgMax'),
+            awayConcededMin: getNum('mfAwayConcededMin'), awayConcededMax: getNum('mfAwayConcededMax'),
+            awayConcededAvgMin: getNum('mfAwayConcededAvgMin'), awayConcededAvgMax: getNum('mfAwayConcededAvgMax'),
+            winningStreakMin: getNum('mfWinningStreakMin'), winningStreakMax: getNum('mfWinningStreakMax'),
+            losingStreakMin: getNum('mfLosingStreakMin'), losingStreakMax: getNum('mfLosingStreakMax'),
+            matchAnalysis: getVal('mfMatchAnalysisFilter'),
+            totalGoalsPrediction: getVal('mfTotalGoalsPredictionFilter'),
+            h2hHomeWinsMin: getNum('mfH2HHomeWinsMin'), h2hHomeWinsMax: getNum('mfH2HHomeWinsMax'),
+            h2hAwayWinsMin: getNum('mfH2HAwayWinsMin'), h2hAwayWinsMax: getNum('mfH2HAwayWinsMax'),
+            h2hDrawsMin: getNum('mfH2HDrawsMin'), h2hDrawsMax: getNum('mfH2HDrawsMax'),
+            homeTeamPositionMin: getNum('mfHomeTeamPositionMin'), homeTeamPositionMax: getNum('mfHomeTeamPositionMax'),
+            awayTeamPositionMin: getNum('mfAwayTeamPositionMin'), awayTeamPositionMax: getNum('mfAwayTeamPositionMax'),
         };
+        
+        // Tab-specific filters
+        let tabDate, model1Pred, minProb1, maxProb1, model2Pred, minProb2, maxProb2, model3Pred, minProb3, maxProb3;
+        let tabMinWinStreak, tabMaxWinStreak, tabMinLoseStreak, tabMaxLoseStreak;
 
-        let tempFiltered = allMatches.filter(r => {
+        if (currentTab === 'dashboard') {
+            tabDate = getVal("dashboardMatchDateFilter");
+            tabMinWinStreak = getNum('dashboardMinWinStreak');
+            tabMaxWinStreak = getNum('dashboardMaxWinStreak');
+            tabMinLoseStreak = getNum('dashboardMinLoseStreak');
+            tabMaxLoseStreak = getNum('dashboardMaxLoseStreak');
+        } else {
+            tabDate = getVal("mainMatchDateFilter");
+            model1Pred = getVal("mainModel1PredFilter"); minProb1 = getNum('mainMinProb1'); maxProb1 = getNum('mainMaxProb1');
+            model2Pred = getVal("mainModel2PredFilter"); minProb2 = getNum('mainMinProb2'); maxProb2 = getNum('mainMaxProb2');
+            model3Pred = getVal("mainModel3PredFilter"); minProb3 = getNum('mainMinProb3'); maxProb3 = getNum('mainMaxProb3');
+        }
+
+        let tempFiltered = dataToFilter.filter(r => {
             const checkRange = (val, min, max) => (isNaN(min) || val >= min) && (isNaN(max) || val <= max);
+            
+            // Apply all filters. For streaks, use the more restrictive value between tab filter and modal filter.
+            const effectiveMinWin = Math.max(tabMinWinStreak || -Infinity, mf.winningStreakMin || -Infinity);
+            const effectiveMaxWin = Math.min(tabMaxWinStreak || Infinity, mf.winningStreakMax || Infinity);
+            const effectiveMinLose = Math.max(tabMinLoseStreak || -Infinity, mf.losingStreakMin || -Infinity);
+            const effectiveMaxLose = Math.min(tabMaxLoseStreak || Infinity, mf.losingStreakMax || Infinity);
 
-            return (!mainDate || r.MatchDate === mainDate) &&
+            return (!tabDate || r.MatchDate === tabDate) &&
                    (!model1Pred || r['Predicted Outcome'] === model1Pred) && checkRange(r['Probability (%)'], minProb1, maxProb1) &&
                    (!model2Pred || r['Predicted Outcome3'] === model2Pred) && checkRange(r['Prediction Confidence (%)'], minProb2, maxProb2) &&
                    (!model3Pred || r['Prediction Outcome1'] === model3Pred) && checkRange(r['Winning Probability'], minProb3, maxProb3) &&
-                   checkRange(r['Home Wins'], mf.homeWinsMin, mf.homeWinsMax) &&
-                   checkRange(r['Home Draws'], mf.homeDrawsMin, mf.homeDrawsMax) &&
-                   checkRange(r['Home Losses'], mf.homeLossesMin, mf.homeLossesMax) &&
-                   checkRange(r['Home Scored'], mf.homeScoredMin, mf.homeScoredMax) &&
-                   checkRange(r['Home Scored (Avg)'], mf.homeScoredAvgMin, mf.homeScoredAvgMax) &&
-                   checkRange(r['Home Conceded'], mf.homeConcededMin, mf.homeConcededMax) &&
-                   checkRange(r['Home Conceded (Avg)'], mf.homeConcededAvgMin, mf.homeConcededAvgMax) &&
-                   checkRange(r['Away Wins'], mf.awayWinsMin, mf.awayWinsMax) &&
-                   checkRange(r['Away Draws'], mf.awayDrawsMin, mf.awayDrawsMax) &&
-                   checkRange(r['Away Losses'], mf.awayLossesMin, mf.awayLossesMax) &&
-                   checkRange(r['Away Scored'], mf.awayScoredMin, mf.awayScoredMax) &&
-                   checkRange(r['Away Scored (Avg)'], mf.awayScoredAvgMin, mf.awayScoredAvgMax) &&
-                   checkRange(r['Away Conceded'], mf.awayConcededMin, mf.awayConcededMax) &&
-                   checkRange(r['Away Conceded (Avg)'], mf.awayConcededAvgMin, mf.awayConcededAvgMax) &&
-                   checkRange(r['Winning Streak'], mf.winningStreakMin, mf.winningStreakMax) &&
-                   checkRange(r['Losing Streak'], mf.losingStreakMin, mf.losingStreakMax) &&
-                   (!mf.matchAnalysis || r['Match Analysis'] === mf.matchAnalysis) &&
-                   (!mf.totalGoalsPrediction || r['Total Goals Prediction'] == mf.totalGoalsPrediction) &&
-                   checkRange(r['H2H Home Wins'], mf.h2hHomeWinsMin, mf.h2hHomeWinsMax) &&
-                   checkRange(r['H2H Away Wins'], mf.h2hAwayWinsMin, mf.h2hAwayWinsMax) &&
-                   checkRange(r['H2H Draws'], mf.h2hDrawsMin, mf.h2hDrawsMax) &&
-                   checkRange(r['Home Team Position'], mf.homeTeamPositionMin, mf.homeTeamPositionMax) &&
+                   (!mf.tip || r['Tip'] === mf.tip) && checkRange(r['Tip Probability'], mf.tipProbMin, mf.tipProbMax) &&
+                   (!mf.matchTip || r['Match Tip'] === mf.matchTip) &&
+                   checkRange(r['Home Wins'], mf.homeWinsMin, mf.homeWinsMax) && checkRange(r['Home Draws'], mf.homeDrawsMin, mf.homeDrawsMax) &&
+                   checkRange(r['Home Losses'], mf.homeLossesMin, mf.homeLossesMax) && checkRange(r['Home Scored'], mf.homeScoredMin, mf.homeScoredMax) &&
+                   checkRange(r['Home Scored (Avg)'], mf.homeScoredAvgMin, mf.homeScoredAvgMax) && checkRange(r['Home Conceded'], mf.homeConcededMin, mf.homeConcededMax) &&
+                   checkRange(r['Home Conceded (Avg)'], mf.homeConcededAvgMin, mf.homeConcededAvgMax) && checkRange(r['Away Wins'], mf.awayWinsMin, mf.awayWinsMax) &&
+                   checkRange(r['Away Draws'], mf.awayDrawsMin, mf.awayDrawsMax) && checkRange(r['Away Losses'], mf.awayLossesMin, mf.awayLossesMax) &&
+                   checkRange(r['Away Scored'], mf.awayScoredMin, mf.awayScoredMax) && checkRange(r['Away Scored (Avg)'], mf.awayScoredAvgMin, mf.awayScoredAvgMax) &&
+                   checkRange(r['Away Conceded'], mf.awayConcededMin, mf.awayConcededMax) && checkRange(r['Away Conceded (Avg)'], mf.awayConcededAvgMin, mf.awayConcededAvgMax) &&
+                   checkRange(r['Winning Streak'], effectiveMinWin, effectiveMaxWin) && checkRange(r['Losing Streak'], effectiveMinLose, effectiveMaxLose) &&
+                   (!mf.matchAnalysis || r['Match Analysis'] === mf.matchAnalysis) && (!mf.totalGoalsPrediction || r['Total Goals Prediction'] == mf.totalGoalsPrediction) &&
+                   checkRange(r['H2H Home Wins'], mf.h2hHomeWinsMin, mf.h2hHomeWinsMax) && checkRange(r['H2H Away Wins'], mf.h2hAwayWinsMin, mf.h2hAwayWinsMax) &&
+                   checkRange(r['H2H Draws'], mf.h2hDrawsMin, mf.h2hDrawsMax) && checkRange(r['Home Team Position'], mf.homeTeamPositionMin, mf.homeTeamPositionMax) &&
                    checkRange(r['Away Team Position'], mf.awayTeamPositionMin, mf.awayTeamPositionMax);
         });
         
-        if (currentTab === 'best') {
-             tempFiltered = tempFiltered.filter(r => r['Prediction Confidence (%)'] > 66);
-        } else if (currentTab === 'favourites') {
-            tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId) && r['Prediction Confidence (%)'] > 55);
-        } else if (currentTab === 'yesterday') { 
-            const y = new Date(); y.setDate(y.getDate() - 1); 
-            tempFiltered = tempFiltered.filter(r => r.MatchDate === y.toISOString().split('T')[0]); 
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (q) {
+            tempFiltered = tempFiltered.filter(r => (r.Match || '').toLowerCase().includes(q));
+        }
+
+        return tempFiltered;
+    }
+
+    function applyFilters(resetPage = true) {
+        if (resetPage) currentPage = 1;
+        
+        let tempFiltered = _getFilteredData(allMatches);
+        
+        if (currentTab !== 'dashboard') {
+            if (currentTab === 'best') {
+                tempFiltered = tempFiltered.filter(r => r['Prediction Confidence (%)'] > 66);
+            } else if (currentTab === 'favourites') {
+                tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId) && r['Prediction Confidence (%)'] > 55);
+            } else if (currentTab === 'yesterday') {
+                const y = new Date(); y.setDate(y.getDate() - 1);
+                const yesterdayStr = y.toISOString().split('T')[0];
+                tempFiltered = tempFiltered.filter(r => r.MatchDate === yesterdayStr);
+            }
         }
         
-        const q = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (q) tempFiltered = tempFiltered.filter(r => (r.Match || '').toLowerCase().includes(q));
-
         if (sortConfig.column) {
             tempFiltered.sort((a,b) => {
                 let valA = a[sortConfig.column];
                 let valB = b[sortConfig.column];
                 if (sortConfig.column.startsWith('Probability')) {
-                    const keyMap = {'Probability 1': 'Probability (%)', 'Probability 2': 'Prediction Confidence (%)', 'Probability 3': 'Winning Probability'};
+                    const keyMap = {'Probability 1': 'Probability (%)', 'Probability 2': 'Prediction Confidence (%)', 'Probability 3': 'Winning Probability', 'Tip Probability': 'Tip Probability'};
                     valA = a[keyMap[sortConfig.column]] || 0;
                     valB = b[keyMap[sortConfig.column]] || 0;
                 }
@@ -562,7 +618,7 @@
         if (!['dashboard', 'analytics', 'insights', 'comparison', 'insight-analytics'].includes(currentTab)) updateSummaryCards(filteredMatches);
         
         if (currentTab === 'analytics') renderAnalytics(filteredMatches);
-        else if (currentTab === 'dashboard') renderDashboard(filteredMatches);
+        else if (currentTab === 'dashboard') renderDashboard();
         else if (!['insights', 'comparison', 'insight-analytics'].includes(currentTab)) renderPaginatedTable(filteredMatches);
     }
 
@@ -616,7 +672,7 @@
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="12" class="text-center p-4">No matches found.</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="15" class="text-center p-4">No matches found.</td></tr>`;
         data.forEach(row => {
             const id = row.uniqueId;
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
@@ -652,6 +708,9 @@
               <td class='p-2 font-semibold'>${row['Predicted Odd'] > 0 ? row['Predicted Odd'].toFixed(2) : 'N/A'}</td>
               <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${row['Prediction Outcome1'] || 'N/A'}</td>
               <td class='p-2'>${row['Winning Probability']}%</td>
+              <td class='p-2'>${row['Tip'] || 'N/A'}</td>
+              <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
+              <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
               <td class='p-2'>${row.Result || '—'}</td>
               <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
@@ -662,7 +721,7 @@
         const tbody = document.getElementById('insightsTableBody');
         const q = document.getElementById('searchInput').value.trim();
         const emptyMessage = q ? 'No matches found for your search.' : 'No matches found.';
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="12" class="text-center p-4">${emptyMessage}</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="15" class="text-center p-4">${emptyMessage}</td></tr>`;
         
         data.forEach(row => {
             const id = row.uniqueId;
@@ -701,6 +760,9 @@
                 <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
                 <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${m3 || 'N/A'}</td>
                 <td class='p-2'>${row['Winning Probability']}%</td>
+                <td class='p-2'>${row['Tip'] || 'N/A'}</td>
+                <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
+                <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
                 <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
         });
@@ -763,16 +825,100 @@
         });
     }
 
-    function renderDashboard(data) {
+    function renderDashboard() {
         const container = document.getElementById('dashboardCards');
-        if (!data.length) { container.innerHTML = '<p class="col-span-full text-center py-8 text-gray-500">No data for dashboard view.</p>'; return; }
-        const completed = data.filter(r => r.Result && r.Result.includes('-'));
-        const won = completed.filter(r => { const o = detectOutcome(r.Result), p=(r['Match Prediction'] || r.Prediction ||'').toLowerCase(); return o && ( (o==='Home'&&p.includes('home')) || (o==='Away'&&p.includes('away')) || (o==='Draw'&&p.includes('draw')) ); }).length;
-        container.innerHTML = `<div class="summary-card bg-gray-100"><h3>Total Matches</h3><p>${data.length}</p></div><div class="summary-card bg-green-100"><h3>Total Wins ✅</h3><p>${won}</p></div><div class="summary-card bg-red-100"><h3>Total Losses ❌</h3><p>${completed.length - won}</p></div><div class="summary-card bg-blue-100"><h3>Avg. Win Prob.</h3><p>${(data.reduce((s, r) => s + r['Winning Probability'], 0) / data.length).toFixed(1)}%</p></div><div class="summary-card bg-indigo-100"><h3>Matches w/ 3+ Goals</h3><p>${data.filter(r => totalGoalsFromResult(r.Result) >= 3).length}</p></div>`;
-        const predCounts = data.reduce((acc, r) => { const val = r['Match Prediction'] || r.Prediction || 'N/A'; acc[val] = (acc[val] || 0) + 1; return acc; }, {});
-        createChart('predictionPieChart', 'pie', 'Predictions', Object.keys(predCounts), Object.values(predCounts));
+        container.innerHTML = '';
+        const models = [
+            { name: 'Model 1', predKey: 'Predicted Outcome' },
+            { name: 'Model 2', predKey: 'Predicted Outcome3' },
+            { name: 'Model 3', predKey: 'Prediction Outcome1' },
+        ];
+        
+        models.forEach(model => {
+            const modelMatches = allMatches.filter(r => r[model.predKey]);
+            const pending = modelMatches.filter(r => !r.Result || !r.Result.includes('-')).length;
+            const completed = modelMatches.filter(r => r.Result && r.Result.includes('-'));
+            const wins = completed.filter(r => evaluatePrediction(r[model.predKey], r.Result)).length;
+            const winPercent = completed.length > 0 ? ((wins / completed.length) * 100).toFixed(1) : 0;
+            
+            const card = document.createElement('div');
+            card.className = 'summary-card bg-white';
+            card.innerHTML = `
+                <h3 class="font-bold">${model.name}</h3>
+                <p class="text-blue-600">${wins} <span class="text-base font-normal">Wins</span></p>
+                <div class="sub-info mt-2">
+                    <span>${winPercent}% Won</span> | <span>${pending} Pending</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+        
+        renderDashboardTables();
+    }
+
+    function renderDashboardTables() {
+        const filters = {
+            table1: r => r['Probability (%)'] > 58 && r['Predicted Odd'] > 1.35,
+            table2: r => r['Outcome Probability'] > 58 && r['Predicted Odd'] > 1.35,
+            table3: r => r['Prediction Confidence (%)'] > 58 && r['Predicted Odd'] > 1.35,
+            table4: r => r['Match Tip'] === 'Home Win'
+        };
+        
+        const filteredData1 = _getFilteredData(allMatches.filter(filters.table1));
+        const filteredData2 = _getFilteredData(allMatches.filter(filters.table2));
+        const filteredData3 = _getFilteredData(allMatches.filter(filters.table3));
+        const filteredData4 = _getFilteredData(allMatches.filter(filters.table4));
+
+        renderDashboardTable('dashboardTable1Container', 'Predicted Outcome', filteredData1, 'Predicted Outcome');
+        renderDashboardTable('dashboardTable2Container', 'Prediction Outcome1', filteredData2, 'Prediction Outcome1');
+        renderDashboardTable('dashboardTable3Container', 'Predicted Outcome3', filteredData3, 'Predicted Outcome3');
+        renderDashboardTable('dashboardTable4Container', 'Match Tip', filteredData4, 'Match Tip');
     }
     
+    function renderDashboardTable(containerId, title, data, valueKey) {
+        const container = document.getElementById(containerId);
+        let tableHTML = `
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-semibold">${title}</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-xs">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="p-2 text-left">Home</th>
+                                <th class="p-2 text-left">Away</th>
+                                <th class="p-2 text-left">Date</th>
+                                <th class="p-2 text-left">${valueKey}</th>
+                                <th class="p-2 text-left">Result</th>
+                                <th class="p-2 text-left">View</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+        
+        if (data.length === 0) {
+            tableHTML += `<tr><td colspan="6" class="text-center p-4 text-gray-500">No matching matches.</td></tr>`;
+        } else {
+            data.slice(0, 20).forEach(row => {
+                const teams = row.Match.split(' vs ');
+                tableHTML += `
+                    <tr class="border-b">
+                        <td class="p-2">${teams[0] || 'N/A'}</td>
+                        <td class="p-2">${teams[1] || 'N/A'}</td>
+                        <td class="p-2">${row.MatchDate}</td>
+                        <td class="p-2">${row[valueKey] || 'N/A'}</td>
+                        <td class="p-2">${row.Result || '—'}</td>
+                        <td class="p-2">
+                            <button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+        
+        tableHTML += `</tbody></table></div></div>`;
+        container.innerHTML = tableHTML;
+    }
+
     function createChart(id, type, label, labels, data, chartOptions = {}) {
         const ctx = document.getElementById(id)?.getContext('2d');
         if (!ctx) return;
@@ -884,6 +1030,10 @@
                     <span class="stat-value">${getStat('Prediction Outcome1')} at ${getStat('Winning Probability')}%</span>
                     ${getResultContent(isCorrect3)}
                 </div>
+                 <div class="stat-item">
+                    <span class="stat-label"><i class="fa-solid fa-star w-5 text-yellow-500"></i> Match Tip</span>
+                    <span class="stat-value">${getStat('Match Tip')} (${getStat('Tip')} at ${getStat('Tip Probability')}% )</span>
+                </div>
             </div>
             <a href="${getStat('URL', '#')}" target="_blank" class="block text-center mt-6 text-blue-600 hover:underline">View Source <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
         `;
@@ -925,7 +1075,7 @@
         if (matchesForComparison.size > 0 && q && data.length === 0) {
             emptyMessage = 'No matches found for your search.';
         }
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="11" class="text-center p-4">${emptyMessage}</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="14" class="text-center p-4">${emptyMessage}</td></tr>`;
         
         let wins1 = 0, wins2 = 0, wins3 = 0;
 
@@ -950,6 +1100,9 @@
               <td class="p-2">${row['Prediction Confidence (%)']}%</td>
               <td class="p-2 ${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td>
               <td class="p-2">${row['Winning Probability']}%</td>
+              <td class='p-2'>${row['Tip'] || 'N/A'}</td>
+              <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
+              <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
               <td class="p-2">${row.Result || '—'}</td>
               <td class="p-2 text-center"><button class="remove-comparison-btn text-red-500 hover:text-red-700 text-lg" data-id="${row.uniqueId}" title="Remove from comparison">✖</button></td>`;
             tbody.appendChild(tr);
@@ -969,7 +1122,7 @@
                 <td class="p-2 text-center">${wins2}</td>
                 <td class="p-2"></td>
                 <td class="p-2 text-center">${wins3}</td>
-                <td class="p-2" colspan="3"></td>
+                <td class="p-2" colspan="6"></td>
             `;
         }
     }
@@ -1219,18 +1372,10 @@
             clearTimeout(filterTimeout);
             filterTimeout = setTimeout(() => {
                 switch (currentTab) {
-                    case 'insights':
-                        applyInsightsFilters();
-                        break;
-                    case 'comparison':
-                        renderComparisonPage();
-                        break;
-                    case 'all':
-                    case 'best':
-                    case 'favourites':
-                    case 'yesterday':
-                        applyFilters();
-                        break;
+                    case 'insights': applyInsightsFilters(); break;
+                    case 'comparison': renderComparisonPage(); break;
+                    case 'dashboard': renderDashboardTables(); break;
+                    default: applyFilters(); break;
                 }
             }, 300);
         });
@@ -1242,22 +1387,14 @@
             const favBtn = e.target.closest('.fav-btn');
             if (favBtn) { 
                 const id = favBtn.dataset.id; 
-                if(favourites.has(id)) {
-                    favourites.delete(id);
-                } else {
-                    favourites.add(id);
-                }
+                if(favourites.has(id)) favourites.delete(id); else favourites.add(id);
                 localStorage.setItem('favourites', JSON.stringify([...favourites])); 
-                if (currentTab === 'insights') {
-                    applyInsightsFilters(false);
-                } else {
-                    applyFilters(false);
-                }
+                if (currentTab === 'insights') applyInsightsFilters(false);
+                else applyFilters(false);
             }
             if (e.target.matches('.compare-checkbox')) { 
                 const id = e.target.dataset.id; 
-                if (e.target.checked) matchesForComparison.add(id); 
-                else matchesForComparison.delete(id); 
+                if (e.target.checked) matchesForComparison.add(id); else matchesForComparison.delete(id); 
             }
             const removeBookmarkBtn = e.target.closest('.remove-bookmark-btn');
             if (removeBookmarkBtn) { 
@@ -1273,14 +1410,13 @@
                 matchesForComparison.delete(id);
                 renderComparisonPage();
                 const insightsCheckbox = document.querySelector(`#insightsTableBody .compare-checkbox[data-id='${id}']`);
-                if (insightsCheckbox) {
-                    insightsCheckbox.checked = false;
-                }
+                if (insightsCheckbox) insightsCheckbox.checked = false;
             }
             const prevBookmarkBtn = e.target.closest('.bookmark-prev-btn');
             if (prevBookmarkBtn) { const group = prevBookmarkBtn.dataset.group; if(bookmarkPages[group] > 1) bookmarkPages[group]--; renderBookmarkSection(); }
             const nextBookmarkBtn = e.target.closest('.bookmark-next-btn');
             if (nextBookmarkBtn) { const group = nextBookmarkBtn.dataset.group; const totalPages = Math.ceil((bookmarkedMatches[group] || []).length / rowsPerPage); if(!bookmarkPages[group]) bookmarkPages[group] = 1; if(bookmarkPages[group] < totalPages) bookmarkPages[group]++; renderBookmarkSection(); }
+
         });
 
         document.getElementById('tableHeaders').addEventListener('click', e => {
@@ -1294,16 +1430,52 @@
             applyFilters(false);
         });
 
+        // Dashboard and global More Filters buttons
         document.getElementById('moreFiltersBtn').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.remove('hidden'));
+        document.getElementById('dashboardMoreFiltersBtn').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.remove('hidden'));
+        
         document.getElementById('closeMoreFiltersModal').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.add('hidden'));
+
         document.getElementById('applyMoreFilters').addEventListener('click', () => {
-            applyFilters();
+            if (currentTab === 'dashboard') {
+                renderDashboardTables();
+            } else {
+                applyFilters();
+            }
             document.getElementById('moreFiltersModal').classList.add('hidden');
         });
+
         document.getElementById('resetMoreFilters').addEventListener('click', () => {
             const modal = document.getElementById('moreFiltersModal');
             modal.querySelectorAll('input[type="number"], select').forEach(el => el.value = '');
-            applyFilters();
+            if (currentTab === 'dashboard') {
+                renderDashboardTables();
+            } else {
+                applyFilters();
+            }
+        });
+
+        const dashboardFilterHandler = () => {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(renderDashboardTables, 300);
+        };
+        ['dashboardMatchDateFilter', 'dashboardMinWinStreak', 'dashboardMaxWinStreak', 'dashboardMinLoseStreak', 'dashboardMaxLoseStreak'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', dashboardFilterHandler);
+                el.addEventListener('change', dashboardFilterHandler);
+            }
+        });
+
+        document.getElementById('dashboardClearFilters').addEventListener('click', () => {
+             document.getElementById('dashboardMatchDateFilter').value = '';
+             document.getElementById('dashboardMinWinStreak').value = '';
+             document.getElementById('dashboardMaxWinStreak').value = '';
+             document.getElementById('dashboardMinLoseStreak').value = '';
+             document.getElementById('dashboardMaxLoseStreak').value = '';
+             const modal = document.getElementById('moreFiltersModal');
+             modal.querySelectorAll('input[type="number"], select').forEach(el => el.value = '');
+             renderDashboardTables();
         });
 
 
@@ -1343,7 +1515,10 @@
       bookmarkedMatches = JSON.parse(localStorage.getItem('bookmarkedMatches') || '{}');
       setupEventListeners();
       loadData();
+      // Set initial tab to dashboard
+      document.querySelector('.tab-btn[data-tab="dashboard"]').click();
     });
   </script>
 </body>
 </html>
+
