@@ -110,7 +110,7 @@
       </div>
       <table id="matchesTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
         <thead class="bg-blue-200"><tr id="tableHeaders">
-            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
+            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Predicted Odd">Predicted Odd</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
         </tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
@@ -293,12 +293,9 @@
             const row = {};
             for (const k in r) row[k.trim()] = (r[k] || '').toString().trim();
             
-            // --- REQUIRED FIX ---
-            // Treat "Match Date" as plain text and assign it to the property used by the rest of the script.
             row.MatchDate = row['Match Date'] || 'N/A';
-            // --- END OF FIX ---
-
             row.uniqueId = encodeURIComponent(`${row.Match}-${row.MatchDate}`);
+            
             const numericKeys = [
                 'Probability (%)', 'Prediction Confidence (%)', 'Winning Probability', 'Probability of 3 Goals', 
                 'Winning Chance', 'Outcome Probability', 'Winning Streak', 'Losing Streak', 
@@ -308,6 +305,18 @@
                 'Odds (Prediction)', 'Stake', 'Total Goals Prediction'
             ];
             numericKeys.forEach(key => { row[key] = parseFloat(String(row[key] || '').replace(/[^0-9.\-%]/g, '')) || 0; });
+
+            // Calculate Predicted Odd based on Predicted Outcome3
+            if (row['Predicted Outcome3'] === 'Home Win') {
+                row['Predicted Odd'] = row['Home Odds'];
+            } else if (row['Predicted Outcome3'] === 'Away Win') {
+                row['Predicted Odd'] = row['Away Odds'];
+            } else if (row['Predicted Outcome3'] === 'Draw') {
+                row['Predicted Odd'] = row['Draw Odds'];
+            } else {
+                row['Predicted Odd'] = 0; // Default if no prediction
+            }
+
             return row;
         });
     }
@@ -500,9 +509,9 @@
         });
         
         if (currentTab === 'best') {
-             tempFiltered = tempFiltered.filter(r => r['Prediction Confidence (%)'] >= 64);
+             tempFiltered = tempFiltered.filter(r => r['Prediction Confidence (%)'] > 66);
         } else if (currentTab === 'favourites') {
-            tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId));
+            tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId) && r['Prediction Confidence (%)'] > 55);
         } else if (currentTab === 'yesterday') { 
             const y = new Date(); y.setDate(y.getDate() - 1); 
             tempFiltered = tempFiltered.filter(r => r.MatchDate === y.toISOString().split('T')[0]); 
@@ -584,7 +593,7 @@
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="11" class="text-center p-4">No matches found.</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="12" class="text-center p-4">No matches found.</td></tr>`;
         data.forEach(row => {
             const id = row.uniqueId;
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
@@ -617,6 +626,7 @@
               <td class='p-2'>${row['Probability (%)']}%</td>
               <td class='p-2 ${getPredictionBgClass(isCorrect2)}'>${row['Predicted Outcome3'] || 'N/A'}</td>
               <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
+              <td class='p-2 font-semibold'>${row['Predicted Odd'] > 0 ? row['Predicted Odd'].toFixed(2) : 'N/A'}</td>
               <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${row['Prediction Outcome1'] || 'N/A'}</td>
               <td class='p-2'>${row['Winning Probability']}%</td>
               <td class='p-2'>${row.Result || '—'}</td>
@@ -1292,4 +1302,3 @@
   </script>
 </body>
 </html>
-
