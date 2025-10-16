@@ -302,7 +302,8 @@
                 'Home Wins', 'Home Draws', 'Home Losses', 'Home Scored', 'Home Scored (Avg)', 'Home Conceded', 'Home Conceded (Avg)', 
                 'Away Wins', 'Away Draws', 'Away Losses', 'Away Scored', 'Away Scored (Avg)', 'Away Conceded', 'Away Conceded (Avg)', 
                 'Home Odds', 'Draw Odds', 'Away Odds',
-                'Odds (Prediction)', 'Stake', 'Total Goals Prediction'
+                'Odds (Prediction)', 'Stake', 'Total Goals Prediction',
+                'H2H Home Wins', 'H2H Away Wins', 'H2H Draws', 'Home Team Position', 'Away Team Position'
             ];
             numericKeys.forEach(key => { row[key] = parseFloat(String(row[key] || '').replace(/[^0-9.\-%]/g, '')) || 0; });
 
@@ -820,6 +821,28 @@
                         <div><p class="text-xs text-gray-500">Away Odds</p><p class="font-semibold text-base">${getStat('Away Odds', 'N/A')}</p></div>
                      </div>
                 </div>
+
+                <!-- H2H and Position Stats -->
+                <div class="bg-gray-50 p-3 rounded-lg border shadow-sm">
+                    <h5 class="font-bold text-gray-700 mb-2 text-center">Head-to-Head & Standings</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500">H2H</p>
+                            <div class="grid grid-cols-3 gap-1 mt-1">
+                                <div><p class="font-semibold text-base">${getStat('H2H Home Wins')}</p><p class="text-xs">Home</p></div>
+                                <div><p class="font-semibold text-base">${getStat('H2H Draws')}</p><p class="text-xs">Draws</p></div>
+                                <div><p class="font-semibold text-base">${getStat('H2H Away Wins')}</p><p class="text-xs">Away</p></div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                             <p class="text-xs text-gray-500">League Position</p>
+                             <div class="grid grid-cols-2 gap-1 mt-1">
+                                <div><p class="font-semibold text-base">${getStat('Home Team Position')}</p><p class="text-xs">Home</p></div>
+                                <div><p class="font-semibold text-base">${getStat('Away Team Position')}</p><p class="text-xs">Away</p></div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <h4 class="text-lg font-semibold text-gray-800 mb-3 text-center">Model Predictions</h4>
@@ -1302,3 +1325,4 @@
   </script>
 </body>
 </html>
+
