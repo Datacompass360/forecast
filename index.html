@@ -245,6 +245,16 @@
                     <div class="filter-group flex flex-col"><label for="mfTotalGoalsPredictionFilter">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter" class="border"></select></div>
                 </div>
             </details>
+            <details class="bg-gray-50 p-3 rounded" open>
+                <summary class="font-semibold cursor-pointer">H2H & Position Stats</summary>
+                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                    <div class="filter-group flex flex-col"><label>H2H Home Wins:</label><div class="range-filter"><input type="number" id="mfH2HHomeWinsMin" placeholder="Min" class="border"><input type="number" id="mfH2HHomeWinsMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>H2H Away Wins:</label><div class="range-filter"><input type="number" id="mfH2HAwayWinsMin" placeholder="Min" class="border"><input type="number" id="mfH2HAwayWinsMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>H2H Draws:</label><div class="range-filter"><input type="number" id="mfH2HDrawsMin" placeholder="Min" class="border"><input type="number" id="mfH2HDrawsMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Home Team Position:</label><div class="range-filter"><input type="number" id="mfHomeTeamPositionMin" placeholder="Min" class="border"><input type="number" id="mfHomeTeamPositionMax" placeholder="Max" class="border"></div></div>
+                    <div class="filter-group flex flex-col"><label>Away Team Position:</label><div class="range-filter"><input type="number" id="mfAwayTeamPositionMin" placeholder="Min" class="border"><input type="number" id="mfAwayTeamPositionMax" placeholder="Max" class="border"></div></div>
+                </div>
+            </details>
         </div>
         <div class="mt-6 flex justify-end gap-3">
             <button id="resetMoreFilters" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Reset</button>
@@ -397,7 +407,9 @@
             'Home Conceded': 'mfHomeConceded', 'Home Conceded (Avg)': 'mfHomeConcededAvg',
             'Away Scored': 'mfAwayScored', 'Away Scored (Avg)': 'mfAwayScoredAvg',
             'Away Conceded': 'mfAwayConceded', 'Away Conceded (Avg)': 'mfAwayConcededAvg',
-            'Winning Streak': 'mfWinningStreak', 'Losing Streak': 'mfLosingStreak'
+            'Winning Streak': 'mfWinningStreak', 'Losing Streak': 'mfLosingStreak',
+            'H2H Home Wins': 'mfH2HHomeWins', 'H2H Away Wins': 'mfH2HAwayWins', 'H2H Draws': 'mfH2HDraws',
+            'Home Team Position': 'mfHomeTeamPosition', 'Away Team Position': 'mfAwayTeamPosition'
         };
         const dropdownColumns = { 'Match Analysis': 'mfMatchAnalysisFilter', 'Total Goals Prediction': 'mfTotalGoalsPredictionFilter' };
 
@@ -480,6 +492,11 @@
             losingStreakMin: getNumMf('mfLosingStreakMin'), losingStreakMax: getNumMf('mfLosingStreakMax'),
             matchAnalysis: getValMf('mfMatchAnalysisFilter'),
             totalGoalsPrediction: getValMf('mfTotalGoalsPredictionFilter'),
+            h2hHomeWinsMin: getNumMf('mfH2HHomeWinsMin'), h2hHomeWinsMax: getNumMf('mfH2HHomeWinsMax'),
+            h2hAwayWinsMin: getNumMf('mfH2HAwayWinsMin'), h2hAwayWinsMax: getNumMf('mfH2HAwayWinsMax'),
+            h2hDrawsMin: getNumMf('mfH2HDrawsMin'), h2hDrawsMax: getNumMf('mfH2HDrawsMax'),
+            homeTeamPositionMin: getNumMf('mfHomeTeamPositionMin'), homeTeamPositionMax: getNumMf('mfHomeTeamPositionMax'),
+            awayTeamPositionMin: getNumMf('mfAwayTeamPositionMin'), awayTeamPositionMax: getNumMf('mfAwayTeamPositionMax'),
         };
 
         let tempFiltered = allMatches.filter(r => {
@@ -506,7 +523,12 @@
                    checkRange(r['Winning Streak'], mf.winningStreakMin, mf.winningStreakMax) &&
                    checkRange(r['Losing Streak'], mf.losingStreakMin, mf.losingStreakMax) &&
                    (!mf.matchAnalysis || r['Match Analysis'] === mf.matchAnalysis) &&
-                   (!mf.totalGoalsPrediction || r['Total Goals Prediction'] == mf.totalGoalsPrediction);
+                   (!mf.totalGoalsPrediction || r['Total Goals Prediction'] == mf.totalGoalsPrediction) &&
+                   checkRange(r['H2H Home Wins'], mf.h2hHomeWinsMin, mf.h2hHomeWinsMax) &&
+                   checkRange(r['H2H Away Wins'], mf.h2hAwayWinsMin, mf.h2hAwayWinsMax) &&
+                   checkRange(r['H2H Draws'], mf.h2hDrawsMin, mf.h2hDrawsMax) &&
+                   checkRange(r['Home Team Position'], mf.homeTeamPositionMin, mf.homeTeamPositionMax) &&
+                   checkRange(r['Away Team Position'], mf.awayTeamPositionMin, mf.awayTeamPositionMax);
         });
         
         if (currentTab === 'best') {
@@ -1325,4 +1347,3 @@
   </script>
 </body>
 </html>
-
