@@ -43,6 +43,27 @@
     .range-filter input { width: 70px; }
     .tab-btn.active { background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
+    /* New styles for redesigned modal */
+    .input {
+        border: 1px solid #D1D5DB;
+        border-radius: 8px;
+        padding: 8px;
+        width: 100%;
+        transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .input:focus {
+        outline: none;
+        border-color: #60A5FA;
+        box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
+    }
+    .filter-label {
+        display: block;
+        font-size: 0.875rem; /* 14px */
+        font-weight: 500;
+        color: #4B5563; /* text-gray-600 */
+        margin-bottom: 4px;
+    }
+
     /* Modal Redesign Styles */
     #modalContent .stat-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb; }
     #modalContent .stat-item:last-child { border-bottom: none; }
@@ -87,21 +108,22 @@
 
   <main id="content" class="p-4">
     <div id="dashboardTab">
+        <!-- Dashboard graphs rearranged into a 2x2 grid -->
         <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white p-4 rounded-lg shadow">
-                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 1 Performance (Prediction)</h3>
+            <div class="bg-white shadow-md rounded-2xl p-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2 text-center">Model 1 Overview 🟩</h2>
                 <div style="height: 300px;"><canvas id="model1PerformanceChart"></canvas></div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow">
-                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 2 Performance (Predicted Outcome)</h3>
+            <div class="bg-white shadow-md rounded-2xl p-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2 text-center">Model 2 Overview 🟦</h2>
                 <div style="height: 300px;"><canvas id="model2PerformanceChart"></canvas></div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow">
-                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 3 Performance (Prediction Outcome1)</h3>
+            <div class="bg-white shadow-md rounded-2xl p-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2 text-center">Model 3 Overview 🟧</h2>
                 <div style="height: 300px;"><canvas id="model3PerformanceChart"></canvas></div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow">
-                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 4 Performance (Predicted Outcome3)</h3>
+            <div class="bg-white shadow-md rounded-2xl p-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2 text-center">Model 4 Overview 🟪</h2>
                 <div style="height: 300px;"><canvas id="model4PerformanceChart"></canvas></div>
             </div>
         </div>
@@ -247,70 +269,88 @@
   </main>
 
   <!-- Modals -->
-  <div id="moreFiltersModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-30 p-4">
-    <div class="bg-white rounded-lg w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto">
-        <button id="closeMoreFiltersModal" class="absolute top-4 right-4 text-gray-500 text-xl">&times;</button>
-        <h3 id="moreFiltersModalTitle" class="text-lg font-bold mb-4">More Filters</h3>
-        <div class="space-y-2">
-            <details class="bg-gray-50 p-3 rounded" open>
-                <summary class="font-semibold cursor-pointer">Predictions & Tips</summary>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                    <div class="filter-group flex flex-col"><label for="mfPredictionFilter">Prediction:</label><select id="mfPredictionFilter" class="border"></select></div>
-                    <div class="filter-group flex flex-col"><label>Stake:</label><div class="range-filter"><input type="number" id="mfStakeMin" placeholder="Min" class="border"><input type="number" id="mfStakeMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Tip Probability (%):</label><div class="range-filter"><input type="number" id="mfTipProbMin" placeholder="Min" class="border"><input type="number" id="mfTipProbMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label for="mfMatchTipFilter">Match Tip:</label><select id="mfMatchTipFilter" class="border"></select></div>
-                </div>
-            </details>
-            <details class="bg-gray-50 p-3 rounded" open>
-                <summary class="font-semibold cursor-pointer">Home Team Stats</summary>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                    <div class="filter-group flex flex-col"><label>Home Wins:</label><div class="range-filter"><input type="number" id="mfHomeWinsMin" placeholder="Min" class="border"><input type="number" id="mfHomeWinsMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Home Draws:</label><div class="range-filter"><input type="number" id="mfHomeDrawsMin" placeholder="Min" class="border"><input type="number" id="mfHomeDrawsMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Home Losses:</label><div class="range-filter"><input type="number" id="mfHomeLossesMin" placeholder="Min" class="border"><input type="number" id="mfHomeLossesMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Home Scored:</label><div class="range-filter"><input type="number" id="mfHomeScoredMin" placeholder="Min" class="border"><input type="number" id="mfHomeScoredMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Home Scored (Avg):</label><div class="range-filter"><input type="number" id="mfHomeScoredAvgMin" placeholder="Min" class="border"><input type="number" id="mfHomeScoredAvgMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Home Conceded:</label><div class="range-filter"><input type="number" id="mfHomeConcededMin" placeholder="Min" class="border"><input type="number" id="mfHomeConcededMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Home Conceded (Avg):</label><div class="range-filter"><input type="number" id="mfHomeConcededAvgMin" placeholder="Min" class="border"><input type="number" id="mfHomeConcededAvgMax" placeholder="Max" class="border"></div></div>
-                </div>
-            </details>
-            <details class="bg-gray-50 p-3 rounded" open>
-                <summary class="font-semibold cursor-pointer">Away Team Stats</summary>
-                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                    <div class="filter-group flex flex-col"><label>Away Wins:</label><div class="range-filter"><input type="number" id="mfAwayWinsMin" placeholder="Min" class="border"><input type="number" id="mfAwayWinsMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Away Draws:</label><div class="range-filter"><input type="number" id="mfAwayDrawsMin" placeholder="Min" class="border"><input type="number" id="mfAwayDrawsMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Away Losses:</label><div class="range-filter"><input type="number" id="mfAwayLossesMin" placeholder="Min" class="border"><input type="number" id="mfAwayLossesMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Away Scored:</label><div class="range-filter"><input type="number" id="mfAwayScoredMin" placeholder="Min" class="border"><input type="number" id="mfAwayScoredMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Away Scored (Avg):</label><div class="range-filter"><input type="number" id="mfAwayScoredAvgMin" placeholder="Min" class="border"><input type="number" id="mfAwayScoredAvgMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Away Conceded:</label><div class="range-filter"><input type="number" id="mfAwayConcededMin" placeholder="Min" class="border"><input type="number" id="mfAwayConcededMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Away Conceded (Avg):</label><div class="range-filter"><input type="number" id="mfAwayConcededAvgMin" placeholder="Min" class="border"><input type="number" id="mfAwayConcededAvgMax" placeholder="Max" class="border"></div></div>
-                </div>
-            </details>
-            <details class="bg-gray-50 p-3 rounded" open>
-                <summary class="font-semibold cursor-pointer">Streaks & Analysis</summary>
-                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                    <div class="filter-group flex flex-col"><label>Winning Streak:</label><div class="range-filter"><input type="number" id="mfWinningStreakMin" placeholder="Min" class="border"><input type="number" id="mfWinningStreakMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Losing Streak:</label><div class="range-filter"><input type="number" id="mfLosingStreakMin" placeholder="Min" class="border"><input type="number" id="mfLosingStreakMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label for="mfMatchAnalysisFilter">Match Analysis:</label><select id="mfMatchAnalysisFilter" class="border"></select></div>
-                    <div class="filter-group flex flex-col"><label for="mfTotalGoalsPredictionFilter">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter" class="border"></select></div>
-                </div>
-            </details>
-            <details class="bg-gray-50 p-3 rounded" open>
-                <summary class="font-semibold cursor-pointer">H2H & Position Stats</summary>
-                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                    <div class="filter-group flex flex-col"><label>H2H Home Wins:</label><div class="range-filter"><input type="number" id="mfH2HHomeWinsMin" placeholder="Min" class="border"><input type="number" id="mfH2HHomeWinsMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>H2H Away Wins:</label><div class="range-filter"><input type="number" id="mfH2HAwayWinsMin" placeholder="Min" class="border"><input type="number" id="mfH2HAwayWinsMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>H2H Draws:</label><div class="range-filter"><input type="number" id="mfH2HDrawsMin" placeholder="Min" class="border"><input type="number" id="mfH2HDrawsMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Home Team Position:</label><div class="range-filter"><input type="number" id="mfHomeTeamPositionMin" placeholder="Min" class="border"><input type="number" id="mfHomeTeamPositionMax" placeholder="Max" class="border"></div></div>
-                    <div class="filter-group flex flex-col"><label>Away Team Position:</label><div class="range-filter"><input type="number" id="mfAwayTeamPositionMin" placeholder="Min" class="border"><input type="number" id="mfAwayTeamPositionMax" placeholder="Max" class="border"></div></div>
-                </div>
-            </details>
+  <!-- Redesigned More Filters Modal -->
+  <div id="moreFiltersModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-11/12 max-w-6xl p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">More Filters</h2>
+        <button id="closeMoreFiltersModal" class="text-gray-500 hover:text-gray-700 text-3xl leading-none">&times;</button>
+      </div>
+  
+      <div class="space-y-6">
+        <!-- Predictions & Tips -->
+        <div>
+          <h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Predictions & Tips</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div><label for="mfPredictionFilter" class="filter-label">Prediction:</label><select id="mfPredictionFilter" class="input"></select></div>
+            <div><label class="filter-label">Stake:</label><div class="flex gap-2"><input type="number" id="mfStakeMin" placeholder="Min" class="input"><input type="number" id="mfStakeMax" placeholder="Max" class="input"></div></div>
+            <div><label class="filter-label">Tip Probability (%):</label><div class="flex gap-2"><input type="number" id="mfTipProbMin" placeholder="Min" class="input"><input type="number" id="mfTipProbMax" placeholder="Max" class="input"></div></div>
+            <div><label for="mfMatchTipFilter" class="filter-label">Match Tip:</label><select id="mfMatchTipFilter" class="input"></select></div>
+          </div>
         </div>
-        <div class="mt-6 flex justify-end gap-3">
-            <button id="resetMoreFilters" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Reset</button>
-            <button id="applyMoreFilters" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Apply Filters</button>
+  
+        <!-- Home Team Stats -->
+        <div>
+          <h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Home Team Stats</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div><label class="filter-label">Home Wins:</label><div class="flex gap-2"><input type="number" id="mfHomeWinsMin" placeholder="Min" class="input"><input type="number" id="mfHomeWinsMax" placeholder="Max" class="input"></div></div>
+            <div><label class="filter-label">Home Draws:</label><div class="flex gap-2"><input type="number" id="mfHomeDrawsMin" placeholder="Min" class="input"><input type="number" id="mfHomeDrawsMax" placeholder="Max" class="input"></div></div>
+            <div><label class="filter-label">Home Losses:</label><div class="flex gap-2"><input type="number" id="mfHomeLossesMin" placeholder="Min" class="input"><input type="number" id="mfHomeLossesMax" placeholder="Max" class="input"></div></div>
+            <div><label class="filter-label">Home Scored:</label><div class="flex gap-2"><input type="number" id="mfHomeScoredMin" placeholder="Min" class="input"><input type="number" id="mfHomeScoredMax" placeholder="Max" class="input"></div></div>
+            <div><label class="filter-label">Home Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeScoredAvgMin" placeholder="Min" class="input"><input type="number" id="mfHomeScoredAvgMax" placeholder="Max" class="input"></div></div>
+            <div><label class="filter-label">Home Conceded:</label><div class="flex gap-2"><input type="number" id="mfHomeConcededMin" placeholder="Min" class="input"><input type="number" id="mfHomeConcededMax" placeholder="Max" class="input"></div></div>
+            <div><label class="filter-label">Home Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeConcededAvgMin" placeholder="Min" class="input"><input type="number" id="mfHomeConcededAvgMax" placeholder="Max" class="input"></div></div>
+          </div>
         </div>
+  
+        <!-- Away Team Stats -->
+        <div>
+            <h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Away Team Stats</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div><label class="filter-label">Away Wins:</label><div class="flex gap-2"><input type="number" id="mfAwayWinsMin" placeholder="Min" class="input"><input type="number" id="mfAwayWinsMax" placeholder="Max" class="input"></div></div>
+              <div><label class="filter-label">Away Draws:</label><div class="flex gap-2"><input type="number" id="mfAwayDrawsMin" placeholder="Min" class="input"><input type="number" id="mfAwayDrawsMax" placeholder="Max" class="input"></div></div>
+              <div><label class="filter-label">Away Losses:</label><div class="flex gap-2"><input type="number" id="mfAwayLossesMin" placeholder="Min" class="input"><input type="number" id="mfAwayLossesMax" placeholder="Max" class="input"></div></div>
+              <div><label class="filter-label">Away Scored:</label><div class="flex gap-2"><input type="number" id="mfAwayScoredMin" placeholder="Min" class="input"><input type="number" id="mfAwayScoredMax" placeholder="Max" class="input"></div></div>
+              <div><label class="filter-label">Away Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayScoredAvgMin" placeholder="Min" class="input"><input type="number" id="mfAwayScoredAvgMax" placeholder="Max" class="input"></div></div>
+              <div><label class="filter-label">Away Conceded:</label><div class="flex gap-2"><input type="number" id="mfAwayConcededMin" placeholder="Min" class="input"><input type="number" id="mfAwayConcededMax" placeholder="Max" class="input"></div></div>
+              <div><label class="filter-label">Away Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayConcededAvgMin" placeholder="Min" class="input"><input type="number" id="mfAwayConcededAvgMax" placeholder="Max" class="input"></div></div>
+            </div>
+        </div>
+  
+        <!-- Streaks & Analysis -->
+        <div>
+            <h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Streaks & Analysis</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div><label class="filter-label">Winning Streak:</label><div class="flex gap-2"><input type="number" id="mfWinningStreakMin" placeholder="Min" class="input"><input type="number" id="mfWinningStreakMax" placeholder="Max" class="input"></div></div>
+                <div><label class="filter-label">Losing Streak:</label><div class="flex gap-2"><input type="number" id="mfLosingStreakMin" placeholder="Min" class="input"><input type="number" id="mfLosingStreakMax" placeholder="Max" class="input"></div></div>
+                <div><label for="mfMatchAnalysisFilter" class="filter-label">Match Analysis:</label><select id="mfMatchAnalysisFilter" class="input"></select></div>
+                <div><label for="mfTotalGoalsPredictionFilter" class="filter-label">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter" class="input"></select></div>
+            </div>
+        </div>
+  
+        <!-- H2H & Position Stats -->
+        <div>
+            <h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">H2H & Position Stats</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div><label class="filter-label">H2H Home Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HHomeWinsMin" placeholder="Min" class="input"><input type="number" id="mfH2HHomeWinsMax" placeholder="Max" class="input"></div></div>
+                <div><label class="filter-label">H2H Away Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HAwayWinsMin" placeholder="Min" class="input"><input type="number" id="mfH2HAwayWinsMax" placeholder="Max" class="input"></div></div>
+                <div><label class="filter-label">H2H Draws:</label><div class="flex gap-2"><input type="number" id="mfH2HDrawsMin" placeholder="Min" class="input"><input type="number" id="mfH2HDrawsMax" placeholder="Max" class="input"></div></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="filter-label">Home Pos:</label><div class="flex gap-2"><input type="number" id="mfHomeTeamPositionMin" placeholder="Min" class="input"><input type="number" id="mfHomeTeamPositionMax" placeholder="Max" class="input"></div></div>
+                    <div><label class="filter-label">Away Pos:</label><div class="flex gap-2"><input type="number" id="mfAwayTeamPositionMin" placeholder="Min" class="input"><input type="number" id="mfAwayTeamPositionMax" placeholder="Max" class="input"></div></div>
+                </div>
+            </div>
+        </div>
+      </div>
+  
+      <!-- Action Buttons -->
+      <div class="mt-8 flex justify-end space-x-4">
+        <button id="resetMoreFilters" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition-colors">Clear Filters</button>
+        <button id="applyMoreFilters" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors">Apply Filters</button>
+      </div>
     </div>
   </div>
+
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-40 p-4"><div class="bg-white rounded-lg w-full max-w-3xl p-6 relative max-h-screen overflow-y-auto"><button id="closeModal" class="absolute top-4 right-4 text-gray-500 text-xl">✖</button><div id="modalContent"></div></div></div>
   <div id="bookmarkNameModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-40 p-4"><div class="bg-white rounded-lg w-full max-w-sm p-6 relative"><button id="closeBookmarkModal" class="absolute top-3 right-4 text-gray-500 text-xl">✖</button><h3 class="text-lg font-bold mb-4">Name Bookmark Group</h3><p class="text-sm text-gray-600 mb-3">Enter a name for this group of matches. If the name already exists, matches will be added to it.</p><input type="text" id="bookmarkGroupName" placeholder="e.g., Weekend Wins, High Confidence" class="border w-full rounded px-3 py-2"><div class="mt-4 flex justify-end gap-3"><button id="cancelBookmark" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Cancel</button><button id="saveBookmark" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button></div></div></div>
   <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div id="loadingText" class="text-white text-xl animate-pulse">Loading data...</div></div>
@@ -943,9 +983,9 @@
         const model4Data = dates.map(date => performanceByDate[date].model4);
 
         createChart('model1PerformanceChart', 'bar', 'Wins', dates, model1Data, { backgroundColor: '#22c55e' });
-        createChart('model2PerformanceChart', 'bar', 'Wins', dates, model2Data, { backgroundColor: '#22c55e' });
-        createChart('model3PerformanceChart', 'bar', 'Wins', dates, model3Data, { backgroundColor: '#22c55e' });
-        createChart('model4PerformanceChart', 'bar', 'Wins', dates, model4Data, { backgroundColor: '#22c55e' });
+        createChart('model2PerformanceChart', 'bar', 'Wins', dates, model2Data, { backgroundColor: '#3b82f6' });
+        createChart('model3PerformanceChart', 'bar', 'Wins', dates, model3Data, { backgroundColor: '#f97316' });
+        createChart('model4PerformanceChart', 'bar', 'Wins', dates, model4Data, { backgroundColor: '#8b5cf6' });
         // --- NEW CHART LOGIC END ---
 
         const container = document.getElementById('dashboardCards');
@@ -1653,4 +1693,3 @@
   </script>
 </body>
 </html>
-
