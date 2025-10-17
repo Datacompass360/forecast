@@ -76,11 +76,11 @@
   <div class="tabs flex flex-wrap justify-center bg-blue-100 py-2 space-x-2 sticky top-[68px] z-20">
     <button class="tab-btn active px-4 py-1 rounded" data-tab="dashboard"><i class="fa-solid fa-chart-pie mr-2"></i>Dashboard</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="all">All Matches</button>
+    <button class="tab-btn px-4 py-1 rounded" data-tab="best">Best Predictions</button>
+    <button class="tab-btn px-4 py-1 rounded" data-tab="favourites">Favourites</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="insights">📊 Insights</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="comparison">🗂️ Comparison</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="insight-analytics">🧩 Insight Analytics</button>
-    <button class="tab-btn px-4 py-1 rounded" data-tab="best">Best Predictions</button>
-    <button class="tab-btn px-4 py-1 rounded" data-tab="favourites">Favourites</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="yesterday">Yesterday</button>
     <button class="tab-btn px-4 py-1 rounded" data-tab="analytics"><i class="fa-solid fa-chart-simple mr-2"></i>Analytics</button>
   </div>
@@ -99,16 +99,21 @@
             </div>
         </div>
         <div id="dashboardCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
-        <div id="dashboardTables" class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            <div id="dashboardTable1Container"></div>
-            <div id="dashboardTable2Container"></div>
-            <div id="dashboardTable3Container"></div>
-            <div id="dashboardTable4Container"></div>
+        <div id="dashboardTables" class="space-y-8">
+             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <div id="dashboardTable1Container"></div>
+                <div id="dashboardTable2Container"></div>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <div id="dashboardTable3Container"></div>
+                <div id="dashboardTable4Container"></div>
+            </div>
         </div>
     </div>
     <div id="analyticsTab" class="hidden"><div id="analyticsCharts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div></div>
     
     <div id="mainContent" class="hidden">
+      <div id="predictionSummaryCard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4"></div>
       <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4"></div>
       <div class="bg-white p-4 rounded-lg shadow mb-4">
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-end">
@@ -127,7 +132,7 @@
       </div>
       <table id="matchesTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
         <thead class="bg-blue-200"><tr id="tableHeaders">
-            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Predicted Odd">Predicted Odd</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Tip">Tip</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
+            <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Predicted Odd">Predicted Odd</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Prediction">Prediction</th><th class="p-2 text-left" data-column="Stake">Stake</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
         </tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
@@ -149,7 +154,7 @@
         </div>
         <table id="insightsTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
             <thead class="bg-blue-200"><tr id="insightsTableHeaders">
-                <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left">C</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left" data-column="Model 1">Model 1</th><th class="p-2 text-left" data-column="Probability 1">Probability 1</th><th class="p-2 text-left" data-column="Model 2">Model 2</th><th class="p-2 text-left" data-column="Probability 2">Probability 2</th><th class="p-2 text-left" data-column="Model 3">Model 3</th><th class="p-2 text-left" data-column="Probability 3">Probability 3</th><th class="p-2 text-left" data-column="Tip">Tip</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left">View</th>
+                <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left">C</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left" data-column="Model 1">Model 1</th><th class="p-2 text-left" data-column="Probability 1">Probability 1</th><th class="p-2 text-left" data-column="Model 2">Model 2</th><th class="p-2 text-left" data-column="Probability 2">Probability 2</th><th class="p-2 text-left" data-column="Model 3">Model 3</th><th class="p-2 text-left" data-column="Probability 3">Probability 3</th><th class="p-2 text-left" data-column="Prediction">Prediction</th><th class="p-2 text-left" data-column="Stake">Stake</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left">View</th>
             </tr></thead><tbody id="insightsTableBody"></tbody>
         </table>
         <div id="insightsPaginationControls" class="flex justify-center items-center gap-4 my-3"><button id="insightsPrevPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Previous</button><span id="insightsPageIndicator">Page 1 of 1</span><button id="insightsNextPageBtn" class="bg-gray-200 px-4 py-2 rounded disabled:opacity-50" disabled>Next</button></div>
@@ -177,7 +182,7 @@
             <div class="overflow-x-auto">
                 <table id="comparisonTable" class="min-w-full bg-white rounded shadow overflow-hidden text-sm">
                     <thead class="bg-blue-200"><tr id="comparisonTableHeaders">
-                        <th class="p-2 text-left"><input type="checkbox" id="selectAllBookmark"></th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Prediction Model 1">Prediction Model 1</th><th class="p-2 text-left" data-column="Confidence Model 1">Confidence Model 1</th><th class="p-2 text-left" data-column="Prediction Model 2">Prediction Model 2</th><th class="p-2 text-left" data-column="Confidence Model 2">Confidence Model 2</th><th class="p-2 text-left" data-column="Prediction Model 3">Prediction Model 3</th><th class="p-2 text-left" data-column="Confidence Model 3">Confidence Model 3</th><th class="p-2 text-left" data-column="Tip">Tip</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">Remove</th>
+                        <th class="p-2 text-left"><input type="checkbox" id="selectAllBookmark"></th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Prediction Model 1">Prediction Model 1</th><th class="p-2 text-left" data-column="Confidence Model 1">Confidence Model 1</th><th class="p-2 text-left" data-column="Prediction Model 2">Prediction Model 2</th><th class="p-2 text-left" data-column="Confidence Model 2">Confidence Model 2</th><th class="p-2 text-left" data-column="Prediction Model 3">Prediction Model 3</th><th class="p-2 text-left" data-column="Confidence Model 3">Confidence Model 3</th><th class="p-2 text-left" data-column="Prediction">Prediction</th><th class="p-2 text-left" data-column="Stake">Stake</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">Remove</th>
                     </tr></thead>
                     <tbody id="comparisonTableBody"></tbody>
                 </table>
@@ -232,7 +237,8 @@
             <details class="bg-gray-50 p-3 rounded" open>
                 <summary class="font-semibold cursor-pointer">Predictions & Tips</summary>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                    <div class="filter-group flex flex-col"><label for="mfTipFilter">Tip:</label><select id="mfTipFilter" class="border"></select></div>
+                    <div class="filter-group flex flex-col"><label for="mfPredictionFilter">Prediction:</label><select id="mfPredictionFilter" class="border"></select></div>
+                    <div class="filter-group flex flex-col"><label>Stake:</label><div class="range-filter"><input type="number" id="mfStakeMin" placeholder="Min" class="border"><input type="number" id="mfStakeMax" placeholder="Max" class="border"></div></div>
                     <div class="filter-group flex flex-col"><label>Tip Probability (%):</label><div class="range-filter"><input type="number" id="mfTipProbMin" placeholder="Min" class="border"><input type="number" id="mfTipProbMax" placeholder="Max" class="border"></div></div>
                     <div class="filter-group flex flex-col"><label for="mfMatchTipFilter">Match Tip:</label><select id="mfMatchTipFilter" class="border"></select></div>
                 </div>
@@ -399,7 +405,7 @@
         const matchDates = createOptions(data.map(r => r.MatchDate), 'desc'); // Changed to desc for recent dates first
         const leagues = createOptions(data.map(r => r.League), 'asc');
         const analyses = createOptions(data.map(r => r['Match Analysis']), 'asc');
-        const tips = createOptions(data.map(r => r['Tip']), 'asc');
+        const predictions = createOptions(data.map(r => r['Prediction']), 'asc');
         const matchTips = createOptions(data.map(r => r['Match Tip']), 'asc');
 
         const predictionTypes = createOptions(data.flatMap(r => [r['Predicted Outcome'], r['Predicted Outcome3'], r['Prediction Outcome1']]));
@@ -421,7 +427,7 @@
         populateSelect('iaLeagueFilter', leagues, true);
         populateSelect('iaAnalysisFilter', analyses, true);
         
-        populateSelect('mfTipFilter', tips);
+        populateSelect('mfPredictionFilter', predictions);
         populateSelect('mfMatchTipFilter', matchTips);
     }
     
@@ -443,7 +449,8 @@
             'Winning Streak': 'mfWinningStreak', 'Losing Streak': 'mfLosingStreak',
             'H2H Home Wins': 'mfH2HHomeWins', 'H2H Away Wins': 'mfH2HAwayWins', 'H2H Draws': 'mfH2HDraws',
             'Home Team Position': 'mfHomeTeamPosition', 'Away Team Position': 'mfAwayTeamPosition',
-            'Tip Probability': 'mfTipProb'
+            'Tip Probability': 'mfTipProb',
+            'Stake': 'mfStake'
         };
         const dropdownColumns = { 'Match Analysis': 'mfMatchAnalysisFilter', 'Total Goals Prediction': 'mfTotalGoalsPredictionFilter' };
 
@@ -500,7 +507,8 @@
 
         // 'More Filters' modal values (common to all tabs)
         const mf = {
-            tip: getVal('mfTipFilter'),
+            prediction: getVal('mfPredictionFilter'),
+            stakeMin: getNum('mfStakeMin'), stakeMax: getNum('mfStakeMax'),
             tipProbMin: getNum('mfTipProbMin'), tipProbMax: getNum('mfTipProbMax'),
             matchTip: getVal('mfMatchTipFilter'),
             homeWinsMin: getNum('mfHomeWinsMin'), homeWinsMax: getNum('mfHomeWinsMax'),
@@ -558,7 +566,8 @@
                    (!model1Pred || r['Predicted Outcome'] === model1Pred) && checkRange(r['Probability (%)'], minProb1, maxProb1) &&
                    (!model2Pred || r['Predicted Outcome3'] === model2Pred) && checkRange(r['Prediction Confidence (%)'], minProb2, maxProb2) &&
                    (!model3Pred || r['Prediction Outcome1'] === model3Pred) && checkRange(r['Winning Probability'], minProb3, maxProb3) &&
-                   (!mf.tip || r['Tip'] === mf.tip) && checkRange(r['Tip Probability'], mf.tipProbMin, mf.tipProbMax) &&
+                   (!mf.prediction || r['Prediction'] === mf.prediction) && checkRange(r['Stake'], mf.stakeMin, mf.stakeMax) &&
+                   checkRange(r['Tip Probability'], mf.tipProbMin, mf.tipProbMax) &&
                    (!mf.matchTip || r['Match Tip'] === mf.matchTip) &&
                    checkRange(r['Home Wins'], mf.homeWinsMin, mf.homeWinsMax) && checkRange(r['Home Draws'], mf.homeDrawsMin, mf.homeDrawsMax) &&
                    checkRange(r['Home Losses'], mf.homeLossesMin, mf.homeLossesMax) && checkRange(r['Home Scored'], mf.homeScoredMin, mf.homeScoredMax) &&
@@ -589,9 +598,18 @@
         
         if (currentTab !== 'dashboard') {
             if (currentTab === 'best') {
-                tempFiltered = tempFiltered.filter(r => r['Prediction Confidence (%)'] > 66);
+                tempFiltered = tempFiltered.filter(r => {
+                    const predConf = r['Prediction Confidence (%)'];
+                    const predOdds = r['Predicted Odd'];
+                    return predConf > 50 && predOdds >= 1.4 && predOdds <= 1.9;
+                });
             } else if (currentTab === 'favourites') {
-                tempFiltered = tempFiltered.filter(r => favourites.has(r.uniqueId) && r['Prediction Confidence (%)'] > 55);
+                tempFiltered = tempFiltered.filter(r => {
+                    const m1 = r['Predicted Outcome'];
+                    const m2 = r['Predicted Outcome3'];
+                    const m3 = r['Prediction Outcome1'];
+                    return m1 && m1 === m2 && m2 === m3;
+                });
             } else if (currentTab === 'yesterday') {
                 const y = new Date(); y.setDate(y.getDate() - 1);
                 const yesterdayStr = y.toISOString().split('T')[0];
@@ -615,7 +633,10 @@
         }
         
         filteredMatches = tempFiltered;
-        if (!['dashboard', 'analytics', 'insights', 'comparison', 'insight-analytics'].includes(currentTab)) updateSummaryCards(filteredMatches);
+        if (!['dashboard', 'analytics', 'insights', 'comparison', 'insight-analytics'].includes(currentTab)) {
+            updateSummaryCards(filteredMatches);
+            renderPredictionSummary(filteredMatches);
+        }
         
         if (currentTab === 'analytics') renderAnalytics(filteredMatches);
         else if (currentTab === 'dashboard') renderDashboard();
@@ -650,8 +671,8 @@
       const [home, away] = scores;
       const outcome = home > away ? "Home Win" : home < away ? "Away Win" : "Draw";
       if (predicted === "Draw") return outcome === "Draw";
-      if (predicted === "Home Win") return outcome === "Home Win";
-      if (predicted === "Away Win") return outcome === "Away Win";
+      if (predicted === "Home Win" || predicted === "Home") return outcome === "Home Win";
+      if (predicted === "Away Win" || predicted === "Away") return outcome === "Away Win";
       return false;
     }
 
@@ -672,13 +693,21 @@
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="15" class="text-center p-4">No matches found.</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="16" class="text-center p-4">No matches found.</td></tr>`;
         data.forEach(row => {
             const id = row.uniqueId;
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
             const isCorrect2 = evaluatePrediction(row['Predicted Outcome3'], row.Result);
             const isCorrect3 = evaluatePrediction(row['Prediction Outcome1'], row.Result);
             
+            const actualOutcome = detectOutcome(row.Result);
+            const prediction = row.Prediction;
+            let predictionBgClass = '';
+            if(actualOutcome && prediction) {
+                predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-200' : 'bg-red-200';
+            }
+
+
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
 
@@ -708,7 +737,8 @@
               <td class='p-2 font-semibold'>${row['Predicted Odd'] > 0 ? row['Predicted Odd'].toFixed(2) : 'N/A'}</td>
               <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${row['Prediction Outcome1'] || 'N/A'}</td>
               <td class='p-2'>${row['Winning Probability']}%</td>
-              <td class='p-2'>${row['Tip'] || 'N/A'}</td>
+              <td class='p-2 ${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td>
+              <td class='p-2'>${row['Stake'] || 'N/A'}</td>
               <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
               <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
               <td class='p-2'>${row.Result || '—'}</td>
@@ -721,7 +751,7 @@
         const tbody = document.getElementById('insightsTableBody');
         const q = document.getElementById('searchInput').value.trim();
         const emptyMessage = q ? 'No matches found for your search.' : 'No matches found.';
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="15" class="text-center p-4">${emptyMessage}</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="16" class="text-center p-4">${emptyMessage}</td></tr>`;
         
         data.forEach(row => {
             const id = row.uniqueId;
@@ -747,6 +777,13 @@
             const isCorrect1 = evaluatePrediction(m1, row.Result);
             const isCorrect2 = evaluatePrediction(m2, row.Result);
             const isCorrect3 = evaluatePrediction(m3, row.Result);
+            
+            const actualOutcome = detectOutcome(row.Result);
+            const prediction = row.Prediction;
+            let predictionBgClass = '';
+            if(actualOutcome && prediction) {
+                predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-200' : 'bg-red-200';
+            }
 
             tr.innerHTML = `
                 <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
@@ -760,7 +797,8 @@
                 <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
                 <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${m3 || 'N/A'}</td>
                 <td class='p-2'>${row['Winning Probability']}%</td>
-                <td class='p-2'>${row['Tip'] || 'N/A'}</td>
+                <td class='p-2 ${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td>
+                <td class='p-2'>${row['Stake'] || 'N/A'}</td>
                 <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
                 <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
                 <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
@@ -797,6 +835,42 @@
         
         container.innerHTML = `<div class="summary-card bg-blue-100"><h3>Total Matches</h3><p class="text-blue-800">${total}</p></div><div class="summary-card bg-green-100"><h3>Model 1 Wins</h3><p class="text-green-800">${won1}</p></div><div class="summary-card bg-green-100"><h3>Model 2 Wins</h3><p class="text-green-800">${won2}</p></div><div class="summary-card bg-green-100"><h3>Model 3 Wins</h3><p class="text-green-800">${won3}</p></div>`;
     }
+
+    function renderPredictionSummary(data) {
+        const container = document.getElementById('predictionSummaryCard');
+        if (!container) return;
+
+        const completed = data.filter(r => r.Result && r.Result.includes('-') && r.Prediction);
+        const totalPredictions = completed.length;
+        
+        let wins = 0;
+        completed.forEach(row => {
+            const actualOutcome = detectOutcome(row.Result); // 'Home', 'Away', or 'Draw'
+            const prediction = row.Prediction;
+            if (actualOutcome && prediction && actualOutcome.toLowerCase() === prediction.toLowerCase()) {
+                wins++;
+            }
+        });
+
+        const winPercentage = totalPredictions > 0 ? ((wins / totalPredictions) * 100).toFixed(1) : 0;
+
+        container.innerHTML = `
+            <div class="summary-card bg-white col-span-full">
+                <h3 class="font-bold text-gray-700">Prediction Summary</h3>
+                <div class="flex justify-center items-center gap-8 mt-2">
+                    <div>
+                        <p class="text-green-600 text-2xl">${wins}</p>
+                        <p class="text-sm text-gray-600">Total Wins</p>
+                    </div>
+                    <div>
+                        <p class="text-blue-600 text-2xl">${winPercentage}%</p>
+                        <p class="text-sm text-gray-600">Winning Percentage</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
 
     function updateInsightsSummaryCards(data) {
         const container = document.getElementById('insightsSummaryCards');
@@ -1031,8 +1105,8 @@
                     ${getResultContent(isCorrect3)}
                 </div>
                  <div class="stat-item">
-                    <span class="stat-label"><i class="fa-solid fa-star w-5 text-yellow-500"></i> Match Tip</span>
-                    <span class="stat-value">${getStat('Match Tip')} (${getStat('Tip')} at ${getStat('Tip Probability')}% )</span>
+                    <span class="stat-label"><i class="fa-solid fa-lightbulb w-5 text-yellow-500"></i> Prediction</span>
+                    <span class="stat-value">${getStat('Prediction')} (Stake: ${getStat('Stake')})</span>
                 </div>
             </div>
             <a href="${getStat('URL', '#')}" target="_blank" class="block text-center mt-6 text-blue-600 hover:underline">View Source <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
@@ -1075,7 +1149,7 @@
         if (matchesForComparison.size > 0 && q && data.length === 0) {
             emptyMessage = 'No matches found for your search.';
         }
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="14" class="text-center p-4">${emptyMessage}</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="15" class="text-center p-4">${emptyMessage}</td></tr>`;
         
         let wins1 = 0, wins2 = 0, wins3 = 0;
 
@@ -1087,6 +1161,13 @@
             if (isCorrect1) wins1++;
             if (isCorrect2) wins2++;
             if (isCorrect3) wins3++;
+            
+            const actualOutcome = detectOutcome(row.Result);
+            const prediction = row.Prediction;
+            let predictionBgClass = '';
+            if(actualOutcome && prediction) {
+                predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-200' : 'bg-red-200';
+            }
 
             const tr = document.createElement('tr');
             tr.className = 'border-b hover:bg-gray-50';
@@ -1100,7 +1181,8 @@
               <td class="p-2">${row['Prediction Confidence (%)']}%</td>
               <td class="p-2 ${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td>
               <td class="p-2">${row['Winning Probability']}%</td>
-              <td class='p-2'>${row['Tip'] || 'N/A'}</td>
+              <td class='p-2 ${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td>
+              <td class='p-2'>${row['Stake'] || 'N/A'}</td>
               <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
               <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
               <td class="p-2">${row.Result || '—'}</td>
@@ -1122,7 +1204,7 @@
                 <td class="p-2 text-center">${wins2}</td>
                 <td class="p-2"></td>
                 <td class="p-2 text-center">${wins3}</td>
-                <td class="p-2" colspan="6"></td>
+                <td class="p-2" colspan="7"></td>
             `;
         }
     }
@@ -1439,6 +1521,8 @@
         document.getElementById('applyMoreFilters').addEventListener('click', () => {
             if (currentTab === 'dashboard') {
                 renderDashboardTables();
+            } else if (currentTab === 'insights') {
+                applyInsightsFilters();
             } else {
                 applyFilters();
             }
