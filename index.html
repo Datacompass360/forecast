@@ -87,6 +87,24 @@
 
   <main id="content" class="p-4">
     <div id="dashboardTab">
+        <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 1 Performance (Prediction)</h3>
+                <div style="height: 300px;"><canvas id="model1PerformanceChart"></canvas></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 2 Performance (Predicted Outcome)</h3>
+                <div style="height: 300px;"><canvas id="model2PerformanceChart"></canvas></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 3 Performance (Prediction Outcome1)</h3>
+                <div style="height: 300px;"><canvas id="model3PerformanceChart"></canvas></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-semibold text-center mb-2 text-gray-700">Model 4 Performance (Predicted Outcome3)</h3>
+                <div style="height: 300px;"><canvas id="model4PerformanceChart"></canvas></div>
+            </div>
+        </div>
         <div id="dashboardFilters" class="bg-white p-4 rounded-lg shadow mb-4">
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 items-end">
                 <div class="filter-group flex flex-col"><label for="dashboardMatchDateFilter">Match Date:</label><select id="dashboardMatchDateFilter" class="border"></select></div>
@@ -900,6 +918,36 @@
     }
 
     function renderDashboard() {
+        // --- NEW CHART LOGIC START ---
+        const completedMatches = allMatches.filter(r => r.Result && r.Result.includes('-'));
+
+        const performanceByDate = completedMatches.reduce((acc, match) => {
+            const date = match.MatchDate;
+            if (!acc[date]) {
+                acc[date] = { model1: 0, model2: 0, model3: 0, model4: 0 };
+            }
+
+            if (evaluatePrediction(match['Prediction'], match.Result)) acc[date].model1++;
+            if (evaluatePrediction(match['Predicted Outcome'], match.Result)) acc[date].model2++;
+            if (evaluatePrediction(match['Prediction Outcome1'], match.Result)) acc[date].model3++;
+            if (evaluatePrediction(match['Predicted Outcome3'], match.Result)) acc[date].model4++;
+            
+            return acc;
+        }, {});
+
+        const dates = Object.keys(performanceByDate).sort();
+        
+        const model1Data = dates.map(date => performanceByDate[date].model1);
+        const model2Data = dates.map(date => performanceByDate[date].model2);
+        const model3Data = dates.map(date => performanceByDate[date].model3);
+        const model4Data = dates.map(date => performanceByDate[date].model4);
+
+        createChart('model1PerformanceChart', 'bar', 'Wins', dates, model1Data, { backgroundColor: '#22c55e' });
+        createChart('model2PerformanceChart', 'bar', 'Wins', dates, model2Data, { backgroundColor: '#22c55e' });
+        createChart('model3PerformanceChart', 'bar', 'Wins', dates, model3Data, { backgroundColor: '#22c55e' });
+        createChart('model4PerformanceChart', 'bar', 'Wins', dates, model4Data, { backgroundColor: '#22c55e' });
+        // --- NEW CHART LOGIC END ---
+
         const container = document.getElementById('dashboardCards');
         container.innerHTML = '';
         const models = [
@@ -1456,7 +1504,7 @@
                 switch (currentTab) {
                     case 'insights': applyInsightsFilters(); break;
                     case 'comparison': renderComparisonPage(); break;
-                    case 'dashboard': renderDashboardTables(); break;
+                    case 'dashboard': renderDashboard(); break;
                     default: applyFilters(); break;
                 }
             }, 300);
@@ -1520,7 +1568,7 @@
 
         document.getElementById('applyMoreFilters').addEventListener('click', () => {
             if (currentTab === 'dashboard') {
-                renderDashboardTables();
+                renderDashboard();
             } else if (currentTab === 'insights') {
                 applyInsightsFilters();
             } else {
@@ -1533,7 +1581,7 @@
             const modal = document.getElementById('moreFiltersModal');
             modal.querySelectorAll('input[type="number"], select').forEach(el => el.value = '');
             if (currentTab === 'dashboard') {
-                renderDashboardTables();
+                renderDashboard();
             } else {
                 applyFilters();
             }
@@ -1541,7 +1589,7 @@
 
         const dashboardFilterHandler = () => {
             clearTimeout(filterTimeout);
-            filterTimeout = setTimeout(renderDashboardTables, 300);
+            filterTimeout = setTimeout(renderDashboard, 300);
         };
         ['dashboardMatchDateFilter', 'dashboardMinWinStreak', 'dashboardMaxWinStreak', 'dashboardMinLoseStreak', 'dashboardMaxLoseStreak'].forEach(id => {
             const el = document.getElementById(id);
@@ -1559,7 +1607,7 @@
              document.getElementById('dashboardMaxLoseStreak').value = '';
              const modal = document.getElementById('moreFiltersModal');
              modal.querySelectorAll('input[type="number"], select').forEach(el => el.value = '');
-             renderDashboardTables();
+             renderDashboard();
         });
 
 
