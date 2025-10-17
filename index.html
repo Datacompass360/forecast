@@ -9,191 +9,248 @@
   <script src="https://cdn.tailwindcss.com/3.4.1"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Core Styles for Redesign -->
   <style>
-    /* 1. Base Styles & Theme Variables */
+    /* 1. COLOR AND VISUAL STYLE - Based on the new Beauty Guide */
     :root {
-      --primary: #4f46e5;
-      --accent: #10b981;
-      --bg: #f7fafc;
-      --card: #ffffff;
-      --border: #e6eef8;
-      --muted: #6b7280;
-      --text-main: #0f172a;
+      /* Primary & Accent Colors */
+      --primary-blue: #2563EB;     /* Deep Royal Blue for primary actions */
+      --secondary-green: #059669; /* Emerald Green for accents */
+      --aqua-tone: #0D9488;       /* Teal/Aqua for gradient transition */
+
+      /* Neutral Colors */
+      --background: #F8FAFC;      /* Very pale gray for main background */
+      --card-background: #FFFFFF;
+      --border: #E2E8F0;          /* Soft light gray for separators */
+      
+      /* Text Colors */
+      --text-primary: #1E293B;     /* Dark charcoal for readability */
+      --text-secondary: #64748B;   /* Softer gray for secondary text */
+      --text-on-dark: #E2E8F0;     /* Light text for the dark sidebar */
+
+      /* Gradients & Shadows */
+      --sidebar-gradient: linear-gradient(180deg, var(--primary-blue), var(--aqua-tone), var(--secondary-green));
+      --button-gradient: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+      --soft-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05); /* Gentle, elevated shadow */
     }
+    
+    /* 5. FONT STYLE - POPPINS */
     body {
-      background-color: var(--bg);
-      font-family: 'Inter', sans-serif;
-      color: var(--text-main);
+      background-color: var(--background);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* 2. System Layout */
+    /* Custom Scrollbar for a polished look */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(37, 99, 235, 0.3); 
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(37, 99, 235, 0.5);
+    }
+
+    /* Main App Layout */
     .app-shell {
       display: grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 260px 1fr;
       min-height: 100vh;
+      transition: grid-template-columns 0.3s ease-in-out;
     }
     .main-content-area {
       padding: 1.5rem 2rem;
       overflow-y: auto;
     }
+    #pageTitle {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
 
-    /* 3. Sidebar Navigation */
+    /* 4. GRADIENT DESIGN FOR NAVIGATION MENU */
     .sidebar {
-      background-color: var(--card);
-      border-right: 1px solid var(--border);
-      transition: all 0.3s ease-in-out;
+      background: var(--sidebar-gradient);
       display: flex;
       flex-direction: column;
+      padding: 1rem;
+      transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
     .brand {
-      padding: 1.5rem;
+      padding: 1rem 0.5rem 1.5rem 0.5rem;
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     .brand .logo {
       font-size: 2rem;
+      color: white;
     }
-    .nav-caption {
-      font-size: 0.75rem;
-      color: var(--muted);
+    .brand .brand-text {
+        font-weight: 700;
+        color: white;
     }
+    
     .nav-list {
-      padding: 1rem 0;
+      padding-top: 1rem;
       flex-grow: 1;
     }
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1.5rem;
-      margin: 0.25rem 1rem;
-      border-radius: 0.5rem;
-      font-weight: 500;
-      color: #374151;
-      border-left: 4px solid transparent;
-      transition: all 0.2s ease;
+      gap: 12px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      color: var(--text-on-dark);
+      transition: all 0.3s;
       cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      position: relative;
     }
-    .nav-item i {
-      width: 1.25rem;
-      text-align: center;
-      color: #9ca3af;
-    }
+    .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
     .nav-item:hover {
-      background-color: #f3f4f6;
-      transform: translateX(4px);
-      color: var(--primary);
+      background-color: rgba(255, 255, 255, 0.1); /* Subtle glow on hover */
+      color: white;
     }
     .nav-item.active {
-      background: linear-gradient(90deg, rgba(79,70,229,0.08), rgba(16,185,129,0.03));
-      border-left: 4px solid var(--primary);
-      color: var(--primary);
-      font-weight: 600;
+      background-color: rgba(255, 255, 255, 0.15); /* Glowing effect for active tab */
+      color: white;
+      font-weight: 700;
     }
-    .nav-item.active i {
-      color: var(--primary);
+    
+    /* Sidebar bottom button */
+    #refreshBtn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-weight: 600;
     }
-
-    /* 4. Top Bar */
+     #refreshBtn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    /* Top Bar */
     .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
-      background-color: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 1.5rem;
-      z-index: 10;
       margin-bottom: 1.5rem;
     }
-    .search-input {
-      position: relative;
-    }
-    .search-input i {
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #9ca3af;
-    }
-    .search-input input {
-      padding-left: 2.5rem;
-      border-radius: 0.5rem;
-      border: 1px solid var(--border);
-      transition: all 0.2s ease;
-    }
-    .search-input input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
-      outline: none;
-    }
-    .top-bar .btn-primary {
-      background-color: var(--primary);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      font-weight: 500;
-      transition: background-color 0.2s;
-    }
-    .top-bar .btn-primary:hover {
-      background-color: #4338ca;
-    }
-    .top-bar .btn-secondary {
-       background-color: var(--card);
-       border: 1px solid var(--border);
-    }
-
-    /* 5. Content Cards & Tables */
-    .data-card {
-      background-color: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    }
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    .badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        border-radius: 9999px;
-    }
-    .badge.model1 { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-    .badge.model2 { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
-    .badge.model3 { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-    .badge.model4 { background: #f5f3ff; color: #5b21b6; border: 1px solid #ddd6fe; }
     
-    table thead th {
-      position: sticky;
-      top: 0;
-      background: linear-gradient(180deg, #f9fafb, #ffffff);
-      z-index: 5;
+    /* 7. CARD AND TABLE STYLES - Light, airy with soft shadows */
+    .data-card {
+      background: var(--card-background);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: none;
+      box-shadow: var(--soft-shadow);
     }
-    table tr:hover td {
-      background: rgba(79,70,229,0.03);
+    .summary-card {
+      border-radius: 1rem;
+      box-shadow: var(--soft-shadow);
+      border: none;
+      padding: 20px; text-align: center;
     }
+    .summary-card h3 { font-size: 1rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;}
+    .summary-card p { font-size: 2rem; font-weight: 700; }
+    
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      padding: 12px;
+      background: #F8FAFC; /* Soft gray header */
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: capitalize;
+      position: sticky; top: 0; z-index: 5;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+    td.font-medium { font-weight: 600; color: var(--text-primary); }
+    tbody tr:hover td {
+      background-color: #EFF6FF; /* Pale blue hover */
+    }
+    .data-card > div > table, table {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    /* 8. BUTTONS & INTERACTION STYLE */
+    .btn {
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 10px 16px;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid transparent;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+      background: var(--button-gradient);
+      color: white;
+      box-shadow: 0 2px 8px 0 rgba(37, 99, 235, 0.3);
+    }
+    .btn-secondary {
+      background: white;
+      border-color: var(--border);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
 
-    /* 6. Modals */
-    #moreFiltersModal {
+    input, select, textarea {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      width: 100%;
+      background-color: white;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .search-input { position: relative; }
+    .search-input i { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+    .search-input input { padding-left: 2.5rem; width: 280px; }
+
+    /* Modals - Glass-like transparency effect */
+    .modal-backdrop {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(5px);
       transition: opacity 0.3s ease;
     }
     .modal-content {
@@ -205,66 +262,30 @@
        overflow-y: auto;
        transform: scale(0.95);
        opacity: 0;
-       transition: all 0.3s ease;
+       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    #moreFiltersModal:not(.hidden) .modal-content {
+    .modal-backdrop:not(.hidden) .modal-content {
         transform: scale(1);
         opacity: 1;
     }
-    .input {
-        border: 1px solid #D1D5DB;
-        border-radius: 8px;
-        padding: 8px;
-        width: 100%;
-        transition: box-shadow 0.2s, border-color 0.2s;
-    }
-    .input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    
+    /* Gentle fade-in animation for content */
+    .tab-content { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
-    /* 7. Responsiveness */
-    @media (max-width: 900px) {
-      .app-shell {
-        grid-template-columns: 60px 1fr;
-      }
-      .sidebar {
-        padding: 0.5rem;
-      }
-      .sidebar .brand .logo { display: flex; justify-content: center; width: 100%;}
-      .sidebar .brand div:not(.logo), .sidebar .nav-item span {
-        display: none;
-      }
-      .nav-item {
-        justify-content: center;
-        margin: 0.25rem 0;
-      }
-      .main-content-area {
-        padding: 1rem;
-      }
-      .top-bar {
-        flex-direction: column;
-        gap: 0.75rem;
-        align-items: stretch;
-      }
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .app-shell { grid-template-columns: 70px 1fr; }
+      .sidebar { width: 70px; padding: 1rem 0.5rem; }
+      .nav-item span, .brand .brand-text { display: none; }
+      .nav-item, .brand { justify-content: center; }
+      .top-bar { flex-direction: column; gap: 1rem; align-items: stretch; }
+      .search-input input { width: 100%; }
+      body { font-size: 13px; }
     }
-
-    /* 8. Original Styles Preservation (for JS compatibility) */
-    .fav-btn { background: transparent; border: none; cursor: pointer; font-size: 16px; }
-    .star-fav { color: #f59e0b; }
-    .star-normal { color: #cbd5e1; }
-    .star-blue { color: #3b82f6; }
-    .star-green { color: #22c55e; }
-    #tableHeaders th, #insightsTableHeaders th, #comparisonTableHeaders th { cursor: pointer; position: relative; }
-    .sorted-asc::after { content: ' ▲'; color: #3b82f6; font-size: 0.8em; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); }
-    .sorted-desc::after { content: ' ▼'; color: #ef4444; font-size: 0.8em; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); }
-    .summary-card {
-      flex: 1 1 22%; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 16px; text-align: center;
-    }
-    .summary-card h3 { font-size: 1rem; color: #4b5563; margin-bottom: 8px; font-weight: 500;}
-    .summary-card p { font-size: 1.75rem; font-weight: bold; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -286,11 +307,8 @@
     <!-- 1. Sidebar Navigation -->
     <aside class="sidebar">
       <div class="brand">
-        <div class="logo">⚽</div>
-        <div>
-          <div class="text-lg font-bold">Smart Analytics</div>
-          <div class="nav-caption">Console · Insights</div>
-        </div>
+        <div class="logo"><i class="fa-solid fa-chart-pie"></i></div>
+        <div class="brand-text text-lg">Smart Analytics</div>
       </div>
       <nav class="nav-list">
         <button class="nav-item active" data-tab="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></button>
@@ -303,10 +321,10 @@
         <button class="nav-item" data-tab="yesterday"><i class="fa-solid fa-calendar-day"></i><span>Yesterday</span></button>
         <button class="nav-item" data-tab="analytics"><i class="fa-solid fa-chart-simple"></i><span>Analytics</span></button>
       </nav>
-      <div class="p-4 border-t border-[var(--border)]">
-         <button id="refreshBtn" class="w-full flex items-center justify-center gap-2 text-sm px-3 py-2 bg-indigo-50 text-indigo-800 rounded-lg hover:bg-indigo-100 font-medium">
+      <div class="p-2 border-t border-[rgba(255,255,255,0.1)] mt-auto">
+         <button id="refreshBtn" class="w-full btn text-sm">
             <i class="fa-solid fa-arrows-rotate"></i>
-            <span class="hidden sm:inline">Refresh Data</span>
+            <span>Refresh Data</span>
         </button>
       </div>
     </aside>
@@ -319,9 +337,12 @@
         <div class="flex items-center gap-4">
           <div class="search-input">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input id="searchInput" type="text" placeholder="Search match..." class="w-64 px-3 py-1.5"/>
+            <input id="searchInput" type="text" placeholder="Search match..."/>
           </div>
-          <button id="dashboardMoreFiltersBtn" class="btn-primary">More Filters</button>
+          <button id="dashboardMoreFiltersBtn" class="btn btn-primary">
+            <i class="fa-solid fa-sliders"></i>
+            <span>More Filters</span>
+          </button>
         </div>
       </header>
       
@@ -329,23 +350,23 @@
       <main id="content">
         <!-- Dashboard Tab Content -->
         <div id="dashboardTab" class="tab-content space-y-6">
-            <div id="dashboardCharts" class="grid-4">
-                <div class="data-card"><h2 class="text-lg font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 1 Overview <span class="badge model1">Prediction</span></h2><div style="height: 300px;"><canvas id="model1PerformanceChart"></canvas></div></div>
-                <div class="data-card"><h2 class="text-lg font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 2 Overview <span class="badge model2">Outcome</span></h2><div style="height: 300px;"><canvas id="model2PerformanceChart"></canvas></div></div>
-                <div class="data-card"><h2 class="text-lg font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 3 Overview <span class="badge model3">Outcome 1</span></h2><div style="height: 300px;"><canvas id="model3PerformanceChart"></canvas></div></div>
-                <div class="data-card"><h2 class="text-lg font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 4 Overview <span class="badge model4">Outcome 3</span></h2><div style="height: 300px;"><canvas id="model4PerformanceChart"></canvas></div></div>
+            <div id="dashboardCharts" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <div class="data-card"><h2 class="text-md font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 1 Overview</h2><div style="height: 300px;"><canvas id="model1PerformanceChart"></canvas></div></div>
+                <div class="data-card"><h2 class="text-md font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 2 Overview</h2><div style="height: 300px;"><canvas id="model2PerformanceChart"></canvas></div></div>
+                <div class="data-card"><h2 class="text-md font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 3 Overview</h2><div style="height: 300px;"><canvas id="model3PerformanceChart"></canvas></div></div>
+                <div class="data-card"><h2 class="text-md font-semibold text-gray-700 mb-3 flex justify-between items-center">Model 4 Overview</h2><div style="height: 300px;"><canvas id="model4PerformanceChart"></canvas></div></div>
             </div>
             <div id="dashboardFilters" class="data-card">
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 items-end">
-                    <div class="filter-group flex flex-col"><label for="dashboardMatchDateFilter" class="text-sm font-medium mb-1">Match Date:</label><select id="dashboardMatchDateFilter" class="border rounded-md p-1.5"></select></div>
-                    <div class="filter-group flex flex-col"><label class="text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="dashboardMinWinStreak" placeholder="Min" class="border rounded-md p-1.5 w-full"><input type="number" id="dashboardMaxWinStreak" placeholder="Max" class="border rounded-md p-1.5 w-full"></div></div>
-                    <div class="filter-group flex flex-col"><label class="text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="dashboardMinLoseStreak" placeholder="Min" class="border rounded-md p-1.5 w-full"><input type="number" id="dashboardMaxLoseStreak" placeholder="Max" class="border rounded-md p-1.5 w-full"></div></div>
+                    <div><label for="dashboardMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="dashboardMatchDateFilter"></select></div>
+                    <div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="dashboardMinWinStreak" placeholder="Min"><input type="number" id="dashboardMaxWinStreak" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="dashboardMinLoseStreak" placeholder="Min"><input type="number" id="dashboardMaxLoseStreak" placeholder="Max"></div></div>
                     <div class="flex items-center justify-end gap-2 col-start-auto lg:col-start-5">
-                      <button id="dashboardClearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded-md text-sm hover:bg-gray-300 font-medium">Clear</button>
+                      <button id="dashboardClearFilters" class="btn btn-secondary text-sm">Clear</button>
                     </div>
                 </div>
             </div>
-            <div id="dashboardCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="dashboardCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             <div id="dashboardTables" class="space-y-8">
                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                     <div id="dashboardTable1Container"></div>
@@ -359,83 +380,86 @@
         </div>
 
         <!-- Analytics Tab Content -->
-        <div id="analyticsTab" class="tab-content hidden"><div id="analyticsCharts" class="grid-4"></div></div>
+        <div id="analyticsTab" class="tab-content hidden"><div id="analyticsCharts" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"></div></div>
         
         <!-- Generic Main Content for other tabs -->
         <div id="mainContent" class="tab-content hidden space-y-6">
-          <div id="predictionSummaryCard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-          <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+          <div id="predictionSummaryCard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+          <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
           <div class="data-card">
               <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-end">
-                  <div class="filter-group flex flex-col"><label for="mainMatchDateFilter">Match Date:</label><select id="mainMatchDateFilter" class="border rounded-md p-1.5"></select></div>
-                  <div class="filter-group flex flex-col"><label for="mainModel1PredFilter">Model 1 Pred:</label><select id="mainModel1PredFilter" class="border rounded-md p-1.5"></select></div>
-                  <div class="filter-group flex flex-col"><label>Prob 1 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb1" placeholder="Min" class="border rounded-md p-1.5 w-full"><input type="number" id="mainMaxProb1" placeholder="Max" class="border rounded-md p-1.5 w-full"></div></div>
-                  <div class="filter-group flex flex-col"><label for="mainModel2PredFilter">Model 2 Pred:</label><select id="mainModel2PredFilter" class="border rounded-md p-1.5"></select></div>
-                  <div class="filter-group flex flex-col"><label>Prob 2 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb2" placeholder="Min" class="border rounded-md p-1.5 w-full"><input type="number" id="mainMaxProb2" placeholder="Max" class="border rounded-md p-1.5 w-full"></div></div>
-                  <div class="filter-group flex flex-col"><label for="mainModel3PredFilter">Model 3 Pred:</label><select id="mainModel3PredFilter" class="border rounded-md p-1.5"></select></div>
-                  <div class="filter-group flex flex-col"><label>Prob 3 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb3" placeholder="Min" class="border rounded-md p-1.5 w-full"><input type="number" id="mainMaxProb3" placeholder="Max" class="border rounded-md p-1.5 w-full"></div></div>
+                  <div><label for="mainMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="mainMatchDateFilter"></select></div>
+                  <div><label for="mainModel1PredFilter" class="block text-sm font-medium mb-1">Model 1 Pred:</label><select id="mainModel1PredFilter"></select></div>
+                  <div><label class="block text-sm font-medium mb-1">Prob 1 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb1" placeholder="Min"><input type="number" id="mainMaxProb1" placeholder="Max"></div></div>
+                  <div><label for="mainModel2PredFilter" class="block text-sm font-medium mb-1">Model 2 Pred:</label><select id="mainModel2PredFilter"></select></div>
+                  <div><label class="block text-sm font-medium mb-1">Prob 2 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb2" placeholder="Min"><input type="number" id="mainMaxProb2" placeholder="Max"></div></div>
+                  <div><label for="mainModel3PredFilter" class="block text-sm font-medium mb-1">Model 3 Pred:</label><select id="mainModel3PredFilter"></select></div>
+                  <div><label class="block text-sm font-medium mb-1">Prob 3 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb3" placeholder="Min"><input type="number" id="mainMaxProb3" placeholder="Max"></div></div>
                   <div class="flex items-center justify-end gap-2">
-                    <button id="mainClearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded-md text-sm hover:bg-gray-300 font-medium">Clear</button>
+                    <button id="mainClearFilters" class="btn btn-secondary text-sm">Clear</button>
                   </div>
               </div>
           </div>
           <div class="data-card overflow-x-auto">
-              <table id="matchesTable" class="min-w-full text-sm">
-                <thead class="bg-gray-100"><tr id="tableHeaders">
-                    <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left" data-column="MatchDate">Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Model 1">Model 1 (Pred)</th><th class="p-2 text-left" data-column="Probability 1">Prob 1 (%)</th><th class="p-2 text-left" data-column="Model 2">Model 2 (Pred)</th><th class="p-2 text-left" data-column="Probability 2">Prob 2 (%)</th><th class="p-2 text-left" data-column="Predicted Odd">Predicted Odd</th><th class="p-2 text-left" data-column="Model 3">Model 3 (Pred)</th><th class="p-2 text-left" data-column="Probability 3">Prob 3 (%)</th><th class="p-2 text-left" data-column="Prediction">Prediction</th><th class="p-2 text-left" data-column="Stake">Stake</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">View</th>
+            <div class="overflow-x-auto">
+              <table id="matchesTable">
+                <thead id="tableHeaders"><tr>
+                    <th data-column="star"><i class="fa-solid fa-star"></i></th><th data-column="MatchDate">Date</th><th data-column="Match">Match</th><th data-column="Model 1">Model 1 (Pred)</th><th data-column="Probability 1">Prob 1 (%)</th><th data-column="Model 2">Model 2 (Pred)</th><th data-column="Probability 2">Prob 2 (%)</th><th data-column="Predicted Odd">Predicted Odd</th><th data-column="Model 3">Model 3 (Pred)</th><th data-column="Probability 3">Prob 3 (%)</th><th data-column="Prediction">Prediction</th><th data-column="Stake">Stake</th><th data-column="Tip Probability">Tip Prob (%)</th><th data-column="Match Tip">Match Tip</th><th data-column="Result">Result</th><th>View</th>
                 </tr></thead>
                 <tbody id="tableBody"></tbody>
               </table>
+            </div>
           </div>
-          <div id="paginationControls" class="flex justify-center items-center gap-4"><button id="prevPageBtn" class="bg-white border border-gray-300 px-4 py-2 rounded-md disabled:opacity-50" disabled>Previous</button><span id="pageIndicator">Page 1 of 1</span><button id="nextPageBtn" class="bg-white border border-gray-300 px-4 py-2 rounded-md disabled:opacity-50" disabled>Next</button></div>
+          <div id="paginationControls" class="flex justify-center items-center gap-4"><button id="prevPageBtn" class="btn btn-secondary" disabled>Previous</button><span id="pageIndicator">Page 1 of 1</span><button id="nextPageBtn" class="btn btn-secondary" disabled>Next</button></div>
         </div>
 
-        <!-- Insights Tab Content -->
+        <!-- ... other tabs ... -->
+        
         <div id="insightsTab" class="tab-content hidden space-y-6">
-            <div id="insightsSummaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="insightsSummaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             <div class="data-card">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2 items-start">
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="insightsMatchDateFilter">Match Date:</label><select id="insightsMatchDateFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="insightsLeagueFilter">League:</label><select id="insightsLeagueFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="insightsAnalysisFilter">Match Analysis:</label><select id="insightsAnalysisFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1 space-y-2"><label>Winning Streak:</label><div class="flex gap-2"><input type="number" id="insightsMinWinStreak" placeholder="Min" class="border w-1/2 p-1.5 rounded-md"><input type="number" id="insightsMaxWinStreak" placeholder="Max" class="border w-1/2 p-1.5 rounded-md"></div></div>
-                    <div class="filter-group flex flex-col lg:col-span-1 space-y-2"><label>Losing Streak:</label><div class="flex gap-2"><input type="number" id="insightsMinLoseStreak" placeholder="Min" class="border w-1/2 p-1.5 rounded-md"><input type="number" id="insightsMaxLoseStreak" placeholder="Max" class="border w-1/2 p-1.5 rounded-md"></div></div>
-                    <div class="flex items-end justify-end h-full lg:col-span-1"><button id="insightsClearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded-md text-sm hover:bg-gray-300">Clear Filters</button></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-start">
+                    <div><label for="insightsMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="insightsMatchDateFilter" multiple class="h-24"></select></div>
+                    <div><label for="insightsLeagueFilter" class="block text-sm font-medium mb-1">League:</label><select id="insightsLeagueFilter" multiple class="h-24"></select></div>
+                    <div><label for="insightsAnalysisFilter" class="block text-sm font-medium mb-1">Match Analysis:</label><select id="insightsAnalysisFilter" multiple class="h-24"></select></div>
+                    <div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="insightsMinWinStreak" placeholder="Min"><input type="number" id="insightsMaxWinStreak" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="insightsMinLoseStreak" placeholder="Min"><input type="number" id="insightsMaxLoseStreak" placeholder="Max"></div></div>
+                    <div class="flex items-end justify-end h-full"><button id="insightsClearFilters" class="btn btn-secondary text-sm">Clear Filters</button></div>
                 </div>
             </div>
             <div class="data-card overflow-x-auto">
-                <table id="insightsTable" class="min-w-full text-sm">
-                    <thead class="bg-gray-100"><tr id="insightsTableHeaders">
-                        <th class="p-2 text-left" data-column="star">★</th><th class="p-2 text-left">C</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left" data-column="Model 1">Model 1</th><th class="p-2 text-left" data-column="Probability 1">Probability 1</th><th class="p-2 text-left" data-column="Model 2">Model 2</th><th class="p-2 text-left" data-column="Probability 2">Probability 2</th><th class="p-2 text-left" data-column="Model 3">Model 3</th><th class="p-2 text-left" data-column="Probability 3">Probability 3</th><th class="p-2 text-left" data-column="Prediction">Prediction</th><th class="p-2 text-left" data-column="Stake">Stake</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left">View</th>
+              <div class="overflow-x-auto">
+                <table id="insightsTable">
+                    <thead id="insightsTableHeaders"><tr>
+                        <th data-column="star"><i class="fa-solid fa-star"></i></th><th>C</th><th data-column="MatchDate">Date</th><th data-column="Match">Match</th><th data-column="Result">Result</th><th data-column="Model 1">Model 1</th><th data-column="Probability 1">Prob 1</th><th data-column="Model 2">Model 2</th><th data-column="Probability 2">Prob 2</th><th data-column="Model 3">Model 3</th><th data-column="Probability 3">Prob 3</th><th data-column="Prediction">Prediction</th><th data-column="Stake">Stake</th><th data-column="Tip Probability">Tip Prob</th><th data-column="Match Tip">Match Tip</th><th>View</th>
                     </tr></thead><tbody id="insightsTableBody"></tbody>
                 </table>
+              </div>
             </div>
-            <div id="insightsPaginationControls" class="flex justify-center items-center gap-4"><button id="insightsPrevPageBtn" class="bg-white border border-gray-300 px-4 py-2 rounded-md disabled:opacity-50" disabled>Previous</button><span id="insightsPageIndicator">Page 1 of 1</span><button id="insightsNextPageBtn" class="bg-white border border-gray-300 px-4 py-2 rounded-md disabled:opacity-50" disabled>Next</button></div>
+            <div id="insightsPaginationControls" class="flex justify-center items-center gap-4"><button id="insightsPrevPageBtn" class="btn btn-secondary" disabled>Previous</button><span id="insightsPageIndicator">Page 1 of 1</span><button id="insightsNextPageBtn" class="btn btn-secondary" disabled>Next</button></div>
         </div>
-
-        <!-- Comparison Tab Content -->
         <div id="comparisonTab" class="tab-content hidden space-y-6">
-            <div id="comparisonStatsCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="comparisonStatsCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             <div class="data-card">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2 items-start">
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="comparisonMatchDateFilter">Match Date:</label><select id="comparisonMatchDateFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="comparisonLeagueFilter">League:</label><select id="comparisonLeagueFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="comparisonAnalysisFilter">Match Analysis:</label><select id="comparisonAnalysisFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1 space-y-2"><label>Winning Streak:</label><div class="flex gap-2"><input type="number" id="comparisonMinWinStreak" placeholder="Min" class="border w-1/2 p-1.5 rounded-md"><input type="number" id="comparisonMaxWinStreak" placeholder="Max" class="border w-1/2 p-1.5 rounded-md"></div></div>
-                    <div class="filter-group flex flex-col lg:col-span-1 space-y-2"><label>Losing Streak:</label><div class="flex gap-2"><input type="number" id="comparisonMinLoseStreak" placeholder="Min" class="border w-1/2 p-1.5 rounded-md"><input type="number" id="comparisonMaxLoseStreak" placeholder="Max" class="border w-1/2 p-1.5 rounded-md"></div></div>
-                    <div class="flex items-end justify-between h-full lg:col-span-1">
-                      <button id="comparisonClearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded-md text-sm hover:bg-gray-300">Clear</button>
-                      <button id="bookmarkBtn" class="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-md text-sm hover:bg-yellow-500 font-semibold">🔖 Bookmark</button>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-start">
+                    <div><label for="comparisonMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="comparisonMatchDateFilter" multiple class="h-24"></select></div>
+                    <div><label for="comparisonLeagueFilter" class="block text-sm font-medium mb-1">League:</label><select id="comparisonLeagueFilter" multiple class="h-24"></select></div>
+                    <div><label for="comparisonAnalysisFilter" class="block text-sm font-medium mb-1">Analysis:</label><select id="comparisonAnalysisFilter" multiple class="h-24"></select></div>
+                    <div><label class="block text-sm font-medium mb-1">Win Streak:</label><div class="flex gap-2"><input type="number" id="comparisonMinWinStreak" placeholder="Min"><input type="number" id="comparisonMaxWinStreak" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">Lose Streak:</label><div class="flex gap-2"><input type="number" id="comparisonMinLoseStreak" placeholder="Min"><input type="number" id="comparisonMaxLoseStreak" placeholder="Max"></div></div>
+                    <div class="flex items-end justify-between h-full">
+                      <button id="comparisonClearFilters" class="btn btn-secondary text-sm">Clear</button>
+                      <button id="bookmarkBtn" class="btn btn-primary text-sm" style="background: var(--light-orange);"><i class="fa-solid fa-bookmark"></i> Bookmark</button>
                     </div>
                 </div>
             </div>
             <details id="comparisonTableContainer" open class="data-card">
-                <summary class="text-xl font-semibold cursor-pointer hover:text-[var(--primary)]">Comparison Table</summary>
+                <summary class="text-lg font-semibold cursor-pointer hover:text-[var(--indigo)]">Comparison Table</summary>
                 <p class="text-sm text-gray-600 my-4">Select matches from the 'Insights' tab using the 'C' checkbox column to compare them here.</p>
                 <div class="overflow-x-auto">
-                    <table id="comparisonTable" class="min-w-full text-sm">
-                        <thead class="bg-gray-100"><tr id="comparisonTableHeaders">
-                            <th class="p-2 text-left"><input type="checkbox" id="selectAllBookmark"></th><th class="p-2 text-left" data-column="Match">Match</th><th class="p-2 text-left" data-column="MatchDate">Match Date</th><th class="p-2 text-left" data-column="Prediction Model 1">Prediction Model 1</th><th class="p-2 text-left" data-column="Confidence Model 1">Confidence Model 1</th><th class="p-2 text-left" data-column="Prediction Model 2">Prediction Model 2</th><th class="p-2 text-left" data-column="Confidence Model 2">Confidence Model 2</th><th class="p-2 text-left" data-column="Prediction Model 3">Prediction Model 3</th><th class="p-2 text-left" data-column="Confidence Model 3">Confidence Model 3</th><th class="p-2 text-left" data-column="Prediction">Prediction</th><th class="p-2 text-left" data-column="Stake">Stake</th><th class="p-2 text-left" data-column="Tip Probability">Tip Prob (%)</th><th class="p-2 text-left" data-column="Match Tip">Match Tip</th><th class="p-2 text-left" data-column="Result">Result</th><th class="p-2 text-left">Remove</th>
+                    <table id="comparisonTable">
+                        <thead id="comparisonTableHeaders"><tr>
+                            <th><input type="checkbox" id="selectAllBookmark"></th><th data-column="Match">Match</th><th data-column="MatchDate">Date</th><th data-column="Prediction Model 1">Model 1</th><th data-column="Confidence Model 1">Conf 1</th><th data-column="Prediction Model 2">Model 2</th><th data-column="Confidence Model 2">Conf 2</th><th data-column="Prediction Model 3">Model 3</th><th data-column="Confidence Model 3">Conf 3</th><th data-column="Prediction">Prediction</th><th data-column="Stake">Stake</th><th data-column="Tip Probability">Tip Prob</th><th data-column="Match Tip">Match Tip</th><th data-column="Result">Result</th><th>Remove</th>
                         </tr></thead>
                         <tbody id="comparisonTableBody"></tbody>
                     </table>
@@ -443,82 +467,62 @@
             </details>
             <div id="bookmarkSection"></div>
             <div id="comparisonAnalyticsSection" class="data-card">
-              <h2 class="text-2xl font-bold text-center mb-6">Comparison Analytics</h2>
+              <h2 class="text-xl font-bold text-center mb-6">Comparison Analytics</h2>
               <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                  <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 1: Win % by Prediction Type</h3><div style="height:300px"><canvas id="model1WinRateChart"></canvas></div></div>
-                  <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 2: Win % by Prediction Type</h3><div style="height:300px"><canvas id="model2WinRateChart"></canvas></div></div>
-                  <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 3: Win % by Prediction Type</h3><div style="height:300px"><canvas id="model3WinRateChart"></canvas></div></div>
+                  <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 1: Win %</h3><div style="height:300px"><canvas id="model1WinRateChart"></canvas></div></div>
+                  <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 2: Win %</h3><div style="height:300px"><canvas id="model2WinRateChart"></canvas></div></div>
+                  <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 3: Win %</h3><div style="height:300px"><canvas id="model3WinRateChart"></canvas></div></div>
               </div>
-              <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Wins by Probability Range (All Models)</h3><div style="height: 400px;"><canvas id="probabilityWinChart"></canvas></div></div>
+              <div class="border rounded-lg p-4"><h3 class="font-semibold text-center mb-2 text-gray-700">Wins by Probability (All Models)</h3><div style="height: 400px;"><canvas id="probabilityWinChart"></canvas></div></div>
             </div>
         </div>
-        
-        <!-- Insight Analytics Tab Content -->
         <div id="insightAnalyticsTab" class="tab-content hidden space-y-6">
-            <div id="insightAnalyticsSummaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="insightAnalyticsSummaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             <div class="data-card">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2 items-start">
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="iaMatchDateFilter">Match Date:</label><select id="iaMatchDateFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="iaLeagueFilter">League:</label><select id="iaLeagueFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1"><label for="iaAnalysisFilter">Match Analysis:</label><select id="iaAnalysisFilter" multiple class="border h-24 rounded-md"></select></div>
-                    <div class="filter-group flex flex-col lg:col-span-1 space-y-2"><label>Winning Streak:</label><div class="flex gap-2"><input type="number" id="iaMinWinStreak" placeholder="Min" class="border w-1/2 p-1.5 rounded-md"><input type="number" id="iaMaxWinStreak" placeholder="Max" class="border w-1/2 p-1.5 rounded-md"></div></div>
-                    <div class="filter-group flex flex-col lg:col-span-1 space-y-2"><label>Losing Streak:</label><div class="flex gap-2"><input type="number" id="iaMinLoseStreak" placeholder="Min" class="border w-1/2 p-1.5 rounded-md"><input type="number" id="iaMaxLoseStreak" placeholder="Max" class="border w-1/2 p-1.5 rounded-md"></div></div>
-                    <div class="flex items-end justify-end h-full lg:col-span-1"><button id="iaClearFilters" class="bg-gray-200 text-gray-800 px-4 py-1.5 rounded-md text-sm hover:bg-gray-300">Clear Filters</button></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-start">
+                    <div><label for="iaMatchDateFilter" class="block text-sm font-medium mb-1">Date:</label><select id="iaMatchDateFilter" multiple class="h-24"></select></div>
+                    <div><label for="iaLeagueFilter" class="block text-sm font-medium mb-1">League:</label><select id="iaLeagueFilter" multiple class="h-24"></select></div>
+                    <div><label for="iaAnalysisFilter" class="block text-sm font-medium mb-1">Analysis:</label><select id="iaAnalysisFilter" multiple class="h-24"></select></div>
+                    <div><label class="block text-sm font-medium mb-1">Win Streak:</label><div class="flex gap-2"><input type="number" id="iaMinWinStreak" placeholder="Min"><input type="number" id="iaMaxWinStreak" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">Lose Streak:</label><div class="flex gap-2"><input type="number" id="iaMinLoseStreak" placeholder="Min"><input type="number" id="iaMaxLoseStreak" placeholder="Max"></div></div>
+                    <div class="flex items-end justify-end h-full"><button id="iaClearFilters" class="btn btn-secondary text-sm">Clear</button></div>
                 </div>
             </div>
             <div id="iaOverviewTableContainer" class="data-card"></div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 1: Performance by Category</h3><div style="height:300px"><canvas id="iaModel1CatChart"></canvas></div></div>
-                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 2: Performance by Category</h3><div style="height:300px"><canvas id="iaModel2CatChart"></canvas></div></div>
-                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 3: Performance by Category</h3><div style="height:300px"><canvas id="iaModel3CatChart"></canvas></div></div>
-                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 1: Wins by Probability</h3><div style="height:300px"><canvas id="iaModel1ProbChart"></canvas></div></div>
-                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 2: Wins by Probability</h3><div style="height:300px"><canvas id="iaModel2ProbChart"></canvas></div></div>
-                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 3: Wins by Probability</h3><div style="height:300px"><canvas id="iaModel3ProbChart"></canvas></div></div>
+                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 1: Performance</h3><div style="height:300px"><canvas id="iaModel1CatChart"></canvas></div></div>
+                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 2: Performance</h3><div style="height:300px"><canvas id="iaModel2CatChart"></canvas></div></div>
+                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 3: Performance</h3><div style="height:300px"><canvas id="iaModel3CatChart"></canvas></div></div>
+                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 1: Wins by Prob</h3><div style="height:300px"><canvas id="iaModel1ProbChart"></canvas></div></div>
+                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 2: Wins by Prob</h3><div style="height:300px"><canvas id="iaModel2ProbChart"></canvas></div></div>
+                <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 3: Wins by Prob</h3><div style="height:300px"><canvas id="iaModel3ProbChart"></canvas></div></div>
             </div>
         </div>
-
       </main>
     </div>
   </div>
 
   <!-- Modals -->
-  <div id="moreFiltersModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+  <div id="moreFiltersModal" class="fixed inset-0 hidden items-center justify-center z-50 p-4 modal-backdrop">
     <div class="modal-content w-11/12 max-w-6xl">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">More Filters</h2>
-        <button id="closeMoreFiltersModal" class="text-gray-400 hover:text-gray-700 text-3xl leading-none">&times;</button>
-      </div>
-  
+      <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-gray-800">More Filters</h2><button id="closeMoreFiltersModal" class="text-gray-400 hover:text-gray-700 text-3xl leading-none">&times;</button></div>
       <div class="space-y-6">
-        <!-- Section for Predictions & Tips -->
-        <div>
-          <h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Predictions & Tips</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div><label for="mfPredictionFilter" class="block text-sm font-medium mb-1">Prediction:</label><select id="mfPredictionFilter" class="input"></select></div>
-            <div><label class="block text-sm font-medium mb-1">Stake:</label><div class="flex gap-2"><input type="number" id="mfStakeMin" placeholder="Min" class="input"><input type="number" id="mfStakeMax" placeholder="Max" class="input"></div></div>
-            <div><label class="block text-sm font-medium mb-1">Tip Probability (%):</label><div class="flex gap-2"><input type="number" id="mfTipProbMin" placeholder="Min" class="input"><input type="number" id="mfTipProbMax" placeholder="Max" class="input"></div></div>
-            <div><label for="mfMatchTipFilter" class="block text-sm font-medium mb-1">Match Tip:</label><select id="mfMatchTipFilter" class="input"></select></div>
-          </div>
-        </div>
-        <!-- Sections for Home/Away Stats -->
-        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Home Team Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Home Wins:</label><div class="flex gap-2"><input type="number" id="mfHomeWinsMin" placeholder="Min" class="input"><input type="number" id="mfHomeWinsMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Home Draws:</label><div class="flex gap-2"><input type="number" id="mfHomeDrawsMin" placeholder="Min" class="input"><input type="number" id="mfHomeDrawsMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Home Losses:</label><div class="flex gap-2"><input type="number" id="mfHomeLossesMin" placeholder="Min" class="input"><input type="number" id="mfHomeLossesMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Home Scored:</label><div class="flex gap-2"><input type="number" id="mfHomeScoredMin" placeholder="Min" class="input"><input type="number" id="mfHomeScoredMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Home Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeScoredAvgMin" placeholder="Min" class="input"><input type="number" id="mfHomeScoredAvgMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Home Conceded:</label><div class="flex gap-2"><input type="number" id="mfHomeConcededMin" placeholder="Min" class="input"><input type="number" id="mfHomeConcededMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Home Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeConcededAvgMin" placeholder="Min" class="input"><input type="number" id="mfHomeConcededAvgMax" placeholder="Max" class="input"></div></div></div></div>
-        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Away Team Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Away Wins:</label><div class="flex gap-2"><input type="number" id="mfAwayWinsMin" placeholder="Min" class="input"><input type="number" id="mfAwayWinsMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Away Draws:</label><div class="flex gap-2"><input type="number" id="mfAwayDrawsMin" placeholder="Min" class="input"><input type="number" id="mfAwayDrawsMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Away Losses:</label><div class="flex gap-2"><input type="number" id="mfAwayLossesMin" placeholder="Min" class="input"><input type="number" id="mfAwayLossesMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Away Scored:</label><div class="flex gap-2"><input type="number" id="mfAwayScoredMin" placeholder="Min" class="input"><input type="number" id="mfAwayScoredMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Away Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayScoredAvgMin" placeholder="Min" class="input"><input type="number" id="mfAwayScoredAvgMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Away Conceded:</label><div class="flex gap-2"><input type="number" id="mfAwayConcededMin" placeholder="Min" class="input"><input type="number" id="mfAwayConcededMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Away Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayConcededAvgMin" placeholder="Min" class="input"><input type="number" id="mfAwayConcededAvgMax" placeholder="Max" class="input"></div></div></div></div>
-        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Streaks & Analysis</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="mfWinningStreakMin" placeholder="Min" class="input"><input type="number" id="mfWinningStreakMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="mfLosingStreakMin" placeholder="Min" class="input"><input type="number" id="mfLosingStreakMax" placeholder="Max" class="input"></div></div><div><label for="mfMatchAnalysisFilter" class="block text-sm font-medium mb-1">Match Analysis:</label><select id="mfMatchAnalysisFilter" class="input"></select></div><div><label for="mfTotalGoalsPredictionFilter" class="block text-sm font-medium mb-1">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter" class="input"></select></div></div></div>
-        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">H2H & Position Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">H2H Home Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HHomeWinsMin" placeholder="Min" class="input"><input type="number" id="mfH2HHomeWinsMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">H2H Away Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HAwayWinsMin" placeholder="Min" class="input"><input type="number" id="mfH2HAwayWinsMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">H2H Draws:</label><div class="flex gap-2"><input type="number" id="mfH2HDrawsMin" placeholder="Min" class="input"><input type="number" id="mfH2HDrawsMax" placeholder="Max" class="input"></div></div><div class="grid grid-cols-2 gap-2"><div><label class="block text-sm font-medium mb-1">Home Pos:</label><div class="flex gap-2"><input type="number" id="mfHomeTeamPositionMin" placeholder="Min" class="input"><input type="number"id="mfHomeTeamPositionMax" placeholder="Max" class="input"></div></div><div><label class="block text-sm font-medium mb-1">Away Pos:</label><div class="flex gap-2"><input type="number" id="mfAwayTeamPositionMin" placeholder="Min" class="input"><input type="number" id="mfAwayTeamPositionMax" placeholder="Max" class="input"></div></div></div></div></div>
+        <!-- ... modal content ... -->
+        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Predictions & Tips</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label for="mfPredictionFilter" class="block text-sm font-medium mb-1">Prediction:</label><select id="mfPredictionFilter"></select></div><div><label class="block text-sm font-medium mb-1">Stake:</label><div class="flex gap-2"><input type="number" id="mfStakeMin" placeholder="Min"><input type="number" id="mfStakeMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Tip Probability (%):</label><div class="flex gap-2"><input type="number" id="mfTipProbMin" placeholder="Min"><input type="number" id="mfTipProbMax" placeholder="Max"></div></div><div><label for="mfMatchTipFilter" class="block text-sm font-medium mb-1">Match Tip:</label><select id="mfMatchTipFilter"></select></div></div></div>
+        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Home Team Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Home Wins:</label><div class="flex gap-2"><input type="number" id="mfHomeWinsMin" placeholder="Min"><input type="number" id="mfHomeWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Draws:</label><div class="flex gap-2"><input type="number" id="mfHomeDrawsMin" placeholder="Min"><input type="number" id="mfHomeDrawsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Losses:</label><div class="flex gap-2"><input type="number" id="mfHomeLossesMin" placeholder="Min"><input type="number" id="mfHomeLossesMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Scored:</label><div class="flex gap-2"><input type="number" id="mfHomeScoredMin" placeholder="Min"><input type="number" id="mfHomeScoredMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeScoredAvgMin" placeholder="Min"><input type="number" id="mfHomeScoredAvgMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Conceded:</label><div class="flex gap-2"><input type="number" id="mfHomeConcededMin" placeholder="Min"><input type="number" id="mfHomeConcededMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeConcededAvgMin" placeholder="Min"><input type="number" id="mfHomeConcededAvgMax" placeholder="Max"></div></div></div></div>
+        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Away Team Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Away Wins:</label><div class="flex gap-2"><input type="number" id="mfAwayWinsMin" placeholder="Min"><input type="number" id="mfAwayWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Draws:</label><div class="flex gap-2"><input type="number" id="mfAwayDrawsMin" placeholder="Min"><input type="number" id="mfAwayDrawsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Losses:</label><div class="flex gap-2"><input type="number" id="mfAwayLossesMin" placeholder="Min"><input type="number" id="mfAwayLossesMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Scored:</label><div class="flex gap-2"><input type="number" id="mfAwayScoredMin" placeholder="Min"><input type="number" id="mfAwayScoredMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayScoredAvgMin" placeholder="Min"><input type="number" id="mfAwayScoredAvgMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Conceded:</label><div class="flex gap-2"><input type="number" id="mfAwayConcededMin" placeholder="Min"><input type="number" id="mfAwayConcededMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayConcededAvgMin" placeholder="Min"><input type="number" id="mfAwayConcededAvgMax" placeholder="Max"></div></div></div></div>
+        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Streaks & Analysis</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="mfWinningStreakMin" placeholder="Min"><input type="number" id="mfWinningStreakMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="mfLosingStreakMin" placeholder="Min"><input type="number" id="mfLosingStreakMax" placeholder="Max"></div></div><div><label for="mfMatchAnalysisFilter" class="block text-sm font-medium mb-1">Match Analysis:</label><select id="mfMatchAnalysisFilter"></select></div><div><label for="mfTotalGoalsPredictionFilter" class="block text-sm font-medium mb-1">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter"></select></div></div></div>
+        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">H2H & Position Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">H2H Home Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HHomeWinsMin" placeholder="Min"><input type="number" id="mfH2HHomeWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">H2H Away Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HAwayWinsMin" placeholder="Min"><input type="number" id="mfH2HAwayWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">H2H Draws:</label><div class="flex gap-2"><input type="number" id="mfH2HDrawsMin" placeholder="Min"><input type="number" id="mfH2HDrawsMax" placeholder="Max"></div></div><div class="grid grid-cols-2 gap-2"><div><label class="block text-sm font-medium mb-1">Home Pos:</label><div class="flex gap-2"><input type="number" id="mfHomeTeamPositionMin" placeholder="Min"><input type="number"id="mfHomeTeamPositionMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Pos:</label><div class="flex gap-2"><input type="number" id="mfAwayTeamPositionMin" placeholder="Min"><input type="number" id="mfAwayTeamPositionMax" placeholder="Max"></div></div></div></div></div>
       </div>
-  
-      <div class="mt-8 flex justify-end space-x-4">
-        <button id="resetMoreFilters" class="font-medium bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition-colors">Clear</button>
-        <button id="applyMoreFilters" class="font-medium bg-[var(--primary)] text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Apply Filters</button>
-      </div>
+      <div class="mt-8 flex justify-end space-x-4"><button id="resetMoreFilters" class="btn btn-secondary">Clear</button><button id="applyMoreFilters" class="btn btn-primary">Apply Filters</button></div>
     </div>
   </div>
 
-  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-40 p-4"><div class="bg-white rounded-lg w-full max-w-3xl p-6 relative max-h-screen overflow-y-auto"><button id="closeModal" class="absolute top-4 right-4 text-gray-500 text-xl">✖</button><div id="modalContent"></div></div></div>
-  <div id="bookmarkNameModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-40 p-4"><div class="bg-white rounded-lg w-full max-w-sm p-6 relative"><button id="closeBookmarkModal" class="absolute top-3 right-4 text-gray-500 text-xl">✖</button><h3 class="text-lg font-bold mb-4">Name Bookmark Group</h3><p class="text-sm text-gray-600 mb-3">Enter a name for this group of matches. If the name already exists, matches will be added to it.</p><input type="text" id="bookmarkGroupName" placeholder="e.g., Weekend Wins" class="border w-full rounded px-3 py-2"><div class="mt-4 flex justify-end gap-3"><button id="cancelBookmark" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Cancel</button><button id="saveBookmark" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button></div></div></div>
-  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div id="loadingText" class="text-white text-xl animate-pulse">Loading data...</div></div>
+  <div id="modal" class="fixed inset-0 hidden items-center justify-center z-40 p-4 modal-backdrop"><div class="modal-content w-full max-w-3xl"><button id="closeModal" class="absolute top-4 right-4 text-gray-500 text-xl z-10">&times;</button><div id="modalContent"></div></div></div>
+  <div id="bookmarkNameModal" class="fixed inset-0 hidden items-center justify-center z-40 p-4 modal-backdrop"><div class="modal-content w-full max-w-sm"><button id="closeBookmarkModal" class="absolute top-3 right-4 text-gray-500 text-xl z-10">&times;</button><h3 class="text-lg font-bold mb-4">Name Bookmark Group</h3><p class="text-sm text-gray-600 mb-3">Enter a name for this group of matches. If the name already exists, matches will be added to it.</p><input type="text" id="bookmarkGroupName" placeholder="e.g., Weekend Wins"><div class="mt-4 flex justify-end gap-3"><button id="cancelBookmark" class="btn btn-secondary">Cancel</button><button id="saveBookmark" class="btn btn-primary">Save</button></div></div></div>
+  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div id="loadingText" class="text-white text-xl animate-pulse">Loading data...</div></div>
 
-  <!-- New UI Interaction Script -->
+  <!-- UI Interaction & Application Logic Script -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
         const navItems = document.querySelectorAll('.nav-item');
@@ -530,17 +534,14 @@
             item.addEventListener('click', () => {
                 const tabName = item.dataset.tab;
 
-                // Update sidebar UI
                 navItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-
-                // Update page title
-                pageTitle.textContent = item.querySelector('span').textContent;
-
-                // Hide all main content tabs
+                
+                const titleSpan = item.querySelector('span');
+                if (titleSpan) pageTitle.textContent = titleSpan.textContent;
+                
                 tabContents.forEach(content => content.classList.add('hidden'));
 
-                // Show the correct main content tab
                 let contentToShowId;
                 switch(tabName) {
                     case 'dashboard': contentToShowId = 'dashboardTab'; break;
@@ -550,20 +551,43 @@
                     case 'insight-analytics': contentToShowId = 'insightAnalyticsTab'; break;
                     default: contentToShowId = 'mainContent'; break;
                 }
-                document.getElementById(contentToShowId).classList.remove('hidden');
+                const contentEl = document.getElementById(contentToShowId);
+                if (contentEl) contentEl.classList.remove('hidden');
 
-                // Programmatically click the original hidden button to trigger existing logic
                 const originalButton = Array.from(originalTabButtons).find(btn => btn.dataset.tab === tabName);
-                if (originalButton) {
-                    originalButton.click();
-                }
+                if (originalButton) originalButton.click();
             });
         });
-    });
-  </script>
+        
+        // Modal logic
+        const openModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.add('flex');
+                modal.classList.remove('hidden');
+            }
+        }
+        const closeModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
 
-  <!-- Original, Unmodified Application Logic -->
-  <script>
+        document.getElementById('dashboardMoreFiltersBtn').addEventListener('click', () => openModal('moreFiltersModal'));
+        document.getElementById('closeMoreFiltersModal').addEventListener('click', () => closeModal('moreFiltersModal'));
+        document.getElementById('moreFiltersModal').addEventListener('click', (e) => { if(e.target.id === 'moreFiltersModal') closeModal('moreFiltersModal'); });
+        
+        document.getElementById('bookmarkBtn').addEventListener('click', () => { if (document.querySelectorAll('.bookmark-checkbox:checked').length > 0) openModal('bookmarkNameModal'); else alert('Please select at least one match to bookmark.'); });
+        document.getElementById('closeBookmarkModal').addEventListener('click', () => closeModal('bookmarkNameModal'));
+        document.getElementById('cancelBookmark').addEventListener('click', () => closeModal('bookmarkNameModal'));
+        document.getElementById('bookmarkNameModal').addEventListener('click', (e) => { if(e.target.id === 'bookmarkNameModal') closeModal('bookmarkNameModal'); });
+        
+        document.getElementById('modal').addEventListener('click', (e) => { if(e.target.id === 'modal') closeModal('modal'); });
+        document.getElementById('closeModal').addEventListener('click', () => closeModal('modal'));
+    });
+
     // --- State & Config ---
     const DATA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQH-Uue5Ctuo4aU-4S81U9QvoXxslOq6YjKHnVkPjyOeJqci4p19cs2iZ8y5GgzsSh_vQHxPYb-gl-5/pub?gid=0&single=true&output=csv';
     let allMatches = [], filteredMatches = [], favourites = new Set(), currentTab = 'dashboard';
@@ -637,6 +661,7 @@
     }
 
     async function loadData() {
+        document.getElementById('loadingOverlay').classList.add('flex');
         document.getElementById('loadingOverlay').classList.remove('hidden');
         document.getElementById('loadingText').textContent = 'Loading data...';
         try {
@@ -653,7 +678,10 @@
         } catch (err) { 
             console.error('Failed to load CSV data:', err);
             showErrorOverlay(`Failed to load data. Error: ${err.message}`);
-        } finally { document.getElementById('loadingOverlay').classList.add('hidden'); }
+        } finally { 
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            document.getElementById('loadingOverlay').classList.remove('flex');
+        }
     }
     
     // --- Filter Population & Logic ---
@@ -939,7 +967,7 @@
 
     const getPredictionBgClass = (isCorrect) => {
         if (isCorrect === null) return '';
-        return isCorrect ? 'bg-green-200' : 'bg-red-200';
+        return isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
     };
 
     const detectOutcome = (res) => {
@@ -964,13 +992,12 @@
             const prediction = row.Prediction;
             let predictionBgClass = '';
             if(actualOutcome && prediction) {
-                predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-200' : 'bg-red-200';
+                predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
             }
 
             const tr = document.createElement('tr');
-            tr.className = 'border-b hover:bg-gray-50';
 
-            let starClass;
+            let starClass = 'text-slate-300';
             const m1 = row['Predicted Outcome'];
             const m2 = row['Predicted Outcome3'];
             const m3 = row['Prediction Outcome1'];
@@ -981,27 +1008,27 @@
                     favourites.add(id);
                     localStorage.setItem('favourites', JSON.stringify([...favourites]));
                 }
-                starClass = evaluatePrediction(m1, row.Result) === true ? 'star-green' : 'star-blue';
+                starClass = evaluatePrediction(m1, row.Result) === true ? 'text-green-500' : 'text-blue-500';
             } else {
-                starClass = favourites.has(id) ? 'star-fav' : 'star-normal';
+                starClass = favourites.has(id) ? 'text-amber-400' : 'text-slate-300';
             }
 
             tr.innerHTML = `
-              <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
-              <td class='p-2'>${row.MatchDate}</td><td class='p-2 font-medium'>${row.Match}</td>
-              <td class='p-2 ${getPredictionBgClass(isCorrect1)}'>${row['Predicted Outcome'] || 'N/A'}</td>
-              <td class='p-2'>${row['Probability (%)']}%</td>
-              <td class='p-2 ${getPredictionBgClass(isCorrect2)}'>${row['Predicted Outcome3'] || 'N/A'}</td>
-              <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
-              <td class='p-2 font-semibold'>${row['Predicted Odd'] > 0 ? row['Predicted Odd'].toFixed(2) : 'N/A'}</td>
-              <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${row['Prediction Outcome1'] || 'N/A'}</td>
-              <td class='p-2'>${row['Winning Probability']}%</td>
-              <td class='p-2 ${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td>
-              <td class='p-2'>${row['Stake'] || 'N/A'}</td>
-              <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
-              <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
-              <td class='p-2'>${row.Result || '—'}</td>
-              <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
+              <td class='text-center'><button class='fav-btn text-lg ${starClass}' data-id='${id}'><i class="fa-solid fa-star"></i></button></td>
+              <td>${row.MatchDate}</td><td class='font-medium'>${row.Match}</td>
+              <td class='${getPredictionBgClass(isCorrect1)}'>${row['Predicted Outcome'] || 'N/A'}</td>
+              <td>${row['Probability (%)']}%</td>
+              <td class='${getPredictionBgClass(isCorrect2)}'>${row['Predicted Outcome3'] || 'N/A'}</td>
+              <td>${row['Prediction Confidence (%)']}%</td>
+              <td class='font-semibold'>${row['Predicted Odd'] > 0 ? row['Predicted Odd'].toFixed(2) : 'N/A'}</td>
+              <td class='${getPredictionBgClass(isCorrect3)}'>${row['Prediction Outcome1'] || 'N/A'}</td>
+              <td>${row['Winning Probability']}%</td>
+              <td class='${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td>
+              <td>${row['Stake'] || 'N/A'}</td>
+              <td>${row['Tip Probability'] || 'N/A'}%</td>
+              <td>${row['Match Tip'] || 'N/A'}</td>
+              <td>${row.Result || '—'}</td>
+              <td><button class='view-btn btn btn-primary text-xs py-1 px-2' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
         });
     }
@@ -1015,22 +1042,21 @@
         data.forEach(row => {
             const id = row.uniqueId;
             const tr = document.createElement('tr');
-            tr.className = 'border-b hover:bg-gray-50';
             
             const m1 = row['Predicted Outcome'];
             const m2 = row['Predicted Outcome3'];
             const m3 = row['Prediction Outcome1'];
             const allModelsMatch = m1 && m1 === m2 && m2 === m3;
 
-            let starClass;
+            let starClass = 'text-slate-300';
             if (allModelsMatch) {
                 if (!favourites.has(id)) {
                     favourites.add(id);
                     localStorage.setItem('favourites', JSON.stringify([...favourites]));
                 }
-                starClass = evaluatePrediction(m1, row.Result) === true ? 'star-green' : 'star-blue';
+                starClass = evaluatePrediction(m1, row.Result) === true ? 'text-green-500' : 'text-blue-500';
             } else {
-                starClass = favourites.has(id) ? 'star-fav' : 'star-normal';
+                starClass = favourites.has(id) ? 'text-amber-400' : 'text-slate-300';
             }
 
             const isCorrect1 = evaluatePrediction(m1, row.Result);
@@ -1041,26 +1067,26 @@
             const prediction = row.Prediction;
             let predictionBgClass = '';
             if(actualOutcome && prediction) {
-                predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-200' : 'bg-red-200';
+                predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
             }
 
             tr.innerHTML = `
-                <td class='p-2 text-center'><button class='fav-btn ${starClass}' data-id='${id}'>★</button></td>
-                <td class='p-2 text-center'><input type="checkbox" class="compare-checkbox" data-id='${id}' ${matchesForComparison.has(id) ? 'checked' : ''}></td>
-                <td class='p-2'>${row.MatchDate}</td>
-                <td class='p-2 font-medium'>${row.Match}</td>
-                <td class='p-2'>${row.Result || '—'}</td>
-                <td class='p-2 ${getPredictionBgClass(isCorrect1)}'>${m1 || 'N/A'}</td>
-                <td class='p-2'>${row['Probability (%)']}%</td>
-                <td class='p-2 ${getPredictionBgClass(isCorrect2)}'>${m2 || 'N/A'}</td>
-                <td class='p-2'>${row['Prediction Confidence (%)']}%</td>
-                <td class='p-2 ${getPredictionBgClass(isCorrect3)}'>${m3 || 'N/A'}</td>
-                <td class='p-2'>${row['Winning Probability']}%</td>
-                <td class='p-2 ${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td>
-                <td class='p-2'>${row['Stake'] || 'N/A'}</td>
-                <td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td>
-                <td class='p-2'>${row['Match Tip'] || 'N/A'}</td>
-                <td class='p-2'><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
+                <td class='text-center'><button class='fav-btn text-lg ${starClass}' data-id='${id}'><i class="fa-solid fa-star"></i></button></td>
+                <td class='text-center'><input type="checkbox" class="compare-checkbox" data-id='${id}' ${matchesForComparison.has(id) ? 'checked' : ''}></td>
+                <td>${row.MatchDate}</td>
+                <td class='font-medium'>${row.Match}</td>
+                <td>${row.Result || '—'}</td>
+                <td class='${getPredictionBgClass(isCorrect1)}'>${m1 || 'N/A'}</td>
+                <td>${row['Probability (%)']}%</td>
+                <td class='${getPredictionBgClass(isCorrect2)}'>${m2 || 'N/A'}</td>
+                <td>${row['Prediction Confidence (%)']}%</td>
+                <td class='${getPredictionBgClass(isCorrect3)}'>${m3 || 'N/A'}</td>
+                <td>${row['Winning Probability']}%</td>
+                <td class='${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td>
+                <td>${row['Stake'] || 'N/A'}</td>
+                <td>${row['Tip Probability'] || 'N/A'}%</td>
+                <td>${row['Match Tip'] || 'N/A'}</td>
+                <td><button class='view-btn btn btn-primary text-xs py-1 px-2' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>`;
             tbody.appendChild(tr);
         });
     }
@@ -1092,7 +1118,7 @@
         const won2 = completed.filter(r => evaluatePrediction(r['Predicted Outcome3'], r.Result)).length;
         const won3 = completed.filter(r => evaluatePrediction(r['Prediction Outcome1'], r.Result)).length;
         
-        container.innerHTML = `<div class="summary-card bg-blue-100"><h3>Total Matches</h3><p class="text-blue-800">${total}</p></div><div class="summary-card bg-green-100"><h3>Model 1 Wins</h3><p class="text-green-800">${won1}</p></div><div class="summary-card bg-green-100"><h3>Model 2 Wins</h3><p class="text-green-800">${won2}</p></div><div class="summary-card bg-green-100"><h3>Model 3 Wins</h3><p class="text-green-800">${won3}</p></div>`;
+        container.innerHTML = `<div class="summary-card bg-blue-50"><h3>Total Matches</h3><p class="text-[var(--primary-blue)]">${total}</p></div><div class="summary-card bg-green-50"><h3>Model 1 Wins</h3><p class="text-[var(--secondary-green)]">${won1}</p></div><div class="summary-card bg-green-50"><h3>Model 2 Wins</h3><p class="text-[var(--secondary-green)]">${won2}</p></div><div class="summary-card bg-green-50"><h3>Model 3 Wins</h3><p class="text-[var(--secondary-green)]">${won3}</p></div>`;
     }
 
     function renderPredictionSummary(data) {
@@ -1117,14 +1143,8 @@
             <div class="summary-card bg-white col-span-full">
                 <h3 class="font-bold text-gray-700">Prediction Summary</h3>
                 <div class="flex justify-center items-center gap-8 mt-2">
-                    <div>
-                        <p class="text-green-600 text-2xl">${wins}</p>
-                        <p class="text-sm text-gray-600">Total Wins</p>
-                    </div>
-                    <div>
-                        <p class="text-blue-600 text-2xl">${winPercentage}%</p>
-                        <p class="text-sm text-gray-600">Winning Percentage</p>
-                    </div>
+                    <div><p class="text-green-600 text-3xl">${wins}</p><p class="text-sm text-gray-600">Total Wins</p></div>
+                    <div><p class="text-blue-600 text-3xl">${winPercentage}%</p><p class="text-sm text-gray-600">Winning Percentage</p></div>
                 </div>
             </div>
         `;
@@ -1138,7 +1158,7 @@
         const model1Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome'], r.Result)).length;
         const model2Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome3'], r.Result)).length;
         const model3Wins = completed.filter(r => evaluatePrediction(r['Prediction Outcome1'], r.Result)).length;
-        container.innerHTML = `<div class="summary-card bg-green-100"><h3>Model 1 Wins</h3><p class="text-green-800">${model1Wins} (${((model1Wins / completed.length) * 100).toFixed(0)}%)</p></div><div class="summary-card bg-green-100"><h3>Model 2 Wins</h3><p class="text-green-800">${model2Wins} (${((model2Wins / completed.length) * 100).toFixed(0)}%)</p></div><div class="summary-card bg-green-100"><h3>Model 3 Wins</h3><p class="text-green-800">${model3Wins} (${((model3Wins / completed.length) * 100).toFixed(0)}%)</p></div>`;
+        container.innerHTML = `<div class="summary-card bg-green-50"><h3>Model 1 Wins</h3><p class="text-[var(--secondary-green)]">${model1Wins} (${((model1Wins / completed.length) * 100).toFixed(0)}%)</p></div><div class="summary-card bg-green-50"><h3>Model 2 Wins</h3><p class="text-[var(--secondary-green)]">${model2Wins} (${((model2Wins / completed.length) * 100).toFixed(0)}%)</p></div><div class="summary-card bg-green-50"><h3>Model 3 Wins</h3><p class="text-[var(--secondary-green)]">${model3Wins} (${((model3Wins / completed.length) * 100).toFixed(0)}%)</p></div>`;
     }
     
     function renderAnalytics(data) {
@@ -1171,10 +1191,11 @@
 
         const dates = Object.keys(performanceByDate).sort();
         
-        createChart('model1PerformanceChart', 'bar', 'Wins', dates, dates.map(d => performanceByDate[d].model1), { backgroundColor: '#10b981' });
-        createChart('model2PerformanceChart', 'bar', 'Wins', dates, dates.map(d => performanceByDate[d].model2), { backgroundColor: '#4f46e5' });
-        createChart('model3PerformanceChart', 'bar', 'Wins', dates, dates.map(d => performanceByDate[d].model3), { backgroundColor: '#f97316' });
-        createChart('model4PerformanceChart', 'bar', 'Wins', dates, dates.map(d => performanceByDate[d].model4), { backgroundColor: '#8b5cf6' });
+        createChart('model1PerformanceChart', 'bar', 'Model 1 Wins', dates, dates.map(d => performanceByDate[d].model1), { backgroundColor: '#059669' });
+        createChart('model2PerformanceChart', 'bar', 'Model 2 Wins', dates, dates.map(d => performanceByDate[d].model2), { backgroundColor: '#2563EB' });
+        createChart('model3PerformanceChart', 'bar', 'Model 3 Wins', dates, dates.map(d => performanceByDate[d].model3), { backgroundColor: '#8B5CF6' });
+        createChart('model4PerformanceChart', 'bar', 'Model 4 Wins', dates, dates.map(d => performanceByDate[d].model4), { backgroundColor: '#0D9488' });
+
 
         const container = document.getElementById('dashboardCards');
         container.innerHTML = '';
@@ -1191,7 +1212,7 @@
             
             const card = document.createElement('div');
             card.className = 'summary-card bg-white';
-            card.innerHTML = `<h3 class="font-bold">${model.name}</h3><p class="text-blue-600">${wins} <span class="text-base font-normal">Wins</span></p><div class="text-sm text-gray-500 mt-2"><span>${winPercent}% Won</span> | <span>${pending} Pending</span></div>`;
+            card.innerHTML = `<h3 class="font-bold">${model.name}</h3><p class="text-[var(--primary-blue)]">${wins} <span class="text-base font-normal">Wins</span></p><div class="text-sm text-gray-500 mt-2"><span>${winPercent}% Won</span> | <span>${pending} Pending</span></div>`;
             container.appendChild(card);
         });
         
@@ -1219,9 +1240,9 @@
     
     function renderDashboardTable(containerId, title, data, valueKey) {
         const container = document.getElementById(containerId);
-        let tableHTML = `<div class="data-card"><div class="flex justify-between items-center mb-2"><h3 class="font-semibold">${title}</h3></div><div class="overflow-x-auto"><table class="min-w-full text-xs"><thead class="bg-gray-100"><tr><th class="p-2 text-left">Home</th><th class="p-2 text-left">Away</th><th class="p-2 text-left">Date</th><th class="p-2 text-left">${valueKey}</th><th class="p-2 text-left">Result</th><th class="p-2 text-left">View</th></tr></thead><tbody>`;
+        let tableHTML = `<div class="data-card"><div class="flex justify-between items-center mb-2"><h3 class="font-semibold text-lg">${title}</h3></div><div class="overflow-x-auto"><table class="w-full text-xs"><thead><tr><th>Home</th><th>Away</th><th>Date</th><th>${valueKey}</th><th>Result</th><th>View</th></tr></thead><tbody>`;
         if (data.length === 0) tableHTML += `<tr><td colspan="6" class="text-center p-4 text-gray-500">No matching matches.</td></tr>`;
-        else data.slice(0, 20).forEach(row => { const teams = row.Match.split(' vs '); tableHTML += `<tr class="border-b"><td class="p-2">${teams[0] || 'N/A'}</td><td class="p-2">${teams[1] || 'N/A'}</td><td class="p-2">${row.MatchDate}</td><td class="p-2">${row[valueKey] || 'N/A'}</td><td class="p-2">${row.Result || '—'}</td><td class="p-2"><button class='view-btn bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td></tr>`; });
+        else data.slice(0, 20).forEach(row => { const teams = row.Match.split(' vs '); tableHTML += `<tr><td>${teams[0] || 'N/A'}</td><td>${teams[1] || 'N/A'}</td><td>${row.MatchDate}</td><td>${row[valueKey] || 'N/A'}</td><td>${row.Result || '—'}</td><td><button class='view-btn btn btn-primary text-xs py-1 px-2' data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td></tr>`; });
         tableHTML += `</tbody></table></div></div>`;
         container.innerHTML = tableHTML;
     }
@@ -1230,7 +1251,8 @@
         const ctx = document.getElementById(id)?.getContext('2d');
         if (!ctx) return;
         if (charts[id]) charts[id].destroy();
-        const datasets = chartOptions.datasets || [{ label, data, backgroundColor: chartOptions.backgroundColor || ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#8b5cf6', '#6b7280'] }];
+        const defaultColors = ['#2563EB', '#059669', '#8B5CF6', '#0D9488', '#F97316', '#64748B'];
+        const datasets = chartOptions.datasets || [{ label, data, backgroundColor: chartOptions.backgroundColor || defaultColors, borderRadius: 4 }];
         charts[id] = new Chart(ctx, { type, data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: !!chartOptions.datasets } }, scales: type === 'bar' ? { y: { beginAtZero: true, suggestedMax: chartOptions.yMax } } : {} } });
     }
 
@@ -1238,8 +1260,9 @@
         const modalContent = document.getElementById('modalContent');
         const getStat = (key, def = 'N/A') => data[key] || def;
         const isCorrect1 = evaluatePrediction(data['Predicted Outcome'], data.Result), isCorrect2 = evaluatePrediction(data['Predicted Outcome3'], data.Result), isCorrect3 = evaluatePrediction(data['Prediction Outcome1'], data.Result);
-        const getResultContent = (isCorrect) => isCorrect === null ? `<span class="badge bg-gray-200 text-gray-700">Pending</span>` : isCorrect ? `<span class="badge bg-green-200 text-green-800">Correct ✅</span>` : `<span class="badge bg-red-200 text-red-800">Incorrect ❌</span>`;
+        const getResultContent = (isCorrect) => isCorrect === null ? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-700">Pending</span>` : isCorrect ? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-200 text-green-800">Correct <i class="fa-solid fa-check"></i></span>` : `<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-200 text-red-800">Incorrect <i class="fa-solid fa-times"></i></span>`;
         modalContent.innerHTML = `<div class="text-center border-b pb-4 mb-4"><h3 class="text-2xl font-bold">${getStat('Match')}</h3><p class="text-sm text-gray-500">${getStat('MatchDate')}</p><p class="text-lg font-bold mt-2">Result: ${getStat('Result', '—')}</p></div><div class="space-y-4 mb-6"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-gray-50 p-3 rounded-lg border shadow-sm"><h5 class="font-bold text-gray-700 mb-2 text-center">Home Team Stats</h5><div class="grid grid-cols-3 gap-2 text-center text-sm"><div><p class="text-xs text-gray-500">Wins</p><p class="font-semibold text-base">${getStat('Home Wins')}</p></div><div><p class="text-xs text-gray-500">Draws</p><p class="font-semibold text-base">${getStat('Home Draws')}</p></div><div><p class="text-xs text-gray-500">Losses</p><p class="font-semibold text-base">${getStat('Home Losses')}</p></div></div></div><div class="bg-gray-50 p-3 rounded-lg border shadow-sm"><h5 class="font-bold text-gray-700 mb-2 text-center">Away Team Stats</h5><div class="grid grid-cols-3 gap-2 text-center text-sm"><div><p class="text-xs text-gray-500">Wins</p><p class="font-semibold text-base">${getStat('Away Wins')}</p></div><div><p class="text-xs text-gray-500">Draws</p><p class="font-semibold text-base">${getStat('Away Draws')}</p></div><div><p class="text-xs text-gray-500">Losses</p><p class="font-semibold text-base">${getStat('Away Losses')}</p></div></div></div></div><div class="bg-gray-50 p-3 rounded-lg border shadow-sm"><div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-sm"><div><p class="text-xs text-gray-500">Home Scored (Avg)</p><p class="font-semibold">${getStat('Home Scored')} (${getStat('Home Scored (Avg)')})</p></div><div><p class="text-xs text-gray-500">Home Conceded (Avg)</p><p class="font-semibold">${getStat('Home Conceded')} (${getStat('Home Conceded (Avg)')})</p></div><div><p class="text-xs text-gray-500">Away Scored (Avg)</p><p class="font-semibold">${getStat('Away Scored')} (${getStat('Away Scored (Avg)')})</p></div><div><p class="text-xs text-gray-500">Away Conceded (Avg)</p><p class="font-semibold">${getStat('Away Conceded')} (${getStat('Away Conceded (Avg)')})</p></div></div></div><div class="bg-gray-50 p-3 rounded-lg border shadow-sm"><h5 class="font-bold text-gray-700 mb-2 text-center">Odds</h5><div class="grid grid-cols-3 gap-2 text-center text-sm"><div><p class="text-xs text-gray-500">Home Odds</p><p class="font-semibold text-base">${getStat('Home Odds', 'N/A')}</p></div><div><p class="text-xs text-gray-500">Draw Odds</p><p class="font-semibold text-base">${getStat('Draw Odds', 'N/A')}</p></div><div><p class="text-xs text-gray-500">Away Odds</p><p class="font-semibold text-base">${getStat('Away Odds', 'N/A')}</p></div></div></div><div class="bg-gray-50 p-3 rounded-lg border shadow-sm"><h5 class="font-bold text-gray-700 mb-2 text-center">Head-to-Head & Standings</h5><div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><div class="text-center"><p class="text-xs text-gray-500">H2H</p><div class="grid grid-cols-3 gap-1 mt-1"><div><p class="font-semibold text-base">${getStat('H2H Home Wins')}</p><p class="text-xs">Home</p></div><div><p class="font-semibold text-base">${getStat('H2H Draws')}</p><p class="text-xs">Draws</p></div><div><p class="font-semibold text-base">${getStat('H2H Away Wins')}</p><p class="text-xs">Away</p></div></div></div><div class="text-center"><p class="text-xs text-gray-500">League Position</p><div class="grid grid-cols-2 gap-1 mt-1"><div><p class="font-semibold text-base">${getStat('Home Team Position')}</p><p class="text-xs">Home</p></div><div><p class="font-semibold text-base">${getStat('Away Team Position')}</p><p class="text-xs">Away</p></div></div></div></div></div></div><h4 class="text-lg font-semibold text-gray-800 mb-3 text-center">Model Predictions</h4><div class="bg-gray-50 rounded-xl p-4 shadow-inner space-y-2"><div class="flex justify-between items-center py-2 border-b"><span class="flex items-center gap-3 text-sm text-gray-600"><i class="fa-solid fa-bullseye w-5 text-blue-500"></i> Model 1</span><span class="font-semibold">${getStat('Predicted Outcome')} at ${getStat('Probability (%)')}%</span>${getResultContent(isCorrect1)}</div><div class="flex justify-between items-center py-2 border-b"><span class="flex items-center gap-3 text-sm text-gray-600"><i class="fa-solid fa-bullseye w-5 text-indigo-500"></i> Model 2</span><span class="font-semibold">${getStat('Predicted Outcome3')} at ${getStat('Prediction Confidence (%)')}%</span>${getResultContent(isCorrect2)}</div><div class="flex justify-between items-center py-2 border-b"><span class="flex items-center gap-3 text-sm text-gray-600"><i class="fa-solid fa-bullseye w-5 text-purple-500"></i> Model 3</span><span class="font-semibold">${getStat('Prediction Outcome1')} at ${getStat('Winning Probability')}%</span>${getResultContent(isCorrect3)}</div><div class="flex justify-between items-center py-2"><span class="flex items-center gap-3 text-sm text-gray-600"><i class="fa-solid fa-lightbulb w-5 text-yellow-500"></i> Prediction</span><span class="font-semibold">${getStat('Prediction')} (Stake: ${getStat('Stake')})</span></div></div><a href="${getStat('URL', '#')}" target="_blank" class="block text-center mt-6 text-blue-600 hover:underline">View Source <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>`;
+        document.getElementById('modal').classList.add('flex');
         document.getElementById('modal').classList.remove('hidden');
     }
     
@@ -1265,7 +1288,7 @@
         const model1Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome'], r.Result)).length;
         const model2Wins = completed.filter(r => evaluatePrediction(r['Predicted Outcome3'], r.Result)).length;
         const model3Wins = completed.filter(r => evaluatePrediction(r['Prediction Outcome1'], r.Result)).length;
-        container.innerHTML = `<div class="summary-card bg-blue-100"><h3>Prediction Model 1 Win %</h3><p class="text-blue-800">${((model1Wins/completed.length)*100).toFixed(0)}%</p></div><div class="summary-card bg-indigo-100"><h3>Prediction Model 2 Win %</h3><p class="text-indigo-800">${((model2Wins/completed.length)*100).toFixed(0)}%</p></div><div class="summary-card bg-purple-100"><h3>Prediction Model 3 Win %</h3><p class="text-purple-800">${((model3Wins/completed.length)*100).toFixed(0)}%</p></div>`;
+        container.innerHTML = `<div class="summary-card bg-blue-50"><h3>Prediction Model 1 Win %</h3><p class="text-blue-800">${((model1Wins/completed.length)*100).toFixed(0)}%</p></div><div class="summary-card bg-indigo-50"><h3>Prediction Model 2 Win %</h3><p class="text-indigo-800">${((model2Wins/completed.length)*100).toFixed(0)}%</p></div><div class="summary-card bg-purple-50"><h3>Prediction Model 3 Win %</h3><p class="text-purple-800">${((model3Wins/completed.length)*100).toFixed(0)}%</p></div>`;
     }
 
     function renderComparisonTable(data) {
@@ -1282,14 +1305,13 @@
             if (isCorrect1) wins1++; if (isCorrect2) wins2++; if (isCorrect3) wins3++;
             const actualOutcome = detectOutcome(row.Result), prediction = row.Prediction;
             let predictionBgClass = '';
-            if(actualOutcome && prediction) predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-200' : 'bg-red-200';
+            if(actualOutcome && prediction) predictionBgClass = (actualOutcome.toLowerCase() === prediction.toLowerCase()) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
             const tr = document.createElement('tr');
-            tr.className = 'border-b hover:bg-gray-50';
-            tr.innerHTML = `<td class="p-2 text-center"><input type="checkbox" class="bookmark-checkbox" data-id="${row.uniqueId}"></td><td class="p-2 font-medium">${row.Match}</td><td class="p-2">${row.MatchDate}</td><td class="p-2 ${getPredictionBgClass(isCorrect1)}">${row['Predicted Outcome']}</td><td class="p-2">${row['Probability (%)']}%</td><td class="p-2 ${getPredictionBgClass(isCorrect2)}">${row['Predicted Outcome3']}</td><td class="p-2">${row['Prediction Confidence (%)']}%</td><td class="p-2 ${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td><td class="p-2">${row['Winning Probability']}%</td><td class='p-2 ${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td><td class='p-2'>${row['Stake'] || 'N/A'}</td><td class='p-2'>${row['Tip Probability'] || 'N/A'}%</td><td class='p-2'>${row['Match Tip'] || 'N/A'}</td><td class="p-2">${row.Result || '—'}</td><td class="p-2 text-center"><button class="remove-comparison-btn text-red-500 hover:text-red-700 text-lg" data-id="${row.uniqueId}" title="Remove">✖</button></td>`;
+            tr.innerHTML = `<td class="text-center"><input type="checkbox" class="bookmark-checkbox" data-id="${row.uniqueId}"></td><td class="font-medium">${row.Match}</td><td>${row.MatchDate}</td><td class="${getPredictionBgClass(isCorrect1)}">${row['Predicted Outcome']}</td><td>${row['Probability (%)']}%</td><td class="${getPredictionBgClass(isCorrect2)}">${row['Predicted Outcome3']}</td><td>${row['Prediction Confidence (%)']}%</td><td class="${getPredictionBgClass(isCorrect3)}">${row['Prediction Outcome1']}</td><td>${row['Winning Probability']}%</td><td class='${predictionBgClass}'>${row['Prediction'] || 'N/A'}</td><td>${row['Stake'] || 'N/A'}</td><td>${row['Tip Probability'] || 'N/A'}%</td><td>${row['Match Tip'] || 'N/A'}</td><td>${row.Result || '—'}</td><td class="text-center"><button class="remove-comparison-btn text-red-500 hover:text-red-700 text-lg" data-id="${row.uniqueId}" title="Remove"><i class="fa-solid fa-trash-can"></i></button></td>`;
             tbody.appendChild(tr);
         });
         const existingTfoot = table.querySelector('tfoot'); if (existingTfoot) existingTfoot.remove();
-        if (data.length > 0) { const tfoot = table.createTFoot(); const footerRow = tfoot.insertRow(); footerRow.className = 'bg-blue-100 font-bold'; footerRow.innerHTML = `<td class="p-2" colspan="3">Number of Wins</td><td class="p-2 text-center">${wins1}</td><td class="p-2"></td><td class="p-2 text-center">${wins2}</td><td class="p-2"></td><td class="p-2 text-center">${wins3}</td><td class="p-2" colspan="7"></td>`; }
+        if (data.length > 0) { const tfoot = table.createTFoot(); const footerRow = tfoot.insertRow(); footerRow.className = 'bg-blue-100 font-bold'; footerRow.innerHTML = `<td class="p-2" colspan="3">Number of Wins</td><td class="text-center">${wins1}</td><td></td><td class="text-center">${wins2}</td><td></td><td class="text-center">${wins3}</td><td colspan="7"></td>`; }
     }
 
     function renderBookmarkSection() { 
@@ -1304,12 +1326,12 @@
             let wins1 = 0, wins2 = 0, wins3 = 0;
             matches.forEach(row => { if (evaluatePrediction(row['Predicted Outcome'], row.Result)) wins1++; if (evaluatePrediction(row['Predicted Outcome3'], row.Result)) wins2++; if (evaluatePrediction(row['Prediction Outcome1'], row.Result)) wins3++; });
             const page = bookmarkPages[groupName] || 1, totalPages = Math.ceil(matches.length / rowsPerPage) || 1, start = (page - 1) * rowsPerPage, paginatedMatches = matches.slice(start, start + rowsPerPage);
-            let tableHTML = `<div class="flex justify-between items-center mb-2"><h2 class="text-xl font-semibold">Bookmarks: ${groupName} (${matches.length})</h2></div><div class="overflow-x-auto"><table class="min-w-full text-sm"><thead class="bg-yellow-200"><tr><th class="p-2 text-left">Match</th><th class="p-2 text-left">Date</th><th class="p-2 text-left">Model 1</th><th class="p-2 text-left">Conf 1</th><th class="p-2 text-left">Model 2</th><th class="p-2 text-left">Conf 2</th><th class="p-2 text-left">Model 3</th><th class="p-2 text-left">Conf 3</th><th class="p-2 text-left">Result</th><th class="p-2 text-left">Remove</th></tr></thead><tbody>`;
-            paginatedMatches.forEach(row => { tableHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-2 font-medium">${row.Match}</td><td class="p-2">${row.MatchDate}</td><td class="p-2 ${getPredictionBgClass(evaluatePrediction(row['Predicted Outcome'], row.Result))}">${row['Predicted Outcome']}</td><td class="p-2">${row['Probability (%)']}%</td><td class="p-2 ${getPredictionBgClass(evaluatePrediction(row['Predicted Outcome3'], row.Result))}">${row['Predicted Outcome3']}</td><td class="p-2">${row['Prediction Confidence (%)']}%</td><td class="p-2 ${getPredictionBgClass(evaluatePrediction(row['Prediction Outcome1'], row.Result))}">${row['Prediction Outcome1']}</td><td class="p-2">${row['Winning Probability']}%</td><td class="p-2">${row.Result || '—'}</td><td class="p-2 text-center"><button class="remove-bookmark-btn text-red-500 hover:text-red-700" data-id="${row.uniqueId}" data-group="${groupName}">✖</button></td></tr>`; });
+            let tableHTML = `<div class="flex justify-between items-center mb-2"><h2 class="text-xl font-semibold">Bookmarks: ${groupName} (${matches.length})</h2></div><div class="overflow-x-auto"><table><thead class="bg-yellow-100"><tr><th>Match</th><th>Date</th><th>Model 1</th><th>Conf 1</th><th>Model 2</th><th>Conf 2</th><th>Model 3</th><th>Conf 3</th><th>Result</th><th>Remove</th></tr></thead><tbody>`;
+            paginatedMatches.forEach(row => { tableHTML += `<tr><td class="font-medium">${row.Match}</td><td>${row.MatchDate}</td><td class="${getPredictionBgClass(evaluatePrediction(row['Predicted Outcome'], row.Result))}">${row['Predicted Outcome']}</td><td>${row['Probability (%)']}%</td><td class="${getPredictionBgClass(evaluatePrediction(row['Predicted Outcome3'], row.Result))}">${row['Predicted Outcome3']}</td><td>${row['Prediction Confidence (%)']}%</td><td class="${getPredictionBgClass(evaluatePrediction(row['Prediction Outcome1'], row.Result))}">${row['Prediction Outcome1']}</td><td>${row['Winning Probability']}%</td><td>${row.Result || '—'}</td><td class="text-center"><button class="remove-bookmark-btn text-red-500 hover:text-red-700" data-id="${row.uniqueId}" data-group="${groupName}"><i class="fa-solid fa-trash-can"></i></button></td></tr>`; });
             tableHTML += `</tbody>`;
-            if (matches.length > 0) tableHTML += `<tfoot class="bg-yellow-100 font-bold"><tr><td class="p-2" colspan="2">Number of Wins</td><td class="p-2 text-center">${wins1}</td><td class="p-2"></td><td class="p-2 text-center">${wins2}</td><td class="p-2"></td><td class="p-2 text-center">${wins3}</td><td class="p-2" colspan="3"></td></tr></tfoot>`;
+            if (matches.length > 0) tableHTML += `<tfoot class="bg-yellow-50 font-bold"><tr><td colspan="2">Number of Wins</td><td class="text-center">${wins1}</td><td></td><td class="text-center">${wins2}</td><td></td><td class="text-center">${wins3}</td><td colspan="3"></td></tr></tfoot>`;
             tableHTML += `</table></div>`;
-            let paginationHTML = `<div class="flex justify-center items-center gap-4 my-3"><button class="bookmark-prev-btn bg-gray-200 px-3 py-1 rounded-md text-xs ${page === 1 ? 'opacity-50' : ''}" data-group="${groupName}" ${page === 1 ? 'disabled' : ''}>Prev</button><span>Page ${page} of ${totalPages}</span><button class="bookmark-next-btn bg-gray-200 px-3 py-1 rounded-md text-xs ${page >= totalPages ? 'opacity-50' : ''}" data-group="${groupName}" ${page >= totalPages ? 'disabled' : ''}>Next</button></div>`;
+            let paginationHTML = `<div class="flex justify-center items-center gap-4 my-3"><button class="bookmark-prev-btn btn btn-secondary text-xs ${page === 1 ? 'opacity-50' : ''}" data-group="${groupName}" ${page === 1 ? 'disabled' : ''}>Prev</button><span>Page ${page} of ${totalPages}</span><button class="bookmark-next-btn btn btn-secondary text-xs ${page >= totalPages ? 'opacity-50' : ''}" data-group="${groupName}" ${page >= totalPages ? 'disabled' : ''}>Next</button></div>`;
             groupContainer.innerHTML = tableHTML + paginationHTML;
             container.appendChild(groupContainer);
         });
@@ -1323,9 +1345,10 @@
             return (wins / relevant.length) * 100;
         };
         const predictionTypes = ['Home Win', 'Away Win', 'Draw'];
-        createChart('model1WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Predicted Outcome', type)));
-        createChart('model2WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Predicted Outcome3', type)));
-        createChart('model3WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Prediction Outcome1', type)));
+        createChart('model1WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Predicted Outcome', type)), { backgroundColor: '#2563EB' });
+        createChart('model2WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Predicted Outcome3', type)), { backgroundColor: '#8B5CF6' });
+        createChart('model3WinRateChart', 'bar', 'Win %', predictionTypes, predictionTypes.map(type => calculateWinRate(data, 'Prediction Outcome1', type)), { backgroundColor: '#059669' });
+        
         const calculateWinsInProbRanges = (dataset, modelPredKey, modelProbKey) => {
             const wins = dataset.filter(r => evaluatePrediction(r[modelPredKey], r.Result));
             const ranges = { '0-50%': 0, '51-70%': 0, '71-100%': 0 };
@@ -1333,7 +1356,11 @@
             return Object.values(ranges);
         };
         const probLabels = ['0-50%', '51-70%', '71-100%'];
-        const probChartData = { datasets: [ { label: 'Model 1', data: calculateWinsInProbRanges(data, 'Predicted Outcome', 'Probability (%)'), backgroundColor: '#3b82f6' }, { label: 'Model 2', data: calculateWinsInProbRanges(data, 'Predicted Outcome3', 'Prediction Confidence (%)'), backgroundColor: '#8b5cf6' }, { label: 'Model 3', data: calculateWinsInProbRanges(data, 'Prediction Outcome1', 'Winning Probability'), backgroundColor: '#10b981' } ] };
+        const probChartData = { datasets: [ 
+            { label: 'Model 1', data: calculateWinsInProbRanges(data, 'Predicted Outcome', 'Probability (%)'), backgroundColor: '#2563EB' }, 
+            { label: 'Model 2', data: calculateWinsInProbRanges(data, 'Predicted Outcome3', 'Prediction Confidence (%)'), backgroundColor: '#8B5CF6' }, 
+            { label: 'Model 3', data: calculateWinsInProbRanges(data, 'Prediction Outcome1', 'Winning Probability'), backgroundColor: '#059669' } 
+        ] };
         createChart('probabilityWinChart', 'bar', 'Wins', probLabels, [], probChartData);
     }
     
@@ -1366,14 +1393,14 @@
         const { models, totalMatches } = getModelStats(data);
         const totalWinRate = models.reduce((acc, m) => acc + m.winRate, 0) / models.length;
         const bestModel = models.reduce((best, current) => current.winRate > best.winRate ? current : best, models[0]);
-        container.innerHTML = `<div class="summary-card bg-blue-100"><h3>Total Matches Analyzed</h3><p class="text-blue-800">${totalMatches}</p></div><div class="summary-card bg-yellow-100"><h3>Avg. Win Rate</h3><p class="text-yellow-800">${totalWinRate.toFixed(1)}%</p></div><div class="summary-card bg-green-100"><h3>Best Performing Model</h3><p class="text-green-800">${bestModel.name} (${bestModel.winRate.toFixed(1)}%)</p></div>`;
+        container.innerHTML = `<div class="summary-card bg-blue-50"><h3>Total Matches Analyzed</h3><p class="text-[var(--primary-blue)]">${totalMatches}</p></div><div class="summary-card bg-yellow-50"><h3>Avg. Win Rate</h3><p class="text-yellow-800">${totalWinRate.toFixed(1)}%</p></div><div class="summary-card bg-green-50"><h3>Best Performing Model</h3><p class="text-[var(--secondary-green)]">${bestModel.name} (${bestModel.winRate.toFixed(1)}%)</p></div>`;
     }
 
     function renderOverviewTable(data) {
         const container = document.getElementById('iaOverviewTableContainer');
         const categories = ['Home Win', 'Draw', 'Away Win'];
         const completed = data.filter(r => r.Result && r.Result.includes('-'));
-        let tableHTML = `<h2 class="text-xl font-semibold mb-4">Model Performance Overview</h2><div class="overflow-x-auto"><table class="min-w-full text-sm"><thead class="bg-gray-100"><tr class="text-left"><th class="p-2 font-semibold">Model</th><th class="p-2 font-semibold">Category</th><th class="p-2 font-semibold">Total Wins</th><th class="p-2 font-semibold">Total Matches</th><th class="p-2 font-semibold">Win Percentage</th></tr></thead><tbody>`;
+        let tableHTML = `<h2 class="text-xl font-semibold mb-4">Model Performance Overview</h2><div class="overflow-x-auto"><table><thead><tr class="text-left"><th>Model</th><th>Category</th><th>Total Wins</th><th>Total Matches</th><th>Win Percentage</th></tr></thead><tbody>`;
         ['Model 1', 'Model 2', 'Model 3'].forEach(modelName => {
             categories.forEach(cat => {
                 const predKey = modelName === 'Model 1' ? 'Predicted Outcome' : modelName === 'Model 2' ? 'Predicted Outcome3' : 'Prediction Outcome1';
@@ -1381,7 +1408,7 @@
                 const totalCatMatches = catMatches.length;
                 const totalCatWins = catMatches.filter(r => evaluatePrediction(r[predKey], r.Result)).length;
                 const winPercent = totalCatMatches > 0 ? ((totalCatWins / totalCatMatches) * 100).toFixed(1) + '%' : 'N/A';
-                tableHTML += `<tr class="border-b"><td class="p-2">${modelName}</td><td class="p-2">${cat}</td><td class="p-2">${totalCatWins}</td><td class="p-2">${totalCatMatches}</td><td class="p-2">${winPercent}</td></tr>`;
+                tableHTML += `<tr><td>${modelName}</td><td>${cat}</td><td>${totalCatWins}</td><td>${totalCatMatches}</td><td>${winPercent}</td></tr>`;
             });
         });
         tableHTML += `</tbody></table></div>`;
@@ -1397,9 +1424,9 @@
             const wins = catMatches.filter(r => evaluatePrediction(r[predKey], r.Result)).length;
             return (wins / catMatches.length) * 100;
         };
-        createChart('iaModel1CatChart', 'bar', 'Win %', categories, categories.map(cat => calcWinRate('Predicted Outcome', cat)), { yMax: 100 });
-        createChart('iaModel2CatChart', 'bar', 'Win %', categories, categories.map(cat => calcWinRate('Predicted Outcome3', cat)), { yMax: 100 });
-        createChart('iaModel3CatChart', 'bar', 'Win %', categories, categories.map(cat => calcWinRate('Prediction Outcome1', cat)), { yMax: 100 });
+        createChart('iaModel1CatChart', 'bar', 'Win %', categories, categories.map(cat => calcWinRate('Predicted Outcome', cat)), { yMax: 100, backgroundColor: '#2563EB' });
+        createChart('iaModel2CatChart', 'bar', 'Win %', categories, categories.map(cat => calcWinRate('Predicted Outcome3', cat)), { yMax: 100, backgroundColor: '#8B5CF6' });
+        createChart('iaModel3CatChart', 'bar', 'Win %', categories, categories.map(cat => calcWinRate('Prediction Outcome1', cat)), { yMax: 100, backgroundColor: '#059669' });
     }
 
     function renderProbabilityWinsGraphs(data) {
@@ -1410,13 +1437,13 @@
             wins.forEach(win => { const prob = win[probKey]; if (prob <= 50) ranges['0-50%']++; else if (prob <= 70) ranges['51-70%']++; else ranges['71-100%']++; });
             return Object.values(ranges);
         };
-        const generateChartForModel = (chartId, predKey, probKey) => {
+        const generateChartForModel = (chartId, predKey, probKey, color) => {
             const modelData = calcWinsInRanges(predKey, probKey);
-            createChart(chartId, 'bar', '# of Wins', probLabels, modelData);
+            createChart(chartId, 'bar', '# of Wins', probLabels, modelData, { backgroundColor: color });
         };
-        generateChartForModel('iaModel1ProbChart', 'Predicted Outcome', 'Probability (%)');
-        generateChartForModel('iaModel2ProbChart', 'Predicted Outcome3', 'Prediction Confidence (%)');
-        generateChartForModel('iaModel3ProbChart', 'Prediction Outcome1', 'Winning Probability');
+        generateChartForModel('iaModel1ProbChart', 'Predicted Outcome', 'Probability (%)', '#2563EB');
+        generateChartForModel('iaModel2ProbChart', 'Predicted Outcome3', 'Prediction Confidence (%)', '#8B5CF6');
+        generateChartForModel('iaModel3ProbChart', 'Prediction Outcome1', 'Winning Probability', '#059669');
     }
 
     // --- Setup Event Listeners ---
@@ -1475,16 +1502,21 @@
         document.body.addEventListener('click', e => {
             const viewBtn = e.target.closest('.view-btn');
             if (viewBtn) showMatchModal(JSON.parse(decodeURIComponent(viewBtn.dataset.match)));
-            if (e.target.id === 'closeModal' || e.target.id === 'modal') document.getElementById('modal').classList.add('hidden');
+            
             const favBtn = e.target.closest('.fav-btn');
             if (favBtn) { const id = favBtn.dataset.id; if(favourites.has(id)) favourites.delete(id); else favourites.add(id); localStorage.setItem('favourites', JSON.stringify([...favourites])); if (currentTab === 'insights') applyInsightsFilters(false); else applyFilters(false); }
+            
             if (e.target.matches('.compare-checkbox')) { const id = e.target.dataset.id; if (e.target.checked) matchesForComparison.add(id); else matchesForComparison.delete(id); }
+            
             const removeBookmarkBtn = e.target.closest('.remove-bookmark-btn');
             if (removeBookmarkBtn) { const {id, group} = removeBookmarkBtn.dataset; bookmarkedMatches[group] = bookmarkedMatches[group].filter(m => m.uniqueId !== id); if(bookmarkedMatches[group].length === 0) delete bookmarkedMatches[group]; localStorage.setItem('bookmarkedMatches', JSON.stringify(bookmarkedMatches)); renderComparisonPage(); }
+            
             const removeComparisonBtn = e.target.closest('.remove-comparison-btn');
             if (removeComparisonBtn) { const id = removeComparisonBtn.dataset.id; matchesForComparison.delete(id); renderComparisonPage(); const insightsCheckbox = document.querySelector(`#insightsTableBody .compare-checkbox[data-id='${id}']`); if (insightsCheckbox) insightsCheckbox.checked = false; }
+            
             const prevBookmarkBtn = e.target.closest('.bookmark-prev-btn');
             if (prevBookmarkBtn) { const group = prevBookmarkBtn.dataset.group; if(bookmarkPages[group] > 1) bookmarkPages[group]--; renderBookmarkSection(); }
+
             const nextBookmarkBtn = e.target.closest('.bookmark-next-btn');
             if (nextBookmarkBtn) { const group = nextBookmarkBtn.dataset.group; const totalPages = Math.ceil((bookmarkedMatches[group] || []).length / rowsPerPage); if(!bookmarkPages[group]) bookmarkPages[group] = 1; if(bookmarkPages[group] < totalPages) bookmarkPages[group]++; renderBookmarkSection(); }
         });
@@ -1499,10 +1531,8 @@
             th.classList.add(sortConfig.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
             applyFilters(false);
         });
-
-        document.getElementById('dashboardMoreFiltersBtn').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.remove('hidden'));
-        document.getElementById('closeMoreFiltersModal').addEventListener('click', () => document.getElementById('moreFiltersModal').classList.add('hidden'));
-        document.getElementById('applyMoreFilters').addEventListener('click', () => { if (currentTab === 'dashboard') renderDashboard(); else if (currentTab === 'insights') applyInsightsFilters(); else applyFilters(); document.getElementById('moreFiltersModal').classList.add('hidden'); });
+        
+        document.getElementById('applyMoreFilters').addEventListener('click', () => { if (currentTab === 'dashboard') renderDashboard(); else if (currentTab === 'insights') applyInsightsFilters(); else applyFilters(); document.getElementById('moreFiltersModal').classList.add('hidden'); document.getElementById('moreFiltersModal').classList.remove('flex'); });
         document.getElementById('resetMoreFilters').addEventListener('click', () => { document.getElementById('moreFiltersModal').querySelectorAll('input[type="number"], select').forEach(el => el.value = ''); if (currentTab === 'dashboard') renderDashboard(); else applyFilters(); });
 
         const dashboardFilterHandler = () => { clearTimeout(filterTimeout); filterTimeout = setTimeout(renderDashboard, 300); };
@@ -1512,8 +1542,6 @@
         ['prevPageBtn', 'nextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredMatches.length/rowsPerPage); if(e.target.id==='nextPageBtn' && currentPage < totalPages) currentPage++; else if(e.target.id==='prevPageBtn' && currentPage > 1) currentPage--; renderPaginatedTable(filteredMatches); }));
         ['insightsPrevPageBtn', 'insightsNextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredInsightsMatches.length/rowsPerPage); if(e.target.id==='insightsNextPageBtn' && insightsCurrentPage < totalPages) insightsCurrentPage++; else if(e.target.id==='insightsPrevPageBtn' && insightsCurrentPage > 1) insightsCurrentPage--; renderInsightsPaginatedTable(filteredInsightsMatches); }));
         
-        document.getElementById('bookmarkBtn').addEventListener('click', () => { if (document.querySelectorAll('.bookmark-checkbox:checked').length > 0) document.getElementById('bookmarkNameModal').classList.remove('hidden'); else alert('Please select at least one match to bookmark.'); });
-        ['closeBookmarkModal', 'cancelBookmark'].forEach(id => document.getElementById(id).addEventListener('click', () => { document.getElementById('bookmarkGroupName').value = ''; document.getElementById('bookmarkNameModal').classList.add('hidden'); }));
         document.getElementById('saveBookmark').addEventListener('click', () => {
             const groupName = document.getElementById('bookmarkGroupName').value.trim();
             if (!groupName) { alert('Please enter a group name.'); return; }
@@ -1527,6 +1555,7 @@
             document.getElementById('selectAllBookmark').checked = false;
             document.getElementById('bookmarkGroupName').value = '';
             document.getElementById('bookmarkNameModal').classList.add('hidden');
+            document.getElementById('bookmarkNameModal').classList.remove('flex');
             renderComparisonPage();
         });
         document.getElementById('selectAllBookmark').addEventListener('click', e => document.querySelectorAll('#comparisonTableBody .bookmark-checkbox').forEach(cb => cb.checked = e.target.checked));
@@ -1543,3 +1572,4 @@
   </script>
 </body>
 </html>
+
