@@ -292,6 +292,38 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Super Tips Table Styles */
+    #superTipsTable tbody tr:nth-child(even) {
+        background-color: #F8FAFC;
+    }
+    .prob-highlight {
+        background: linear-gradient(90deg, rgba(239, 246, 255, 0) 0%, rgba(219, 234, 254, 1) 100%);
+    }
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 180px;
+        background-color: #1E293B;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -90px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
     
     /* Responsive Design */
     @media (max-width: 768px) {
@@ -319,6 +351,7 @@
     <button class="tab-btn" data-tab="yesterday"></button>
     <button class="tab-btn" data-tab="analytics"></button>
     <button class="tab-btn" data-tab="match-prediction"></button>
+    <button class="tab-btn" data-tab="super-tips"></button>
   </div>
 
   <div class="app-shell">
@@ -330,6 +363,7 @@
       </div>
       <nav class="nav-list">
         <button class="nav-item active" data-tab="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></button>
+        <button class="nav-item" data-tab="super-tips"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Super Tips</span></button>
         <button class="nav-item" data-tab="all"><i class="fa-solid fa-table-list"></i><span>All Matches</span></button>
         <button class="nav-item" data-tab="best"><i class="fa-solid fa-star"></i><span>Best Predictions</span></button>
         <button class="nav-item" data-tab="match-prediction"><i class="fa-solid fa-bullseye"></i><span>Match Prediction</span></button>
@@ -397,6 +431,36 @@
                     <div id="dashboardTable3Container"></div>
                     <div id="dashboardTable4Container"></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Super Tips Tab -->
+        <div id="superTipsTab" class="tab-content hidden space-y-6">
+            <div id="superTipsSummaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div class="data-card" style="background: linear-gradient(to bottom, #f0f9ff, #ffffff);">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div><label for="stMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="stMatchDateFilter"></select></div>
+                    <div><label for="stSuperTipFilter" class="block text-sm font-medium mb-1">Super Tip:</label><select id="stSuperTipFilter"></select></div>
+                    <div><label for="stProbFilter" class="block text-sm font-medium mb-1">Super Tip Probability (%):</label><input type="number" id="stProbFilter" placeholder="e.g., > 60"></div>
+                    <div class="flex items-center justify-end gap-2">
+                      <button id="stClearFilters" class="btn btn-secondary text-sm">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="data-card overflow-x-auto">
+                <div class="overflow-x-auto">
+                    <table id="superTipsTable">
+                        <thead><tr>
+                            <th>Match</th><th>League</th><th>Home Odds</th><th>Draw Odds</th><th>Away Odds</th><th>Match Date</th><th>Result</th><th>Super Tip</th><th>Super Tip Probability</th><th>View</th>
+                        </tr></thead>
+                        <tbody id="superTipsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="superTipsPagination" class="flex justify-center items-center gap-4">
+                <button id="stPrevPageBtn" class="btn btn-secondary" disabled>Previous</button>
+                <span id="stPageIndicator">Page 1 of 1</span>
+                <button id="stNextPageBtn" class="btn btn-secondary" disabled>Next</button>
             </div>
         </div>
 
@@ -575,6 +639,12 @@
         <div id="matchPredictionModalContent"></div>
     </div>
   </div>
+  <div id="superTipsModal" class="fixed inset-0 hidden items-center justify-center z-40 p-4 modal-backdrop">
+    <div class="modal-content w-full max-w-2xl">
+        <button id="closeSuperTipsModal" class="absolute top-4 right-4 text-gray-500 text-xl z-10">&times;</button>
+        <div id="superTipsModalContent"></div>
+    </div>
+  </div>
   <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div id="loadingText" class="text-white text-xl animate-pulse">Loading data...</div></div>
 
   <!-- UI Interaction & Application Logic Script -->
@@ -605,6 +675,7 @@
                     case 'comparison': contentToShowId = 'comparisonTab'; break;
                     case 'insight-analytics': contentToShowId = 'insightAnalyticsTab'; break;
                     case 'match-prediction': contentToShowId = 'matchPredictionTab'; break;
+                    case 'super-tips': contentToShowId = 'superTipsTab'; break;
                     default: contentToShowId = 'mainContent'; break;
                 }
                 const contentEl = document.getElementById(contentToShowId);
@@ -646,6 +717,9 @@
         document.getElementById('matchPredictionModal').addEventListener('click', (e) => { if (e.target.id === 'matchPredictionModal') closeModal('matchPredictionModal'); });
         document.getElementById('closeMatchPredictionModal').addEventListener('click', () => closeModal('matchPredictionModal'));
 
+        document.getElementById('superTipsModal').addEventListener('click', (e) => { if (e.target.id === 'superTipsModal') closeModal('superTipsModal'); });
+        document.getElementById('closeSuperTipsModal').addEventListener('click', () => closeModal('superTipsModal'));
+
     });
 
     // --- State & Config ---
@@ -654,9 +728,10 @@
     let insightsMatches = [], filteredInsightsMatches = [], matchesForComparison = new Set();
     let filteredInsightAnalyticsMatches = [];
     let filteredMatchPredictionMatches = [];
+    let filteredSuperTipsMatches = [];
     let bookmarkedMatches = {};
     let charts = {};
-    let currentPage = 1, insightsCurrentPage = 1, matchPredictionCurrentPage = 1, bookmarkPages = {};
+    let currentPage = 1, insightsCurrentPage = 1, matchPredictionCurrentPage = 1, superTipsCurrentPage = 1, bookmarkPages = {};
     const rowsPerPage = 20; // Changed to 20
     let sortConfig = { column: 'MatchDate', direction: 'desc' };
     let insightsSortConfig = { column: 'MatchDate', direction: 'desc' };
@@ -696,7 +771,7 @@
                 'Home Odds', 'Draw Odds', 'Away Odds',
                 'Odds (Prediction)', 'Stake', 'Total Goals Prediction',
                 'H2H Home Wins', 'H2H Away Wins', 'H2H Draws', 'Home Team Position', 'Away Team Position',
-                'Tip Probability'
+                'Tip Probability', 'Super Tip Probability'
             ];
             numericKeys.forEach(key => { row[key] = parseFloat(String(row[key] || '').replace(/[^0-9.\-%]/g, '')) || 0; });
 
@@ -734,7 +809,8 @@
             populateDynamicFilters(allMatches);
             applyFilters();
             applyInsightsFilters();
-            applyMatchPredictionFilters(); // Apply filters for the new tab
+            applyMatchPredictionFilters(); 
+            applySuperTipsFilters();
             renderInsightAnalyticsPage(filteredInsightAnalyticsMatches);
             renderDashboard();
         } catch (err) { 
@@ -761,6 +837,7 @@
         const analyses = createOptions(data.map(r => r['Match Analysis']), 'asc');
         const predictions = createOptions(data.map(r => r['Prediction']), 'asc');
         const matchTips = createOptions(data.map(r => r['Match Tip']), 'asc');
+        const superTips = createOptions(data.map(r => r['Super Tip']), 'asc');
 
         const predictionTypes = createOptions(data.flatMap(r => [r['Predicted Outcome'], r['Predicted Outcome3'], r['Prediction Outcome1']]));
         populateSelect('mainMatchDateFilter', matchDates);
@@ -784,6 +861,8 @@
         
         populateSelect('mfPredictionFilter', predictions);
         populateSelect('mfMatchTipFilter', matchTips);
+        populateSelect('stSuperTipFilter', ['Home Win', 'Draw', 'Away Win']);
+        populateSelect('stMatchDateFilter', matchDates);
     }
     
     function populateSelect(id, options, isMulti = false) {
@@ -985,14 +1064,14 @@
         }
         
         filteredMatches = tempFiltered;
-        if (!['dashboard', 'analytics', 'insights', 'comparison', 'insight-analytics', 'match-prediction'].includes(currentTab)) {
+        if (!['dashboard', 'analytics', 'insights', 'comparison', 'insight-analytics', 'match-prediction', 'super-tips'].includes(currentTab)) {
             updateSummaryCards(filteredMatches);
             renderPredictionSummary(filteredMatches);
         }
         
         if (currentTab === 'analytics') renderAnalytics(filteredMatches);
         else if (currentTab === 'dashboard') renderDashboard();
-        else if (!['insights', 'comparison', 'insight-analytics', 'match-prediction'].includes(currentTab)) renderPaginatedTable(filteredMatches);
+        else if (!['insights', 'comparison', 'insight-analytics', 'match-prediction', 'super-tips'].includes(currentTab)) renderPaginatedTable(filteredMatches);
     }
 
     function applyInsightsFilters(resetPage = true) {
@@ -1045,6 +1124,31 @@
 
         filteredMatchPredictionMatches = tempFiltered;
         renderMatchPredictionTab();
+    }
+
+    // --- Super Tips Tab Logic ---
+    function applySuperTipsFilters(resetPage = true) {
+        if (resetPage) superTipsCurrentPage = 1;
+        
+        let tempFiltered = allMatches.filter(r => r['Super Tip'] && r['Super Tip'].trim() !== '');
+
+        const dateFilter = document.getElementById('stMatchDateFilter').value;
+        const tipFilter = document.getElementById('stSuperTipFilter').value;
+        const probFilter = parseFloat(document.getElementById('stProbFilter').value);
+        
+        tempFiltered = tempFiltered.filter(r => {
+            return (!dateFilter || r.MatchDate === dateFilter) &&
+                   (!tipFilter || r['Super Tip'] === tipFilter) &&
+                   (isNaN(probFilter) || r['Super Tip Probability'] >= probFilter);
+        });
+
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (q) {
+            tempFiltered = tempFiltered.filter(r => (r.Match || '').toLowerCase().includes(q));
+        }
+
+        filteredSuperTipsMatches = tempFiltered;
+        renderSuperTipsTab();
     }
     
     // --- Rendering Functions ---
@@ -1203,6 +1307,127 @@
         document.getElementById('insightsPrevPageBtn').disabled = insightsCurrentPage === 1;
         document.getElementById('insightsNextPageBtn').disabled = insightsCurrentPage >= totalPages;
     }
+
+    // --- Super Tips Rendering ---
+    function renderSuperTipsTab() {
+        renderSuperTipsSummary(filteredSuperTipsMatches);
+        renderSuperTipsPaginatedTable(filteredSuperTipsMatches);
+    }
+    
+    function renderSuperTipsSummary(data) {
+        const container = document.getElementById('superTipsSummaryCards');
+        const totalMatches = data.length;
+        const completed = data.filter(r => r.Result && r.Result.includes('-'));
+        const correctPredictions = completed.filter(r => evaluatePrediction(r['Super Tip'], r.Result)).length;
+        const accuracy = completed.length > 0 ? ((correctPredictions / completed.length) * 100).toFixed(1) : '0.0';
+
+        container.innerHTML = `
+            <div class="summary-card bg-blue-50"><h3>Total Matches</h3><p class="text-[var(--primary-blue)]">${totalMatches}</p></div>
+            <div class="summary-card bg-green-50"><h3>Correct Predictions</h3><p class="text-[var(--secondary-green)]">${correctPredictions}</p></div>
+            <div class="summary-card bg-indigo-50"><h3>Accuracy</h3><p class="text-indigo-800">${accuracy}%</p></div>
+        `;
+    }
+    
+    function renderSuperTipsPaginatedTable(data) {
+        const start = (superTipsCurrentPage - 1) * rowsPerPage;
+        const pageData = data.slice(start, start + rowsPerPage);
+        renderSuperTipsTable(pageData);
+
+        const totalPages = Math.ceil(data.length / rowsPerPage) || 1;
+        document.getElementById('stPageIndicator').textContent = `Page ${superTipsCurrentPage} of ${totalPages}`;
+        document.getElementById('stPrevPageBtn').disabled = superTipsCurrentPage === 1;
+        document.getElementById('stNextPageBtn').disabled = superTipsCurrentPage >= totalPages;
+    }
+    
+    function renderSuperTipsTable(data) {
+        const tbody = document.getElementById('superTipsTableBody');
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" class="text-center p-4">No matches found.</td></tr>`;
+            return;
+        }
+
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            const resultOutcome = detectOutcome(row.Result);
+            const superTip = row['Super Tip'];
+            const isCorrect = evaluatePrediction(superTip, row.Result);
+
+            let resultBg = '';
+            let tipBg = '';
+
+            if (resultOutcome) {
+                if (isCorrect) {
+                    if (superTip === 'Home Win') { resultBg = tipBg = 'bg-green-100 text-green-800'; }
+                    else if (superTip === 'Draw') { resultBg = tipBg = 'bg-blue-100 text-blue-800'; }
+                    else if (superTip === 'Away Win') { resultBg = tipBg = 'bg-orange-100 text-orange-800'; }
+                } else {
+                    resultBg = tipBg = 'bg-red-100 text-red-800';
+                }
+            }
+
+            if (row['Super Tip Probability'] >= 70) {
+                tr.classList.add('prob-highlight');
+            }
+
+            tr.innerHTML = `
+                <td class="font-medium">${row.Match}</td>
+                <td>${row.League}</td>
+                <td>${row['Home Odds']}</td>
+                <td>${row['Draw Odds']}</td>
+                <td>${row['Away Odds']}</td>
+                <td>${row.MatchDate}</td>
+                <td class="${resultBg}">${row.Result || '—'}</td>
+                <td class="${tipBg} tooltip">
+                    ${superTip}
+                    <span class="tooltiptext">Predicted ${row['Super Tip Probability']}% chance of ${superTip}</span>
+                </td>
+                <td>${row['Super Tip Probability']}%</td>
+                <td><button class="st-view-btn btn btn-primary text-xs py-1 px-2" data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function showSuperTipsModal(data) {
+        const modalContent = document.getElementById('superTipsModalContent');
+        const getStat = (key, def = 'N/A') => data[key] || def;
+
+        modalContent.innerHTML = `
+            <div class="text-center border-b pb-4 mb-4">
+                <h3 class="text-2xl font-bold">${getStat('Match')}</h3>
+                <p class="text-sm text-gray-500">${getStat('League')} - ${getStat('MatchDate')}</p>
+            </div>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-4 text-sm p-4">
+                <div class="font-semibold text-gray-600">Home Wins:</div> <div>${getStat('Home Wins')}</div>
+                <div class="font-semibold text-gray-600">Away Wins:</div> <div>${getStat('Away Wins')}</div>
+                <div class="font-semibold text-gray-600">Home Draws:</div> <div>${getStat('Home Draws')}</div>
+                <div class="font-semibold text-gray-600">Away Draws:</div> <div>${getStat('Away Draws')}</div>
+                <div class="font-semibold text-gray-600">Home Losses:</div> <div>${getStat('Home Losses')}</div>
+                <div class="font-semibold text-gray-600">Away Losses:</div> <div>${getStat('Away Losses')}</div>
+                <div class="col-span-2 my-2 border-t"></div>
+                <div class="font-semibold text-gray-600">Home Team Scored:</div> <div>${getStat('Home Scored')}</div>
+                <div class="font-semibold text-gray-600">Away Team Scored:</div> <div>${getStat('Away Scored')}</div>
+                <div class="font-semibold text-gray-600">Home Avg Scored:</div> <div>${getStat('Home Scored (Avg)')}</div>
+                <div class="font-semibold text-gray-600">Away Avg Scored:</div> <div>${getStat('Away Scored (Avg)')}</div>
+                <div class="font-semibold text-gray-600">Home Conceded:</div> <div>${getStat('Home Conceded')}</div>
+                <div class="font-semibold text-gray-600">Away Conceded:</div> <div>${getStat('Away Conceded')}</div>
+                <div class="font-semibold text-gray-600">Home Avg Conceded:</div> <div>${getStat('Home Conceded (Avg)')}</div>
+                <div class="font-semibold text-gray-600">Away Avg Conceded:</div> <div>${getStat('Away Conceded (Avg)')}</div>
+                 <div class="col-span-2 my-2 border-t"></div>
+                <div class="font-semibold text-gray-600">H2H Home Wins:</div> <div>${getStat('H2H Home Wins')}</div>
+                <div class="font-semibold text-gray-600">H2H Away Wins:</div> <div>${getStat('H2H Away Wins')}</div>
+                <div class="font-semibold text-gray-600">H2H Draws:</div> <div>${getStat('H2H Draws')}</div>
+                <div></div>
+                 <div class="col-span-2 my-2 border-t"></div>
+                <div class="font-semibold text-gray-600">Home Team Position:</div> <div>${getStat('Home Team Position')}</div>
+                <div class="font-semibold text-gray-600">Away Team Position:</div> <div>${getStat('Away Team Position')}</div>
+            </div>
+        `;
+        document.getElementById('superTipsModal').classList.add('flex');
+        document.getElementById('superTipsModal').classList.remove('hidden');
+    }
+
 
     // --- New Match Prediction Rendering ---
     function renderMatchPredictionTab() {
@@ -1665,6 +1890,7 @@
             else if (currentTab === 'comparison') renderComparisonPage();
             else if (currentTab === 'insight-analytics') applyInsightAnalyticsFilters();
             else if (currentTab === 'match-prediction') applyMatchPredictionFilters();
+            else if (currentTab === 'super-tips') applySuperTipsFilters();
             else applyFilters();
         }));
 
@@ -1678,6 +1904,13 @@
              const form = document.querySelector('#matchPredictionTab .data-card');
              form.querySelectorAll('select, input').forEach(el => { el.value = ''; });
              applyMatchPredictionFilters();
+        });
+        
+        document.getElementById('stClearFilters').addEventListener('click', () => {
+             document.getElementById('stMatchDateFilter').value = '';
+             document.getElementById('stSuperTipFilter').value = '';
+             document.getElementById('stProbFilter').value = '';
+             applySuperTipsFilters();
         });
 
         ['insightsClearFilters', 'comparisonClearFilters', 'iaClearFilters'].forEach(id => {
@@ -1700,6 +1933,9 @@
         const mpFilterHandler = () => { clearTimeout(filterTimeout); filterTimeout = setTimeout(applyMatchPredictionFilters, 300); };
         document.querySelectorAll('#matchPredictionTab select, #matchPredictionTab input').forEach(el => { el.addEventListener('input', mpFilterHandler); el.addEventListener('change', mpFilterHandler); });
 
+        const stFilterHandler = () => { clearTimeout(filterTimeout); filterTimeout = setTimeout(applySuperTipsFilters, 300); };
+        document.querySelectorAll('#superTipsTab select, #superTipsTab input').forEach(el => { el.addEventListener('input', stFilterHandler); el.addEventListener('change', stFilterHandler); });
+
         const filterHandler = (tab) => { clearTimeout(filterTimeout); filterTimeout = setTimeout(() => { if (tab === 'insights') applyInsightsFilters(); else if (tab === 'comparison') renderComparisonPage(); else if (tab === 'ia') applyInsightAnalyticsFilters(); }, 300); };
         ['insights', 'comparison', 'ia'].forEach(prefix => {
             ['MatchDateFilter', 'LeagueFilter', 'AnalysisFilter'].forEach(filter => document.getElementById(`${prefix}${filter}`)?.addEventListener('change', () => filterHandler(prefix)));
@@ -1714,6 +1950,7 @@
                     case 'comparison': renderComparisonPage(); break;
                     case 'dashboard': renderDashboard(); break;
                     case 'match-prediction': applyMatchPredictionFilters(); break;
+                    case 'super-tips': applySuperTipsFilters(); break;
                     default: applyFilters(); break;
                 }
             }, 300);
@@ -1725,6 +1962,9 @@
             
             const mpViewBtn = e.target.closest('.mp-view-btn');
             if (mpViewBtn) showMatchPredictionModal(JSON.parse(decodeURIComponent(mpViewBtn.dataset.match)));
+
+            const stViewBtn = e.target.closest('.st-view-btn');
+            if (stViewBtn) showSuperTipsModal(JSON.parse(decodeURIComponent(stViewBtn.dataset.match)));
             
             const favBtn = e.target.closest('.fav-btn');
             if (favBtn) { const id = favBtn.dataset.id; if(favourites.has(id)) favourites.delete(id); else favourites.add(id); localStorage.setItem('favourites', JSON.stringify([...favourites])); if (currentTab === 'insights') applyInsightsFilters(false); else applyFilters(false); }
@@ -1765,6 +2005,7 @@
         ['prevPageBtn', 'nextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredMatches.length/rowsPerPage); if(e.target.id==='nextPageBtn' && currentPage < totalPages) currentPage++; else if(e.target.id==='prevPageBtn' && currentPage > 1) currentPage--; renderPaginatedTable(filteredMatches); }));
         ['insightsPrevPageBtn', 'insightsNextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredInsightsMatches.length/rowsPerPage); if(e.target.id==='insightsNextPageBtn' && insightsCurrentPage < totalPages) insightsCurrentPage++; else if(e.target.id==='insightsPrevPageBtn' && insightsCurrentPage > 1) insightsCurrentPage--; renderInsightsPaginatedTable(filteredInsightsMatches); }));
         ['mpPrevPageBtn', 'mpNextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredMatchPredictionMatches.length/rowsPerPage); if(e.target.id==='mpNextPageBtn' && matchPredictionCurrentPage < totalPages) matchPredictionCurrentPage++; else if(e.target.id==='mpPrevPageBtn' && matchPredictionCurrentPage > 1) matchPredictionCurrentPage--; renderMatchPredictionPaginatedTable(filteredMatchPredictionMatches); }));
+        ['stPrevPageBtn', 'stNextPageBtn'].forEach(id => document.getElementById(id).addEventListener('click', e => { const totalPages = Math.ceil(filteredSuperTipsMatches.length/rowsPerPage); if(e.target.id==='stNextPageBtn' && superTipsCurrentPage < totalPages) superTipsCurrentPage++; else if(e.target.id==='stPrevPageBtn' && superTipsCurrentPage > 1) superTipsCurrentPage--; renderSuperTipsPaginatedTable(filteredSuperTipsMatches); }));
         
         document.getElementById('saveBookmark').addEventListener('click', () => {
             const groupName = document.getElementById('bookmarkGroupName').value.trim();
