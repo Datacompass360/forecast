@@ -87,7 +87,7 @@
         position: sticky;
         top: 0;
         z-index: 10;
-        background-color: #EBF8FF; /* Light blue background */
+        background-color: #F8FAFC;
         padding: 1.5rem 2rem;
         border-bottom: 1px solid var(--border);
     }
@@ -339,6 +339,11 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-5 right-5 z-50 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300">
+    <span id="toast-message"></span>
+  </div>
+
   <!-- Original Tab Buttons (Hidden but required for original JS logic) -->
   <div id="original-tabs" class="hidden">
     <button class="tab-btn" data-tab="dashboard"></button>
@@ -352,6 +357,8 @@
     <button class="tab-btn" data-tab="analytics"></button>
     <button class="tab-btn" data-tab="match-prediction"></button>
     <button class="tab-btn" data-tab="super-tips"></button>
+    <button class="tab-btn" data-tab="email-integration"></button> <!-- New -->
+    <button class="tab-btn" data-tab="report-management"></button> <!-- New -->
   </div>
 
   <div class="app-shell">
@@ -373,6 +380,9 @@
         <button class="nav-item" data-tab="insight-analytics"><i class="fa-solid fa-magnifying-glass-chart"></i><span>Insight Analytics</span></button>
         <button class="nav-item" data-tab="yesterday"><i class="fa-solid fa-calendar-day"></i><span>Yesterday</span></button>
         <button class="nav-item" data-tab="analytics"><i class="fa-solid fa-chart-simple"></i><span>Analytics</span></button>
+        <div class="my-2 border-t border-white/10"></div> <!-- Separator -->
+        <button class="nav-item" data-tab="report-management"><i class="fa-solid fa-file-invoice"></i><span>Reports</span></button>
+        <button class="nav-item" data-tab="email-integration"><i class="fa-solid fa-envelope"></i><span>Email Integration</span></button>
       </nav>
       <div class="p-2 border-t border-[rgba(255,255,255,0.1)] mt-auto">
          <button id="refreshBtn" class="w-full btn text-sm">
@@ -441,7 +451,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div><label for="stMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="stMatchDateFilter"></select></div>
                     <div><label for="stSuperTipFilter" class="block text-sm font-medium mb-1">Super Tip:</label><select id="stSuperTipFilter"></select></div>
-                    <div><label for="stProbFilter" class="block text-sm font-medium mb-1">Super Tip Probability (%):</label><input type="number" id="stProbFilter" placeholder="e.g., > 60"></div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Super Tip Probability (%):</label>
+                        <div class="flex gap-2">
+                          <input type="number" id="stProbMin" min="0" max="100" placeholder="Min %">
+                          <input type="number" id="stProbMax" min="0" max="100" placeholder="Max %">
+                        </div>
+                    </div>
                     <div class="flex items-center justify-end gap-2">
                       <button id="stClearFilters" class="btn btn-secondary text-sm">Clear</button>
                     </div>
@@ -611,6 +627,139 @@
                 <div class="data-card"><h3 class="font-semibold text-center mb-2 text-gray-700">Model 3: Wins by Prob</h3><div style="height:300px"><canvas id="iaModel3ProbChart"></canvas></div></div>
             </div>
         </div>
+
+        <!-- NEW: Email Integration Tab -->
+        <div id="emailIntegrationTab" class="tab-content hidden space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column: Configuration -->
+            <div class="data-card space-y-6 bg-gradient-to-br from-blue-50 to-white">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-cogs text-xl text-blue-600"></i>
+                <h2 class="text-xl font-bold text-gray-800">Email Configuration</h2>
+              </div>
+
+              <!-- Status Panel -->
+              <div id="emailStatusPanel" class="p-4 rounded-lg bg-blue-100 text-blue-800 flex items-center gap-3">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <span>Status: Not Configured</span>
+              </div>
+
+              <!-- Configuration Form -->
+              <div class="space-y-4">
+                <div><label for="smtpServer" class="block text-sm font-medium mb-1">SMTP Server</label><input id="smtpServer" type="text" placeholder="smtp.example.com"></div>
+                <div><label for="smtpPort" class="block text-sm font-medium mb-1">Port</label><input id="smtpPort" type="number" placeholder="587"></div>
+                <div><label for="senderEmail" class="block text-sm font-medium mb-1">Sender Email</label><input id="senderEmail" type="email" placeholder="your-email@example.com"></div>
+                <div><label for="senderPassword" class="block text-sm font-medium mb-1">Password / API Key</label><input id="senderPassword" type="password"></div>
+                <div><label for="senderName" class="block text-sm font-medium mb-1">Sender Name</label><input id="senderName" type="text" placeholder="Smart Analytics Bot"></div>
+              </div>
+
+              <div class="flex items-center gap-3 pt-4 border-t">
+                <button id="testConnectionBtn" class="btn btn-secondary"><i class="fa-solid fa-plug-circle-check"></i> Test Connection</button>
+                <button id="saveEmailConfigBtn" class="btn btn-primary"><i class="fa-solid fa-save"></i> Save Configuration</button>
+              </div>
+            </div>
+
+            <!-- Right Column: Send Email -->
+            <div class="data-card space-y-6">
+               <div class="flex items-center gap-3">
+                <i class="fa-solid fa-paper-plane text-xl text-green-600"></i>
+                <h2 class="text-xl font-bold text-gray-800">Send Email</h2>
+              </div>
+              <div class="space-y-4">
+                  <div><label for="emailRecipients" class="block text-sm font-medium mb-1">Recipient(s)</label><input id="emailRecipients" type="text" placeholder="recipient@example.com, another@example.com"></div>
+                  <div><label for="emailSubject" class="block text-sm font-medium mb-1">Subject</label><input id="emailSubject" type="text" placeholder="Your Analytics Report"></div>
+                  <div><label for="emailBody" class="block text-sm font-medium mb-1">Message</label><textarea id="emailBody" rows="6" placeholder="Enter your message here..."></textarea></div>
+              </div>
+               <div class="flex items-center justify-between pt-4 border-t">
+                  <p class="text-sm text-gray-500">Attach or link a report below.</p>
+                  <button id="sendEmailBtn" class="btn btn-primary bg-green-600 hover:bg-green-700" style="background: var(--secondary-green);"><i class="fa-solid fa-paper-plane"></i> Send Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: Report Management Tab -->
+        <div id="reportManagementTab" class="tab-content hidden space-y-8">
+          <!-- Report Builder -->
+          <div class="data-card bg-gradient-to-br from-green-50 to-white">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-3"><i class="fa-solid fa-wrench text-green-600"></i> Custom Report Builder</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+              <div>
+                <label for="reportType" class="block text-sm font-medium mb-1">Report Type</label>
+                <select id="reportType">
+                  <option value="summary">Summary</option>
+                  <option value="table">Detailed Table</option>
+                  <option value="chart">Analytical Chart</option>
+                </select>
+              </div>
+              <div>
+                <label for="reportDataFields" class="block text-sm font-medium mb-1">Data Fields</label>
+                <select id="reportDataFields" multiple class="h-24">
+                  <option>Match</option><option>MatchDate</option><option>League</option><option>Model 1</option><option>Probability 1</option><option>Result</option>
+                </select>
+              </div>
+              <div class="flex gap-3">
+                <button class="btn btn-secondary w-full"><i class="fa-solid fa-eye"></i> Preview</button>
+                <button class="btn btn-primary w-full"><i class="fa-solid fa-save"></i> Save Report</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Report Scheduling & Management Dashboard -->
+          <div class="data-card">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-3"><i class="fa-solid fa-clock text-blue-600"></i> Report Scheduling & Management</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr><th>Report Name</th><th>Type</th><th>Next Schedule</th><th>Recipients</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="font-medium">Daily Win Rate Summary</td>
+                    <td>Summary</td>
+                    <td>Oct 19, 2025, 08:00</td>
+                    <td>admin@example.com</td>
+                    <td><span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Active</span></td>
+                    <td class="flex gap-2">
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-pencil"></i></button>
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-pause"></i></button>
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-trash text-red-500"></i></button>
+                    </td>
+                  </tr>
+                   <tr>
+                    <td class="font-medium">Weekly Top Predictions</td>
+                    <td>Detailed Table</td>
+                    <td>Oct 24, 2025, 09:00</td>
+                    <td>team@example.com</td>
+                    <td><span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Active</span></td>
+                    <td class="flex gap-2">
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-pencil"></i></button>
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-pause"></i></button>
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-trash text-red-500"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="font-medium">Monthly Performance Chart</td>
+                    <td>Analytical Chart</td>
+                    <td>Nov 01, 2025, 12:00</td>
+                    <td>management@example.com</td>
+                    <td><span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Paused</span></td>
+                     <td class="flex gap-2">
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-pencil"></i></button>
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-play"></i></button>
+                      <button class="btn btn-secondary text-xs p-2"><i class="fa-solid fa-trash text-red-500"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-4 text-right">
+              <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Schedule</button>
+            </div>
+          </div>
+        </div>
+
+
       </main>
     </div>
   </div>
@@ -676,6 +825,8 @@
                     case 'insight-analytics': contentToShowId = 'insightAnalyticsTab'; break;
                     case 'match-prediction': contentToShowId = 'matchPredictionTab'; break;
                     case 'super-tips': contentToShowId = 'superTipsTab'; break;
+                    case 'email-integration': contentToShowId = 'emailIntegrationTab'; break;
+                    case 'report-management': contentToShowId = 'reportManagementTab'; break;
                     default: contentToShowId = 'mainContent'; break;
                 }
                 const contentEl = document.getElementById(contentToShowId);
@@ -701,12 +852,30 @@
                 modal.classList.remove('flex');
             }
         }
+        
+        // Toast notification logic
+        const showToast = (message, isError = false) => {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.className = 'fixed top-5 right-5 z-[100] py-2 px-4 rounded-lg shadow-lg transform transition-transform duration-300';
+            if (isError) {
+                toast.classList.add('bg-red-500', 'text-white');
+            } else {
+                toast.classList.add('bg-green-500', 'text-white');
+            }
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        };
+
 
         document.getElementById('dashboardMoreFiltersBtn').addEventListener('click', () => openModal('moreFiltersModal'));
         document.getElementById('closeMoreFiltersModal').addEventListener('click', () => closeModal('moreFiltersModal'));
         document.getElementById('moreFiltersModal').addEventListener('click', (e) => { if(e.target.id === 'moreFiltersModal') closeModal('moreFiltersModal'); });
         
-        document.getElementById('bookmarkBtn').addEventListener('click', () => { if (document.querySelectorAll('.bookmark-checkbox:checked').length > 0) openModal('bookmarkNameModal'); else alert('Please select at least one match to bookmark.'); });
+        document.getElementById('bookmarkBtn').addEventListener('click', () => { if (document.querySelectorAll('.bookmark-checkbox:checked').length > 0) openModal('bookmarkNameModal'); else showToast('Please select at least one match to bookmark.', true); });
         document.getElementById('closeBookmarkModal').addEventListener('click', () => closeModal('bookmarkNameModal'));
         document.getElementById('cancelBookmark').addEventListener('click', () => closeModal('bookmarkNameModal'));
         document.getElementById('bookmarkNameModal').addEventListener('click', (e) => { if(e.target.id === 'bookmarkNameModal') closeModal('bookmarkNameModal'); });
@@ -720,6 +889,38 @@
         document.getElementById('superTipsModal').addEventListener('click', (e) => { if (e.target.id === 'superTipsModal') closeModal('superTipsModal'); });
         document.getElementById('closeSuperTipsModal').addEventListener('click', () => closeModal('superTipsModal'));
 
+        // Event Listeners for new tabs
+        document.getElementById('testConnectionBtn').addEventListener('click', () => {
+            showToast('Testing connection...');
+            // In a real app, this would trigger a backend call.
+            setTimeout(() => {
+                const success = Math.random() > 0.3; // Simulate success/failure
+                if(success) {
+                    showToast('Connection successful!');
+                    document.querySelector('#emailStatusPanel span').textContent = 'Status: Connected';
+                    document.querySelector('#emailStatusPanel').classList.remove('bg-blue-100', 'text-blue-800');
+                    document.querySelector('#emailStatusPanel').classList.add('bg-green-100', 'text-green-800');
+                } else {
+                    showToast('Connection failed. Check settings.', true);
+                     document.querySelector('#emailStatusPanel span').textContent = 'Status: Invalid Configuration';
+                    document.querySelector('#emailStatusPanel').classList.remove('bg-green-100', 'text-green-800');
+                    document.querySelector('#emailStatusPanel').classList.add('bg-red-100', 'text-red-800');
+                }
+            }, 1500);
+        });
+
+        document.getElementById('saveEmailConfigBtn').addEventListener('click', () => {
+            showToast('Configuration saved successfully!');
+            // Here you would use something like Apps Script's PropertiesService
+        });
+
+        document.getElementById('sendEmailBtn').addEventListener('click', () => {
+            showToast('Sending email...');
+            // Simulate sending
+            setTimeout(() => {
+                showToast('Email sent successfully!');
+            }, 1000);
+        });
     });
 
     // --- State & Config ---
@@ -794,6 +995,7 @@
         text.textContent = message;
         text.classList.remove('animate-pulse');
         overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
     }
 
     async function loadData() {
@@ -1071,7 +1273,7 @@
         
         if (currentTab === 'analytics') renderAnalytics(filteredMatches);
         else if (currentTab === 'dashboard') renderDashboard();
-        else if (!['insights', 'comparison', 'insight-analytics', 'match-prediction', 'super-tips'].includes(currentTab)) renderPaginatedTable(filteredMatches);
+        else if (!['insights', 'comparison', 'insight-analytics', 'match-prediction', 'super-tips', 'email-integration', 'report-management'].includes(currentTab)) renderPaginatedTable(filteredMatches);
     }
 
     function applyInsightsFilters(resetPage = true) {
@@ -1126,7 +1328,7 @@
         renderMatchPredictionTab();
     }
 
-    // --- Super Tips Tab Logic ---
+    // --- Super Tips Tab Logic (UPDATED) ---
     function applySuperTipsFilters(resetPage = true) {
         if (resetPage) superTipsCurrentPage = 1;
         
@@ -1134,12 +1336,15 @@
 
         const dateFilter = document.getElementById('stMatchDateFilter').value;
         const tipFilter = document.getElementById('stSuperTipFilter').value;
-        const probFilter = parseFloat(document.getElementById('stProbFilter').value);
+        const probMin = parseFloat(document.getElementById('stProbMin').value);
+        const probMax = parseFloat(document.getElementById('stProbMax').value);
         
         tempFiltered = tempFiltered.filter(r => {
+            const prob = r['Super Tip Probability'];
             return (!dateFilter || r.MatchDate === dateFilter) &&
                    (!tipFilter || r['Super Tip'] === tipFilter) &&
-                   (isNaN(probFilter) || r['Super Tip Probability'] >= probFilter);
+                   (isNaN(probMin) || prob >= probMin) &&
+                   (isNaN(probMax) || prob <= probMax);
         });
 
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -1615,7 +1820,8 @@
         const completedMatches = allMatches.filter(r => r.Result && r.Result.includes('-'));
         const performanceByDate = completedMatches.reduce((acc, match) => {
             const date = match.MatchDate;
-            if (!acc[date]) acc[date] = { model1: 0, model2: 0, model3: 0, model4: 0 };
+            if (!acc[date]) acc[date] = { model1: 0, model2: 0, model3: 0, model4: 0, total: 0 };
+            acc[date].total++;
             if (evaluatePrediction(match['Prediction'], match.Result)) acc[date].model1++;
             if (evaluatePrediction(match['Predicted Outcome'], match.Result)) acc[date].model2++;
             if (evaluatePrediction(match['Prediction Outcome1'], match.Result)) acc[date].model3++;
@@ -1891,6 +2097,7 @@
             else if (currentTab === 'insight-analytics') applyInsightAnalyticsFilters();
             else if (currentTab === 'match-prediction') applyMatchPredictionFilters();
             else if (currentTab === 'super-tips') applySuperTipsFilters();
+            else if (['email-integration', 'report-management'].includes(currentTab)) { /* Do nothing, tab switch is handled */ }
             else applyFilters();
         }));
 
@@ -1909,7 +2116,8 @@
         document.getElementById('stClearFilters').addEventListener('click', () => {
              document.getElementById('stMatchDateFilter').value = '';
              document.getElementById('stSuperTipFilter').value = '';
-             document.getElementById('stProbFilter').value = '';
+             document.getElementById('stProbMin').value = '';
+             document.getElementById('stProbMax').value = '';
              applySuperTipsFilters();
         });
 
@@ -2037,4 +2245,3 @@
   </script>
 </body>
 </html>
-
