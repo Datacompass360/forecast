@@ -372,7 +372,7 @@
         <button class="nav-item active" data-tab="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></button>
         <button class="nav-item" data-tab="super-tips"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Super Tips</span></button>
         <button class="nav-item" data-tab="all"><i class="fa-solid fa-table-list"></i><span>All Matches</span></button>
-        <button class="nav-item" data-tab="best"><i class="fa-solid fa-star"></i><span>Best Predictions</span></button>
+        <button class="nav-item" data-tab="best"><i class="fa-solid fa-star"></i><span>Brstt Predictions</span></button>
         <button class="nav-item" data-tab="match-prediction"><i class="fa-solid fa-bullseye"></i><span>Match Prediction</span></button>
         <button class="nav-item" data-tab="favourites"><i class="fa-solid fa-heart"></i><span>Favourites</span></button>
         <button class="nav-item" data-tab="insights"><i class="fa-solid fa-lightbulb"></i><span>Insights</span></button>
@@ -462,12 +462,19 @@
                       <button id="stClearFilters" class="btn btn-secondary text-sm">Clear</button>
                     </div>
                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end mt-4">
+                    <div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="stMinWinStreak" placeholder="Min"><input type="number" id="stMaxWinStreak" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="stMinLoseStreak" placeholder="Min"><input type="number" id="stMaxLoseStreak" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">Table Difference:</label><div class="flex gap-2"><input type="number" id="stMinTableDiff" placeholder="Min"><input type="number" id="stMaxTableDiff" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">H2H Difference:</label><div class="flex gap-2"><input type="number" id="stMinH2HDiff" placeholder="Min"><input type="number" id="stMaxH2HDiff" placeholder="Max"></div></div>
+                    <div><label class="block text-sm font-medium mb-1">Scoring Difference:</label><div class="flex gap-2"><input type="number" id="stMinScoringDiff" placeholder="Min"><input type="number" id="stMaxScoringDiff" placeholder="Max"></div></div>
+                </div>
             </div>
             <div class="data-card overflow-x-auto">
                 <div class="overflow-x-auto">
                     <table id="superTipsTable">
                         <thead><tr>
-                            <th>Match</th><th>League</th><th>Home Odds</th><th>Draw Odds</th><th>Away Odds</th><th>Match Date</th><th>Result</th><th>Super Tip</th><th>Super Tip Probability</th><th>View</th>
+                            <th>Match</th><th>League</th><th>Home Odds</th><th>Draw Odds</th><th>Away Odds</th><th>Match Date</th><th>Winning Streak</th><th>Losing Streak</th><th>Table Diff</th><th>H2H Diff</th><th>Scoring Diff</th><th>Result</th><th>Super Tip</th><th>Super Tip Probability</th><th>View</th>
                         </tr></thead>
                         <tbody id="superTipsTableBody"></tbody>
                     </table>
@@ -488,7 +495,7 @@
           <div id="predictionSummaryCard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
           <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
           <div class="data-card">
-              <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-end">
+              <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
                   <div><label for="mainMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="mainMatchDateFilter"></select></div>
                   <div><label for="mainModel1PredFilter" class="block text-sm font-medium mb-1">Model 1 Pred:</label><select id="mainModel1PredFilter"></select></div>
                   <div><label class="block text-sm font-medium mb-1">Prob 1 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb1" placeholder="Min"><input type="number" id="mainMaxProb1" placeholder="Max"></div></div>
@@ -496,6 +503,13 @@
                   <div><label class="block text-sm font-medium mb-1">Prob 2 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb2" placeholder="Min"><input type="number" id="mainMaxProb2" placeholder="Max"></div></div>
                   <div><label for="mainModel3PredFilter" class="block text-sm font-medium mb-1">Model 3 Pred:</label><select id="mainModel3PredFilter"></select></div>
                   <div><label class="block text-sm font-medium mb-1">Prob 3 (%):</label><div class="flex gap-2"><input type="number" id="mainMinProb3" placeholder="Min"><input type="number" id="mainMaxProb3" placeholder="Max"></div></div>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end mt-4">
+                  <div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="mainMinWinningStreak" placeholder="Min"><input type="number" id="mainMaxWinningStreak" placeholder="Max"></div></div>
+                  <div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="mainMinLosingStreak" placeholder="Min"><input type="number" id="mainMaxLosingStreak" placeholder="Max"></div></div>
+                  <div><label class="block text-sm font-medium mb-1">Table Difference:</label><div class="flex gap-2"><input type="number" id="mainMinTableDiff" placeholder="Min"><input type="number" id="mainMaxTableDiff" placeholder="Max"></div></div>
+                  <div><label class="block text-sm font-medium mb-1">H2H Difference:</label><div class="flex gap-2"><input type="number" id="mainMinH2HDiff" placeholder="Min"><input type="number" id="mainMaxH2HDiff" placeholder="Max"></div></div>
+                  <div><label class="block text-sm font-medium mb-1">Scoring Difference:</label><div class="flex gap-2"><input type="number" id="mainMinScoringDiff" placeholder="Min"><input type="number" id="mainMaxScoringDiff" placeholder="Max"></div></div>
                   <div class="flex items-center justify-end gap-2">
                     <button id="mainClearFilters" class="btn btn-secondary text-sm">Clear</button>
                   </div>
@@ -505,7 +519,7 @@
             <div class="overflow-x-auto">
               <table id="matchesTable">
                 <thead id="tableHeaders"><tr>
-                    <th data-column="star"><i class="fa-solid fa-star"></i></th><th data-column="MatchDate">Date</th><th data-column="Match">Match</th><th data-column="Model 1">Model 1 (Pred)</th><th data-column="Probability 1">Prob 1 (%)</th><th data-column="Model 2">Model 2 (Pred)</th><th data-column="Probability 2">Prob 2 (%)</th><th data-column="Predicted Odd">Predicted Odd</th><th data-column="Model 3">Model 3 (Pred)</th><th data-column="Probability 3">Prob 3 (%)</th><th data-column="Prediction">Prediction</th><th data-column="Stake">Stake</th><th data-column="Tip Probability">Tip Prob (%)</th><th data-column="Match Tip">Match Tip</th><th data-column="Result">Result</th><th>View</th>
+                    <th data-column="star"><i class="fa-solid fa-star"></i></th><th data-column="MatchDate">Date</th><th data-column="Match">Match</th><th data-column="Winning Streak">Winning Streak</th><th data-column="Losing Streak">Losing Streak</th><th data-column="Table Difference">Table Diff</th><th data-column="H2H Difference">H2H Diff</th><th data-column="Scoring Difference">Scoring Diff</th><th data-column="Model 1">Model 1 (Pred)</th><th data-column="Probability 1">Prob 1 (%)</th><th data-column="Model 2">Model 2 (Pred)</th><th data-column="Probability 2">Prob 2 (%)</th><th data-column="Predicted Odd">Predicted Odd</th><th data-column="Model 3">Model 3 (Pred)</th><th data-column="Probability 3">Prob 3 (%)</th><th data-column="Prediction">Prediction</th><th data-column="Stake">Stake</th><th data-column="Tip Probability">Tip Prob (%)</th><th data-column="Match Tip">Match Tip</th><th data-column="Result">Result</th><th>View</th>
                 </tr></thead>
                 <tbody id="tableBody"></tbody>
               </table>
@@ -518,11 +532,14 @@
         <div id="matchPredictionTab" class="tab-content hidden space-y-6">
           <div id="matchPredictionSummaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
           <div class="data-card">
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+              <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
                   <div><label for="mpMatchDateFilter" class="block text-sm font-medium mb-1">Match Date:</label><select id="mpMatchDateFilter"></select></div>
                   <div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="mpMinWinStreak" placeholder="Min"><input type="number" id="mpMaxWinStreak" placeholder="Max"></div></div>
                   <div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="mpMinLoseStreak" placeholder="Min"><input type="number" id="mpMaxLoseStreak" placeholder="Max"></div></div>
-                  <div class="flex items-center justify-end gap-2">
+                  <div><label class="block text-sm font-medium mb-1">Table Difference:</label><div class="flex gap-2"><input type="number" id="mpMinTableDiff" placeholder="Min"><input type="number" id="mpMaxTableDiff" placeholder="Max"></div></div>
+                  <div><label class="block text-sm font-medium mb-1">H2H Difference:</label><div class="flex gap-2"><input type="number" id="mpMinH2HDiff" placeholder="Min"><input type="number" id="mpMaxH2HDiff" placeholder="Max"></div></div>
+                  <div><label class="block text-sm font-medium mb-1">Scoring Difference:</label><div class="flex gap-2"><input type="number" id="mpMinScoringDiff" placeholder="Min"><input type="number" id="mpMaxScoringDiff" placeholder="Max"></div></div>
+                  <div class="flex items-center justify-end gap-2 lg:col-start-6">
                     <button id="mpClearFilters" class="btn btn-secondary text-sm">Clear</button>
                   </div>
               </div>
@@ -531,7 +548,7 @@
               <div class="overflow-x-auto">
                   <table id="matchPredictionTable">
                       <thead><tr>
-                          <th>Match</th><th>Home Odds</th><th>Draw Odds</th><th>Away Odds</th><th>Match Date</th><th>Match Prediction</th><th>Result</th><th>View</th>
+                          <th>Match</th><th>Home Odds</th><th>Draw Odds</th><th>Away Odds</th><th>Match Date</th><th>Winning Streak</th><th>Losing Streak</th><th>Table Diff</th><th>H2H Diff</th><th>Scoring Diff</th><th>Match Prediction</th><th>Result</th><th>View</th>
                       </tr></thead>
                       <tbody id="matchPredictionTableBody"></tbody>
                   </table>
@@ -773,7 +790,15 @@
         <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Predictions & Tips</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label for="mfPredictionFilter" class="block text-sm font-medium mb-1">Prediction:</label><select id="mfPredictionFilter"></select></div><div><label class="block text-sm font-medium mb-1">Stake:</label><div class="flex gap-2"><input type="number" id="mfStakeMin" placeholder="Min"><input type="number" id="mfStakeMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Tip Probability (%):</label><div class="flex gap-2"><input type="number" id="mfTipProbMin" placeholder="Min"><input type="number" id="mfTipProbMax" placeholder="Max"></div></div><div><label for="mfMatchTipFilter" class="block text-sm font-medium mb-1">Match Tip:</label><select id="mfMatchTipFilter"></select></div></div></div>
         <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Home Team Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Home Wins:</label><div class="flex gap-2"><input type="number" id="mfHomeWinsMin" placeholder="Min"><input type="number" id="mfHomeWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Draws:</label><div class="flex gap-2"><input type="number" id="mfHomeDrawsMin" placeholder="Min"><input type="number" id="mfHomeDrawsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Losses:</label><div class="flex gap-2"><input type="number" id="mfHomeLossesMin" placeholder="Min"><input type="number" id="mfHomeLossesMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Scored:</label><div class="flex gap-2"><input type="number" id="mfHomeScoredMin" placeholder="Min"><input type="number" id="mfHomeScoredMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeScoredAvgMin" placeholder="Min"><input type="number" id="mfHomeScoredAvgMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Conceded:</label><div class="flex gap-2"><input type="number" id="mfHomeConcededMin" placeholder="Min"><input type="number" id="mfHomeConcededMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Home Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfHomeConcededAvgMin" placeholder="Min"><input type="number" id="mfHomeConcededAvgMax" placeholder="Max"></div></div></div></div>
         <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Away Team Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Away Wins:</label><div class="flex gap-2"><input type="number" id="mfAwayWinsMin" placeholder="Min"><input type="number" id="mfAwayWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Draws:</label><div class="flex gap-2"><input type="number" id="mfAwayDrawsMin" placeholder="Min"><input type="number" id="mfAwayDrawsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Losses:</label><div class="flex gap-2"><input type="number" id="mfAwayLossesMin" placeholder="Min"><input type="number" id="mfAwayLossesMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Scored:</label><div class="flex gap-2"><input type="number" id="mfAwayScoredMin" placeholder="Min"><input type="number" id="mfAwayScoredMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Scored (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayScoredAvgMin" placeholder="Min"><input type="number" id="mfAwayScoredAvgMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Conceded:</label><div class="flex gap-2"><input type="number" id="mfAwayConcededMin" placeholder="Min"><input type="number" id="mfAwayConcededMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Conceded (Avg):</label><div class="flex gap-2"><input type="number" id="mfAwayConcededAvgMin" placeholder="Min"><input type="number" id="mfAwayConcededAvgMax" placeholder="Max"></div></div></div></div>
-        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Streaks & Analysis</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="mfWinningStreakMin" placeholder="Min"><input type="number" id="mfWinningStreakMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="mfLosingStreakMin" placeholder="Min"><input type="number" id="mfLosingStreakMax" placeholder="Max"></div></div><div><label for="mfMatchAnalysisFilter" class="block text-sm font-medium mb-1">Match Analysis:</label><select id="mfMatchAnalysisFilter"></select></div><div><label for="mfTotalGoalsPredictionFilter" class="block text-sm font-medium mb-1">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter"></select></div></div></div>
+        <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">Streaks, Analysis & Differences</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div><label class="block text-sm font-medium mb-1">Winning Streak:</label><div class="flex gap-2"><input type="number" id="mfWinningStreakMin" placeholder="Min"><input type="number" id="mfWinningStreakMax" placeholder="Max"></div></div>
+            <div><label class="block text-sm font-medium mb-1">Losing Streak:</label><div class="flex gap-2"><input type="number" id="mfLosingStreakMin" placeholder="Min"><input type="number" id="mfLosingStreakMax" placeholder="Max"></div></div>
+            <div><label class="block text-sm font-medium mb-1">Table Difference:</label><div class="flex gap-2"><input type="number" id="mfTableDiffMin" placeholder="Min"><input type="number" id="mfTableDiffMax" placeholder="Max"></div></div>
+            <div><label class="block text-sm font-medium mb-1">H2H Difference:</label><div class="flex gap-2"><input type="number" id="mfH2HDiffMin" placeholder="Min"><input type="number" id="mfH2HDiffMax" placeholder="Max"></div></div>
+            <div><label class="block text-sm font-medium mb-1">Scoring Difference:</label><div class="flex gap-2"><input type="number" id="mfScoringDiffMin" placeholder="Min"><input type="number" id="mfScoringDiffMax" placeholder="Max"></div></div>
+            <div><label for="mfMatchAnalysisFilter" class="block text-sm font-medium mb-1">Match Analysis:</label><select id="mfMatchAnalysisFilter"></select></div>
+            <div><label for="mfTotalGoalsPredictionFilter" class="block text-sm font-medium mb-1">Total Goals Prediction:</label><select id="mfTotalGoalsPredictionFilter"></select></div>
+        </div></div>
         <div><h3 class="text-lg text-gray-700 font-semibold mb-3 border-b pb-2">H2H & Position Stats</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-sm font-medium mb-1">H2H Home Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HHomeWinsMin" placeholder="Min"><input type="number" id="mfH2HHomeWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">H2H Away Wins:</label><div class="flex gap-2"><input type="number" id="mfH2HAwayWinsMin" placeholder="Min"><input type="number" id="mfH2HAwayWinsMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">H2H Draws:</label><div class="flex gap-2"><input type="number" id="mfH2HDrawsMin" placeholder="Min"><input type="number" id="mfH2HDrawsMax" placeholder="Max"></div></div><div class="grid grid-cols-2 gap-2"><div><label class="block text-sm font-medium mb-1">Home Pos:</label><div class="flex gap-2"><input type="number" id="mfHomeTeamPositionMin" placeholder="Min"><input type="number"id="mfHomeTeamPositionMax" placeholder="Max"></div></div><div><label class="block text-sm font-medium mb-1">Away Pos:</label><div class="flex gap-2"><input type="number" id="mfAwayTeamPositionMin" placeholder="Min"><input type="number" id="mfAwayTeamPositionMax" placeholder="Max"></div></div></div></div></div>
       </div>
       <div class="mt-8 flex justify-end space-x-4"><button id="resetMoreFilters" class="btn btn-secondary">Clear</button><button id="applyMoreFilters" class="btn btn-primary">Apply Filters</button></div>
@@ -972,7 +997,7 @@
                 'Home Odds', 'Draw Odds', 'Away Odds',
                 'Odds (Prediction)', 'Stake', 'Total Goals Prediction',
                 'H2H Home Wins', 'H2H Away Wins', 'H2H Draws', 'Home Team Position', 'Away Team Position',
-                'Tip Probability', 'Super Tip Probability'
+                'Tip Probability', 'Super Tip Probability', 'Table Difference', 'H2H Difference', 'Scoring Difference'
             ];
             numericKeys.forEach(key => { row[key] = parseFloat(String(row[key] || '').replace(/[^0-9.\-%]/g, '')) || 0; });
 
@@ -1086,7 +1111,8 @@
             'H2H Home Wins': 'mfH2HHomeWins', 'H2H Away Wins': 'mfH2HAwayWins', 'H2H Draws': 'mfH2HDraws',
             'Home Team Position': 'mfHomeTeamPosition', 'Away Team Position': 'mfAwayTeamPosition',
             'Tip Probability': 'mfTipProb',
-            'Stake': 'mfStake'
+            'Stake': 'mfStake',
+            'Table Difference': 'mfTableDiff', 'H2H Difference': 'mfH2HDiff', 'Scoring Difference': 'mfScoringDiff'
         };
         const dropdownColumns = { 'Match Analysis': 'mfMatchAnalysisFilter', 'Total Goals Prediction': 'mfTotalGoalsPredictionFilter' };
 
@@ -1162,6 +1188,9 @@
             awayConcededAvgMin: getNum('mfAwayConcededAvgMin'), awayConcededAvgMax: getNum('mfAwayConcededAvgMax'),
             winningStreakMin: getNum('mfWinningStreakMin'), winningStreakMax: getNum('mfWinningStreakMax'),
             losingStreakMin: getNum('mfLosingStreakMin'), losingStreakMax: getNum('mfLosingStreakMax'),
+            tableDiffMin: getNum('mfTableDiffMin'), tableDiffMax: getNum('mfTableDiffMax'),
+            h2hDiffMin: getNum('mfH2HDiffMin'), h2hDiffMax: getNum('mfH2HDiffMax'),
+            scoringDiffMin: getNum('mfScoringDiffMin'), scoringDiffMax: getNum('mfScoringDiffMax'),
             matchAnalysis: getVal('mfMatchAnalysisFilter'),
             totalGoalsPrediction: getVal('mfTotalGoalsPredictionFilter'),
             h2hHomeWinsMin: getNum('mfH2HHomeWinsMin'), h2hHomeWinsMax: getNum('mfH2HHomeWinsMax'),
@@ -1173,6 +1202,7 @@
         
         let tabDate, model1Pred, minProb1, maxProb1, model2Pred, minProb2, maxProb2, model3Pred, minProb3, maxProb3;
         let tabMinWinStreak, tabMaxWinStreak, tabMinLoseStreak, tabMaxLoseStreak;
+        let tabMinTableDiff, tabMaxTableDiff, tabMinH2HDiff, tabMaxH2HDiff, tabMinScoringDiff, tabMaxScoringDiff;
 
         if (currentTab === 'dashboard') {
             tabDate = getVal("dashboardMatchDateFilter");
@@ -1185,6 +1215,17 @@
             model1Pred = getVal("mainModel1PredFilter"); minProb1 = getNum('mainMinProb1'); maxProb1 = getNum('mainMaxProb1');
             model2Pred = getVal("mainModel2PredFilter"); minProb2 = getNum('mainMinProb2'); maxProb2 = getNum('mainMaxProb2');
             model3Pred = getVal("mainModel3PredFilter"); minProb3 = getNum('mainMinProb3'); maxProb3 = getNum('mainMaxProb3');
+            
+            tabMinWinStreak = getNum('mainMinWinningStreak');
+            tabMaxWinStreak = getNum('mainMaxWinningStreak');
+            tabMinLoseStreak = getNum('mainMinLosingStreak');
+            tabMaxLoseStreak = getNum('mainMaxLosingStreak');
+            tabMinTableDiff = getNum('mainMinTableDiff');
+            tabMaxTableDiff = getNum('mainMaxTableDiff');
+            tabMinH2HDiff = getNum('mainMinH2HDiff');
+            tabMaxH2HDiff = getNum('mainMaxH2HDiff');
+            tabMinScoringDiff = getNum('mainMinScoringDiff');
+            tabMaxScoringDiff = getNum('mainMaxScoringDiff');
         }
 
         let tempFiltered = dataToFilter.filter(r => {
@@ -1194,6 +1235,13 @@
             const effectiveMaxWin = Math.min(tabMaxWinStreak || Infinity, mf.winningStreakMax || Infinity);
             const effectiveMinLose = Math.max(tabMinLoseStreak || -Infinity, mf.losingStreakMin || -Infinity);
             const effectiveMaxLose = Math.min(tabMaxLoseStreak || Infinity, mf.losingStreakMax || Infinity);
+
+            const effectiveMinTableDiff = Math.max(tabMinTableDiff || -Infinity, mf.tableDiffMin || -Infinity);
+            const effectiveMaxTableDiff = Math.min(tabMaxTableDiff || Infinity, mf.tableDiffMax || Infinity);
+            const effectiveMinH2HDiff = Math.max(tabMinH2HDiff || -Infinity, mf.h2hDiffMin || -Infinity);
+            const effectiveMaxH2HDiff = Math.min(tabMaxH2HDiff || Infinity, mf.h2hDiffMax || Infinity);
+            const effectiveMinScoringDiff = Math.max(tabMinScoringDiff || -Infinity, mf.scoringDiffMin || -Infinity);
+            const effectiveMaxScoringDiff = Math.min(tabMaxScoringDiff || Infinity, mf.scoringDiffMax || Infinity);
 
             return (!tabDate || r.MatchDate === tabDate) &&
                    (!model1Pred || r['Predicted Outcome'] === model1Pred) && checkRange(r['Probability (%)'], minProb1, maxProb1) &&
@@ -1210,6 +1258,9 @@
                    checkRange(r['Away Scored'], mf.awayScoredMin, mf.awayScoredMax) && checkRange(r['Away Scored (Avg)'], mf.awayScoredAvgMin, mf.awayScoredAvgMax) &&
                    checkRange(r['Away Conceded'], mf.awayConcededMin, mf.awayConcededMax) && checkRange(r['Away Conceded (Avg)'], mf.awayConcededAvgMin, mf.awayConcededAvgMax) &&
                    checkRange(r['Winning Streak'], effectiveMinWin, effectiveMaxWin) && checkRange(r['Losing Streak'], effectiveMinLose, effectiveMaxLose) &&
+                   checkRange(r['Table Difference'], effectiveMinTableDiff, effectiveMaxTableDiff) && 
+                   checkRange(r['H2H Difference'], effectiveMinH2HDiff, effectiveMaxH2HDiff) &&
+                   checkRange(r['Scoring Difference'], effectiveMinScoringDiff, effectiveMaxScoringDiff) &&
                    (!mf.matchAnalysis || r['Match Analysis'] === mf.matchAnalysis) && (!mf.totalGoalsPrediction || r['Total Goals Prediction'] == mf.totalGoalsPrediction) &&
                    checkRange(r['H2H Home Wins'], mf.h2hHomeWinsMin, mf.h2hHomeWinsMax) && checkRange(r['H2H Away Wins'], mf.h2hAwayWinsMin, mf.h2hAwayWinsMax) &&
                    checkRange(r['H2H Draws'], mf.h2hDrawsMin, mf.h2hDrawsMax) && checkRange(r['Home Team Position'], mf.homeTeamPositionMin, mf.homeTeamPositionMax) &&
@@ -1230,7 +1281,7 @@
         let tempFiltered = _getFilteredData(allMatches);
         
         if (currentTab !== 'dashboard') {
-            if (currentTab === 'best') {
+            if (currentTab === 'best') { // This is for Brstt Predictions
                 tempFiltered = tempFiltered.filter(r => {
                     const predConf = r['Prediction Confidence (%)'];
                     const predOdds = r['Predicted Odd'];
@@ -1310,13 +1361,25 @@
         const maxWin = getNum('mpMaxWinStreak');
         const minLose = getNum('mpMinLoseStreak');
         const maxLose = getNum('mpMaxLoseStreak');
+        const minTableDiff = getNum('mpMinTableDiff');
+        const maxTableDiff = getNum('mpMaxTableDiff');
+        const minH2HDiff = getNum('mpMinH2HDiff');
+        const maxH2HDiff = getNum('mpMaxH2HDiff');
+        const minScoringDiff = getNum('mpMinScoringDiff');
+        const maxScoringDiff = getNum('mpMaxScoringDiff');
 
         tempFiltered = tempFiltered.filter(r => {
             return (!date || r.MatchDate === date) &&
                    (isNaN(minWin) || r['Winning Streak'] >= minWin) &&
                    (isNaN(maxWin) || r['Winning Streak'] <= maxWin) &&
                    (isNaN(minLose) || r['Losing Streak'] >= minLose) &&
-                   (isNaN(maxLose) || r['Losing Streak'] <= maxLose);
+                   (isNaN(maxLose) || r['Losing Streak'] <= maxLose) &&
+                   (isNaN(minTableDiff) || r['Table Difference'] >= minTableDiff) &&
+                   (isNaN(maxTableDiff) || r['Table Difference'] <= maxTableDiff) &&
+                   (isNaN(minH2HDiff) || r['H2H Difference'] >= minH2HDiff) &&
+                   (isNaN(maxH2HDiff) || r['H2H Difference'] <= maxH2HDiff) &&
+                   (isNaN(minScoringDiff) || r['Scoring Difference'] >= minScoringDiff) &&
+                   (isNaN(maxScoringDiff) || r['Scoring Difference'] <= maxScoringDiff);
         });
 
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -1338,13 +1401,33 @@
         const tipFilter = document.getElementById('stSuperTipFilter').value;
         const probMin = parseFloat(document.getElementById('stProbMin').value);
         const probMax = parseFloat(document.getElementById('stProbMax').value);
+        const minWin = parseFloat(document.getElementById('stMinWinStreak').value);
+        const maxWin = parseFloat(document.getElementById('stMaxWinStreak').value);
+        const minLose = parseFloat(document.getElementById('stMinLoseStreak').value);
+        const maxLose = parseFloat(document.getElementById('stMaxLoseStreak').value);
+        const minTableDiff = parseFloat(document.getElementById('stMinTableDiff').value);
+        const maxTableDiff = parseFloat(document.getElementById('stMaxTableDiff').value);
+        const minH2HDiff = parseFloat(document.getElementById('stMinH2HDiff').value);
+        const maxH2HDiff = parseFloat(document.getElementById('stMaxH2HDiff').value);
+        const minScoringDiff = parseFloat(document.getElementById('stMinScoringDiff').value);
+        const maxScoringDiff = parseFloat(document.getElementById('stMaxScoringDiff').value);
         
         tempFiltered = tempFiltered.filter(r => {
             const prob = r['Super Tip Probability'];
             return (!dateFilter || r.MatchDate === dateFilter) &&
                    (!tipFilter || r['Super Tip'] === tipFilter) &&
                    (isNaN(probMin) || prob >= probMin) &&
-                   (isNaN(probMax) || prob <= probMax);
+                   (isNaN(probMax) || prob <= probMax) &&
+                   (isNaN(minWin) || r['Winning Streak'] >= minWin) &&
+                   (isNaN(maxWin) || r['Winning Streak'] <= maxWin) &&
+                   (isNaN(minLose) || r['Losing Streak'] >= minLose) &&
+                   (isNaN(maxLose) || r['Losing Streak'] <= maxLose) &&
+                   (isNaN(minTableDiff) || r['Table Difference'] >= minTableDiff) &&
+                   (isNaN(maxTableDiff) || r['Table Difference'] <= maxTableDiff) &&
+                   (isNaN(minH2HDiff) || r['H2H Difference'] >= minH2HDiff) &&
+                   (isNaN(maxH2HDiff) || r['H2H Difference'] <= maxH2HDiff) &&
+                   (isNaN(minScoringDiff) || r['Scoring Difference'] >= minScoringDiff) &&
+                   (isNaN(maxScoringDiff) || r['Scoring Difference'] <= maxScoringDiff);
         });
 
         const q = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -1385,7 +1468,7 @@
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = data.length ? '' : `<tr><td colspan="16" class="text-center p-4">No matches found.</td></tr>`;
+        tbody.innerHTML = data.length ? '' : `<tr><td colspan="21" class="text-center p-4">No matches found.</td></tr>`;
         data.forEach(row => {
             const id = row.uniqueId;
             const isCorrect1 = evaluatePrediction(row['Predicted Outcome'], row.Result);
@@ -1419,7 +1502,13 @@
 
             tr.innerHTML = `
               <td class='text-center'><button class='fav-btn text-lg ${starClass}' data-id='${id}'><i class="fa-solid fa-star"></i></button></td>
-              <td>${row.MatchDate}</td><td class='font-medium'>${row.Match}</td>
+              <td>${row.MatchDate}</td>
+              <td class='font-medium'>${row.Match}</td>
+              <td>${row['Winning Streak']}</td>
+              <td>${row['Losing Streak']}</td>
+              <td>${row['Table Difference'] || 'N/A'}</td>
+              <td>${row['H2H Difference'] || 'N/A'}</td>
+              <td>${row['Scoring Difference'] || 'N/A'}</td>
               <td class='${getPredictionBgClass(isCorrect1)}'>${row['Predicted Outcome'] || 'N/A'}</td>
               <td>${row['Probability (%)']}%</td>
               <td class='${getPredictionBgClass(isCorrect2)}'>${row['Predicted Outcome3'] || 'N/A'}</td>
@@ -1548,7 +1637,7 @@
         const tbody = document.getElementById('superTipsTableBody');
         tbody.innerHTML = '';
         if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" class="text-center p-4">No matches found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="15" class="text-center p-4">No matches found.</td></tr>`;
             return;
         }
 
@@ -1582,6 +1671,11 @@
                 <td>${row['Draw Odds']}</td>
                 <td>${row['Away Odds']}</td>
                 <td>${row.MatchDate}</td>
+                <td>${row['Winning Streak']}</td>
+                <td>${row['Losing Streak']}</td>
+                <td>${row['Table Difference'] || 'N/A'}</td>
+                <td>${row['H2H Difference'] || 'N/A'}</td>
+                <td>${row['Scoring Difference'] || 'N/A'}</td>
                 <td class="${resultBg}">${row.Result || '—'}</td>
                 <td class="${tipBg} tooltip">
                     ${superTip}
@@ -1669,7 +1763,7 @@
         const tbody = document.getElementById('matchPredictionTableBody');
         tbody.innerHTML = '';
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4">No matches found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="13" class="text-center p-4">No matches found.</td></tr>`;
         } else {
             pageData.forEach(row => {
                 const tr = document.createElement('tr');
@@ -1687,6 +1781,11 @@
                     <td>${row['Draw Odds']}</td>
                     <td>${row['Away Odds']}</td>
                     <td>${row.MatchDate}</td>
+                    <td>${row['Winning Streak']}</td>
+                    <td>${row['Losing Streak']}</td>
+                    <td>${row['Table Difference'] || 'N/A'}</td>
+                    <td>${row['H2H Difference'] || 'N/A'}</td>
+                    <td>${row['Scoring Difference'] || 'N/A'}</td>
                     <td class="${predictionCellBgClass}">${prediction}</td>
                     <td class="${resultCellBgClass}">${row.Result || '—'}</td>
                     <td><button class="mp-view-btn btn btn-primary text-xs py-1 px-2" data-match='${encodeURIComponent(JSON.stringify(row))}'>View</button></td>
@@ -2118,6 +2217,16 @@
              document.getElementById('stSuperTipFilter').value = '';
              document.getElementById('stProbMin').value = '';
              document.getElementById('stProbMax').value = '';
+             document.getElementById('stMinWinStreak').value = '';
+             document.getElementById('stMaxWinStreak').value = '';
+             document.getElementById('stMinLoseStreak').value = '';
+             document.getElementById('stMaxLoseStreak').value = '';
+             document.getElementById('stMinTableDiff').value = '';
+             document.getElementById('stMaxTableDiff').value = '';
+             document.getElementById('stMinH2HDiff').value = '';
+             document.getElementById('stMaxH2HDiff').value = '';
+             document.getElementById('stMinScoringDiff').value = '';
+             document.getElementById('stMaxScoringDiff').value = '';
              applySuperTipsFilters();
         });
 
