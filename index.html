@@ -3058,5 +3058,329 @@ function enhancedOpenMatchDetailsModal(matchKey) {
 window.openMatchDetailsModal = enhancedOpenMatchDetailsModal;
 </script>
 
+
+<script>
+function renderRowsToMatchesBody(data, tableType = 'all-matches') {
+    const tbody = document.getElementById(
+        tableType === 'high-chance' ? 'high-chance-table-body' :
+        tableType === 'finished' ? 'finished-matches-table-body' :
+        'matches-table-body'
+    );
+    if (!tbody) return;
+
+    if (!Array.isArray(data) || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-gray-500">No matches found.</td></tr>`;
+        return;
+    }
+
+    if (typeof createMatchRowHtml === 'function') {
+        tbody.innerHTML = data.map(m => createMatchRowHtml(m, tableType)).join('');
+    } else {
+        tbody.innerHTML = data.map(m => `
+            <tr>
+                <td class="px-3 py-2">${m.Date || ''}</td>
+                <td>${m['Home Team'] || ''}</td>
+                <td>${m['Away Team'] || ''}</td>
+                <td>${m.Prediction || ''}</td>
+                <td>${m['Confidence %'] || ''}%</td>
+                <td>${m['Match Result'] || ''}</td>
+                <td>
+                    <button class="text-blue-600 hover:underline" onclick="openMatchDetailsModal('${m.MatchKey}')">View</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+async function loadFinishedMatchesFromFirebaseAndRender() {
+    const url = "https://datacompass360-3b5d9-default-rtdb.firebaseio.com/predictions.json";
+    const spinner = document.getElementById('loading-spinner');
+    try {
+        if (spinner) spinner.classList.remove('hidden');
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Firebase fetch failed');
+        const json = await res.json();
+        const arr = Object.keys(json || {}).map(k => ({ ...json[k], _fbKey: k }));
+        window.finishedMatchesFromFirebase = arr;
+        renderRowsToMatchesBody(arr, 'finished');
+    } catch (e) {
+        console.error(e);
+        renderRowsToMatchesBody([], 'finished');
+    } finally {
+        if (spinner) spinner.classList.add('hidden');
+    }
+}
+
+function getHighChanceDatasetFromAllMatches() {
+    const src = Array.isArray(window.allMatchesData) ? window.allMatchesData : [];
+    return src.filter(m => {
+        const conf = parseFloat(m['Confidence %'] || m.Confidence || 0);
+        const pp = parseFloat(m['Predicted Probability (%)'] || m.Predicted_Probability || 0);
+        const pr = parseFloat(m['Probability Rate'] || 0);
+        return conf >= 60 && pp > 50 && pr > 45;
+    });
+}
+
+function applyHighChanceFiltersAndRender() {
+    let data = getHighChanceDatasetFromAllMatches();
+    const league = document.getElementById('filter-league-highchance')?.value || '';
+    const date = document.getElementById('filter-date-highchance')?.value || '';
+    const correct = document.getElementById('filter-correctscore-highchance')?.value || '';
+    const confidence = document.getElementById('filter-confidence-highchance')?.value || '';
+    const global = document.getElementById('global-search')?.value?.toLowerCase() || '';
+
+    if (league) data = data.filter(m => (m.League || '') === league);
+    if (date) data = data.filter(m => (m.Date || '') === date);
+    if (correct) data = data.filter(m => ((m['Correct Score'] || '') + '').includes(correct));
+    if (confidence) {
+        const cNum = parseFloat(confidence) || 0;
+        data = data.filter(m => (parseFloat(m['Confidence %'] || 0) >= cNum));
+    }
+    if (global) {
+        data = data.filter(m => Object.values(m).join(' ').toLowerCase().includes(global));
+    }
+    renderRowsToMatchesBody(data, 'high-chance');
+}
+
+['filter-league-highchance','filter-date-highchance','filter-correctscore-highchance','filter-confidence-highchance','global-search']
+    .forEach(id=>{
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', applyHighChanceFiltersAndRender);
+            el.addEventListener('change', applyHighChanceFiltersAndRender);
+        }
+    });
+
+document.querySelectorAll('.nav-tab-button[data-tab="high-chance"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> setTimeout(applyHighChanceFiltersAndRender, 100));
+});
+document.querySelectorAll('.nav-tab-button[data-tab="finished-matches"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> setTimeout(loadFinishedMatchesFromFirebaseAndRender, 100));
+});
+
+function openMatchDetailsModal(matchKey) {
+    const match =
+        (window.allMatchesData || []).find(m => m.MatchKey === matchKey)
+        || (window.finishedMatchesFromFirebase || []).find(m => m.MatchKey === matchKey || m._fbKey === matchKey);
+
+    if (!match) {
+        showNotification("Error: Match not found.", "error");
+        return;
+    }
+
+    document.getElementById('modal-match-title').textContent = `${match['Home Team']} vs ${match['Away Team']}`;
+    document.getElementById('modal-home-team').textContent = match['Home Team'] || 'Home';
+    document.getElementById('modal-away-team').textContent = match['Away Team'] || 'Away';
+
+    const tbody = document.getElementById('modal-comparison-table');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const addRow = (label, homeVal, awayVal) => {
+        tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td class="px-4 py-2 font-medium text-gray-700">${label}</td>
+                <td class="px-4 py-2 text-center">${homeVal ?? '-'}</td>
+                <td class="px-4 py-2 text-center">${awayVal ?? '-'}</td>
+            </tr>
+        `);
+    };
+
+    addRow('Confidence %', match['Confidence %'], match['Predicted Probability (%)']);
+    addRow('Home Team Table Standing', match['Home Team Table Standing'], match['Away Team Table Standing']);
+    addRow('Home Team Power', match['Home Team Power'], match['Away Team Power']);
+
+    const modal = document.getElementById('match-details-modal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+document.getElementById('close-match-details-modal')?.addEventListener('click', ()=>{
+    document.getElementById('match-details-modal')?.classList.add('hidden');
+});
+</script>
+
+
+<script>
+/* ===== v8 Enhancements: High Chance loader + Finished Matches redesigned table (30 rows) ===== */
+
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9E7TTXJgBm3CBY0Oydz5qQ_QLaP-8Za5O2GSitCWFvOSI9tt-nEaSS64P7NPX6h6aJluZ4bA16nIO/pub?gid=0&single=true&output=csv";
+
+// Utility: parse simple CSV (works for your published sheet)
+function parseCsv(text) {
+    const lines = text.trim().split(/\r?\n/);
+    if(lines.length===0) return [];
+    const headers = lines[0].split(',').map(h=>h.trim());
+    const rows = lines.slice(1).map(line => {
+        // Basic split - assumes no embedded commas in fields
+        const cols = line.split(',');
+        const obj = {};
+        for(let i=0;i<headers.length;i++){
+            obj[headers[i]] = cols[i] !== undefined ? cols[i].trim() : '';
+        }
+        return obj;
+    });
+    return rows;
+}
+
+// Render rows into shared matches table body (keeps existing function if present)
+function renderRowsToMatchesBodySimple(data, tableType='all-matches') {
+    const tbody = document.getElementById('matches-table-body');
+    if(!tbody) return;
+    if(!Array.isArray(data) || data.length===0) {
+        tbody.innerHTML = '<tr><td colspan="12" class="text-center py-6 text-gray-500">No matches found.</td></tr>';
+        return;
+    }
+    // Build rows
+    tbody.innerHTML = data.map(m=>{
+        return `<tr class="hover:bg-gray-50">
+            <td class="px-3 py-2 text-sm">${m.Date||''}</td>
+            <td class="px-3 py-2 text-sm font-medium">${m.League||m['League']||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Home Team']||m.Home||m.HomeTeam||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Away Team']||m.Away||m.AwayTeam||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Prediction']||m.Prediction||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Predicted Probability (%)']||m['Predicted_Probability_(%)']||m.Predicted_Probability||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Confidence %']||m.Confidence||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Probability Rate']||m.ProbabilityRate||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Prediction_Status']||m.Prediction_Status||m.PredictionStatus||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Recommendation_Tip']||m['Recommendation Tip']||m.Recommendation_Tip||''}</td>
+            <td class="px-3 py-2 text-sm">${m['Predicted_Total_Goals']||m['Predicted Total Goals']||m.Predicted_Total_Goals||''}</td>
+            <td class="px-3 py-2 text-sm"><a href="${m.Match_URL||m['Match_URL']||m.MatchUrl||m.Match_URL||'#'}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
+        </tr>`;
+    }).join('');
+}
+
+// High Chance: load from sheet, filter by numeric criteria, then apply UI filters and render
+async function loadHighChanceFromSheetAndRender() {
+    try {
+        // show spinner if exists
+        const spinner = document.getElementById('loading-spinner');
+        if(spinner) spinner.classList.remove('hidden');
+        const res = await fetch(SHEET_CSV_URL);
+        if(!res.ok) throw new Error('Failed to load sheet CSV');
+        const text = await res.text();
+        const rows = parseCsv(text);
+        // Normalize header names trimming spaces
+        const normalized = rows.map(r=>{
+            const obj = {};
+            for(const k in r) {
+                obj[k.trim()] = r[k];
+            }
+            return obj;
+        });
+        // Filter numeric high chance criteria
+        const hc = normalized.filter(m=>{
+            const c = parseFloat(m['Confidence %'])||0;
+            const pp = parseFloat(m['Predicted Probability (%)'])||0;
+            const pr = parseFloat(m['Probability Rate'])||0;
+            return c >= 60 && pp > 50 && pr > 45;
+        });
+        // Save for filter live use
+        window.highChanceData = hc;
+        // Apply UI filters (reuse applyHighChanceFiltersAndRender if exists)
+        if(typeof applyHighChanceFiltersAndRender === 'function'){
+            // replace source function to use window.highChanceData
+            // We'll temporarily set window.allMatchesData to hc so existing filter function works
+            const prev = window.allMatchesData;
+            window.allMatchesData = hc;
+            applyHighChanceFiltersAndRender();
+            window.allMatchesData = prev;
+        } else {
+            // Render raw hc
+            renderRowsToMatchesBodySimple(hc,'high-chance');
+        }
+    } catch(err){
+        console.error(err);
+    } finally {
+        const spinner = document.getElementById('loading-spinner');
+        if(spinner) spinner.classList.add('hidden');
+    }
+}
+
+// Wire high chance nav to load
+document.querySelectorAll('.nav-tab-button[data-tab="high-chance"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> {
+        setTimeout(()=> loadHighChanceFromSheetAndRender(), 80);
+    });
+});
+
+// Finished Matches: render specific fields, max 30 rows
+async function loadFinishedMatchesRedesigned() {
+    const url = "https://datacompass360-3b5d9-default-rtdb.firebaseio.com/predictions.json";
+    try {
+        const spinner = document.getElementById('loading-spinner');
+        if(spinner) spinner.classList.remove('hidden');
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('Firebase fetch failed');
+        const json = await res.json() || {};
+        let arr = Object.keys(json).map(k => ({...json[k], _fbKey:k}));
+        // try to sort by Date if present (descending) else leave order
+        arr = arr.map(a=>{
+            // attempt to parse a.Date or Date field
+            const d = a.Date || a.date || a.matchDate || '';
+            a.__parsedDate = Date.parse(d) || 0;
+            return a;
+        }).sort((x,y)=> (y.__parsedDate||0) - (x.__parsedDate||0));
+        // limit to 30
+        arr = arr.slice(0,30);
+        // Build header for matches table to match redesigned columns
+        const table = document.getElementById('matches-table-body')?.closest('table');
+        if(table){
+            const thead = table.querySelector('thead') || table.insertAdjacentHTML('afterbegin','') ;
+            const headerHtml = `
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Date</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">League</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Home Team</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Away Team</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Match Result</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Prediction</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Predicted Probability (%)</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Confidence %</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Prediction Status</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Recommendation Tip</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Total Goals Prediction</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold">Match URL</th>
+                    </tr>
+                </thead>
+            `;
+            // Replace existing thead
+            const existingThead = table.querySelector('thead');
+            if(existingThead) existingThead.outerHTML = headerHtml;
+            else table.insertAdjacentHTML('afterbegin', headerHtml);
+        }
+        // Render rows into shared tbody
+        const tbody = document.getElementById('matches-table-body');
+        if(!tbody) return;
+        tbody.innerHTML = arr.map(m=>{
+            return `<tr class="hover:bg-gray-50">
+                <td class="px-3 py-2 text-sm">${m.Date||m.date||''}</td>
+                <td class="px-3 py-2 text-sm">${m.League||''}</td>
+                <td class="px-3 py-2 text-sm">${m['Home Team']||m.Home||''}</td>
+                <td class="px-3 py-2 text-sm">${m['Away Team']||m.Away||''}</td>
+                <td class="px-3 py-2 text-sm">${m.Match_Result||m['Match Result']||m.MatchResult||''}</td>
+                <td class="px-3 py-2 text-sm">${m.Predicted_Outcome||m.Predicted_Outcome||m.Prediction||''}</td>
+                <td class="px-3 py-2 text-sm">${m['Predicted Probability (%)']||m.Predicted_Probability||m.Predicted_Probability_||''}</td>
+                <td class="px-3 py-2 text-sm">${m['Confidence %']||m.Confidence||''}</td>
+                <td class="px-3 py-2 text-sm">${m.Prediction_Status||m.PredictionStatus||m['Prediction Status']||''}</td>
+                <td class="px-3 py-2 text-sm">${m.Recommendation_Tip||m['Recommendation Tip']||''}</td>
+                <td class="px-3 py-2 text-sm">${m.Predicted_Total_Goals||m['Predicted Total Goals']||''}</td>
+                <td class="px-3 py-2 text-sm"><a href="${m.Match_URL||m.MatchUrl||m.MatchUrl||'#'}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
+            </tr>`;
+        }).join('');
+    } catch(err){
+        console.error(err);
+    } finally {
+        const spinner = document.getElementById('loading-spinner');
+        if(spinner) spinner.classList.add('hidden');
+    }
+}
+
+// wire finished matches nav
+document.querySelectorAll('.nav-tab-button[data-tab="finished-matches"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> setTimeout(()=> loadFinishedMatchesRedesigned(), 80));
+});
+</script>
+
 </body>
 </html>
